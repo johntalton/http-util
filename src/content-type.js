@@ -26,6 +26,9 @@ export const SPECIAL_CHARS = [
 	'\n', '\r', '\t'
 ]
 
+/**
+ * @param {string} c
+ */
 export function isWhitespace(c){ return /\s/.test(c) }
 
 /**

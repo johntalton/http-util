@@ -108,6 +108,7 @@ export function sendError(stream, message, meta) {
  */
 export function sendPreflight(stream, allowedOrigin, methods, meta) {
 	stream.respond({
+		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: allowedOrigin,
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: methods.join(','),
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: ['Authorization', HTTP2_HEADER_CONTENT_TYPE].join(','),
