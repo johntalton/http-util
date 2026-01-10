@@ -4,18 +4,18 @@ import { parseContentType } from './content-type.js'
 export const DISPOSITION_FORM_DATA = 'form-data'
 
 export const BOUNDARY_MARK = '--'
-export const SEPARATOR = '\r\n'
+export const MULTIPART_SEPARATOR = '\r\n'
 
 export const HEADER_SEPARATOR = ':'
 
 export const EMPTY = ''
 
-export const HEADER = {
+export const MULTIPART_HEADER = {
 	CONTENT_DISPOSITION: 'content-disposition',
 	CONTENT_TYPE: 'content-type'
 }
 
-export const STATE = {
+export const MULTIPART_STATE = {
 	BEGIN: 'begin',
 	HEADERS: 'headers',
 	VALUE: 'value',
@@ -37,7 +37,7 @@ export class Multipart {
 			return formData
 		}
 
-		const lines = text.split(SEPARATOR)
+		const lines = text.split(MULTIPART_SEPARATOR)
 
 		if(lines.length === 0) {
 			// missing body?
@@ -48,12 +48,12 @@ export class Multipart {
 		const boundaryEnd = `${BOUNDARY_MARK}${boundary}${BOUNDARY_MARK}`
 
 		let partName = undefined
-		let state = STATE.BEGIN
+		let state = MULTIPART_STATE.BEGIN
 
 		for(const line of lines) {
 			// console.log('line', line)
 
-			if(state === STATE.BEGIN) {
+			if(state === MULTIPART_STATE.BEGIN) {
 				// expect boundary
 				if(line === boundaryEnd) {
 					// empty set
@@ -63,19 +63,19 @@ export class Multipart {
 				if(line !== boundaryBegin) {
 					throw new Error('missing beginning boundary')
 				}
-				state = STATE.HEADERS
+				state = MULTIPART_STATE.HEADERS
 			}
-			else if(state === STATE.HEADERS) {
-				if(line === EMPTY) { state = STATE.VALUE }
+			else if(state === MULTIPART_STATE.HEADERS) {
+				if(line === EMPTY) { state = MULTIPART_STATE.VALUE }
 				else {
 					const [ rawName, value ] = line.split(HEADER_SEPARATOR)
 					const name = rawName.toLowerCase()
 					// console.log('header', name, value)
-					if(name === HEADER.CONTENT_TYPE) {
+					if(name === MULTIPART_HEADER.CONTENT_TYPE) {
 						const contentType = parseContentType(value)
 						// console.log({ contentType })
 					}
-					else if(name === HEADER.CONTENT_DISPOSITION) {
+					else if(name === MULTIPART_HEADER.CONTENT_DISPOSITION) {
 						const disposition = parseContentDisposition(value)
 						if(disposition?.disposition !== DISPOSITION_FORM_DATA) {
 							throw new Error('disposition not form-data')
@@ -90,21 +90,21 @@ export class Multipart {
 					}
 				}
 			}
-			else if(state === STATE.VALUE) {
+			else if(state === MULTIPART_STATE.VALUE) {
 				// console.log('value', line)
 				if(partName === undefined) { throw new Error('unnamed part') }
 
 				formData.append(partName, line)
 				partName = undefined
 
-				state = STATE.BEGIN_OR_END
+				state = MULTIPART_STATE.BEGIN_OR_END
 			}
-			else if(state === STATE.BEGIN_OR_END) {
+			else if(state === MULTIPART_STATE.BEGIN_OR_END) {
 				if(line === boundaryEnd) { break }
 				if(line !== boundaryBegin) {
 					throw new Error('missing boundary or end')
 				}
-				state = STATE.HEADERS
+				state = MULTIPART_STATE.HEADERS
 			}
 			else {
 				throw new Error('unknown state')

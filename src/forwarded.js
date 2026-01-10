@@ -12,7 +12,7 @@ export const KNOWN_FORWARDED_KEYS = [
 
 export const SKIP_ANY = '*'
 
-export const SEPARATOR = {
+export const FORWARDED_SEPARATOR = {
 	ITEM: ',',
 	ELEMENT: ';',
 	KVP: '='
@@ -29,12 +29,12 @@ export class Forwarded {
 
 		return header
 			.trim()
-			.split(SEPARATOR.ITEM)
+			.split(FORWARDED_SEPARATOR.ITEM)
 			.map(single => new Map(single
 					.trim()
-					.split(SEPARATOR.ELEMENT)
+					.split(FORWARDED_SEPARATOR.ELEMENT)
 					.map(kvp => {
-						const [ rawKey, rawValue ] = kvp.trim().split(SEPARATOR.KVP)
+						const [ rawKey, rawValue ] = kvp.trim().split(FORWARDED_SEPARATOR.KVP)
 
 						const key = rawKey?.trim()?.toLowerCase()
 						if (key === undefined || !acceptedKeys.includes(key)) { return undefined }

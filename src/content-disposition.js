@@ -6,13 +6,13 @@
  * @property {string} [filename]
  */
 
-export const SEPARATOR = {
+export const DISPOSITION_SEPARATOR = {
 	PARAMETER: ';',
 	KVP: '='
 }
 
-export const NAME = 'name'
-export const FILENAME = 'filename'
+export const DISPOSITION_PARAM_NAME = 'name'
+export const DISPOSITION_PARAM_FILENAME = 'filename'
 
 /**
  * @param {string} contentDispositionHeader
@@ -21,14 +21,14 @@ export const FILENAME = 'filename'
 export function parseContentDisposition(contentDispositionHeader) {
 	if(contentDispositionHeader === undefined) { return undefined }
 
-	const [ disposition, ...parameterSet ] = contentDispositionHeader.trim().split(SEPARATOR.PARAMETER).map(entry => entry.trim())
+	const [ disposition, ...parameterSet ] = contentDispositionHeader.trim().split(DISPOSITION_SEPARATOR.PARAMETER).map(entry => entry.trim())
 	const parameters = new Map(parameterSet.map(parameter => {
-		const [ key, value ] = parameter.split(SEPARATOR.KVP).map(p => p.trim())
+		const [ key, value ] = parameter.split(DISPOSITION_SEPARATOR.KVP).map(p => p.trim())
 		return [ key, value ]
 	}))
 
-	const name = parameters.get(NAME)
-	const filename = parameters.get(FILENAME)
+	const name = parameters.get(DISPOSITION_PARAM_NAME)
+	const filename = parameters.get(DISPOSITION_PARAM_FILENAME)
 
 	return {
 		disposition,

@@ -1,10 +1,10 @@
-export const KEY_DURATION = 'dur' // common in milliseconds
-export const KEY_DESCRIPTION = 'desc'
+export const SERVER_TIMING_KEY_DURATION = 'dur' // common in milliseconds
+export const SERVER_TIMING_KEY_DESCRIPTION = 'desc'
 
 export const HTTP_HEADER_SERVER_TIMING = 'Server-Timing'
 export const HTTP_HEADER_TIMING_ALLOW_ORIGIN = 'Timing-Allow-Origin'
 
-export const SEPARATOR = {
+export const SERVER_TIMING_SEPARATOR = {
 	METRIC: ',',
 	PARAMETER: ';',
 	KVP: '='
@@ -28,12 +28,12 @@ export class ServerTiming {
 		return timings
 			.map(({ name, duration, description }) => [
 					`${name}`,
-					description !== undefined ? `${KEY_DESCRIPTION}${SEPARATOR.KVP}"${description}"` : undefined,
-					duration !== undefined ? `${KEY_DURATION}${SEPARATOR.KVP}${Math.trunc(duration * 10) / 10}` : undefined
+					description !== undefined ? `${SERVER_TIMING_KEY_DESCRIPTION}${SERVER_TIMING_SEPARATOR.KVP}"${description}"` : undefined,
+					duration !== undefined ? `${SERVER_TIMING_KEY_DURATION}${SERVER_TIMING_SEPARATOR.KVP}${Math.trunc(duration * 10) / 10}` : undefined
 				]
 				.filter(item => item !== undefined)
-				.join(SEPARATOR.PARAMETER))
-			.join(SEPARATOR.METRIC)
+				.join(SERVER_TIMING_SEPARATOR.PARAMETER))
+			.join(SERVER_TIMING_SEPARATOR.METRIC)
 	}
 }
 

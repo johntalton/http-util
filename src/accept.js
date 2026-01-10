@@ -15,8 +15,8 @@ import { parseAcceptStyleHeader } from './accept-util.js'
  * @typedef {AcceptStyleItem & AcceptExtensionItem} AcceptItem
  */
 
-export const SEPARATOR = { SUBTYPE: '/' }
-export const ANY = '*'
+export const ACCEPT_SEPARATOR = { SUBTYPE: '/' }
+export const ACCEPT_ANY = '*'
 
 export const WELL_KNOWN = new Map([
 	[ '*/*', [ { name: '*/*', quality: 1 } ] ],
@@ -32,11 +32,11 @@ export class Accept {
 		return parseAcceptStyleHeader(acceptHeader, WELL_KNOWN)
 			.map(({ name, quality, parameters }) => {
 				const [ type, subtype ] = name
-					.split(SEPARATOR.SUBTYPE)
+					.split(ACCEPT_SEPARATOR.SUBTYPE)
 					.map(t => t.trim())
 
 				return {
-					mimetype: `${type}${SEPARATOR.SUBTYPE}${subtype ?? ANY}`,
+					mimetype: `${type}${ACCEPT_SEPARATOR.SUBTYPE}${subtype ?? ACCEPT_ANY}`,
 					name, type, subtype,
 					quality,
 					parameters
@@ -45,8 +45,8 @@ export class Accept {
 			.sort((entryA, entryB) => {
 				if(entryA.quality === entryB.quality) {
 					// prefer things with less ANY
-					const specificityA = (entryA.type === ANY ? 1 : 0) + (entryA.subtype === ANY ? 1 : 0)
-					const specificityB = (entryB.type === ANY ? 1 : 0) + (entryB.subtype === ANY ? 1 : 0)
+					const specificityA = (entryA.type === ACCEPT_ANY ? 1 : 0) + (entryA.subtype === ACCEPT_ANY ? 1 : 0)
+					const specificityB = (entryB.type === ACCEPT_ANY ? 1 : 0) + (entryB.subtype === ACCEPT_ANY ? 1 : 0)
 					return specificityA - specificityB
 				}
 
@@ -75,8 +75,8 @@ export class Accept {
 		const bests = accepts.map(accept => {
 			const { type, subtype, quality } = accept
 			const st = supportedTypes.filter(supportedType => {
-				const [ stType, stSubtype ] = supportedType.split(SEPARATOR.SUBTYPE)
-				return ((stType === type || type === ANY) && (stSubtype === subtype || subtype === ANY))
+				const [ stType, stSubtype ] = supportedType.split(ACCEPT_SEPARATOR.SUBTYPE)
+				return ((stType === type || type === ACCEPT_ANY) && (stSubtype === subtype || subtype === ACCEPT_ANY))
 			})
 
 			return {

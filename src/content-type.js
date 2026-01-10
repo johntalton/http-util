@@ -7,7 +7,7 @@ export const MIME_TYPE_URL_FORM_DATA = 'application/x-www-form-urlencoded'
 export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
 export const MIME_TYPE_OCTET_STREAM = 'application/octet-stream'
 
-export const KNOWN_TYPES = [
+export const KNOWN_CONTENT_TYPES = [
 	'application', 'audio', 'image', 'message',
 	'multipart','text', 'video'
 ]
@@ -50,7 +50,7 @@ export function hasSpecialChar(value) {
  * @property {Map<string, string>} parameters
  */
 
-export const SEPARATOR = {
+export const CONTENT_TYPE_SEPARATOR = {
 	SUBTYPE: '/',
 	PARAMETER: ';',
 	KVP: '='
@@ -58,9 +58,9 @@ export const SEPARATOR = {
 
 export const CHARSET_UTF8 = 'utf8'
 export const CHARSET = 'charset'
-export const PARAMETER_CHARSET_UTF8 = `${CHARSET}${SEPARATOR.KVP}${CHARSET_UTF8}`
-export const CONTENT_TYPE_JSON = `${MIME_TYPE_JSON}${SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
-export const CONTENT_TYPE_TEXT = `${MIME_TYPE_TEXT}${SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
+export const PARAMETER_CHARSET_UTF8 = `${CHARSET}${CONTENT_TYPE_SEPARATOR.KVP}${CHARSET_UTF8}`
+export const CONTENT_TYPE_JSON = `${MIME_TYPE_JSON}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
+export const CONTENT_TYPE_TEXT = `${MIME_TYPE_TEXT}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
 
 /** @type {ContentType} */
 export const WELL_KNOWN_JSON = {
@@ -72,7 +72,7 @@ export const WELL_KNOWN_JSON = {
 	parameters: new Map()
 }
 
-export const WELL_KNOWN = new Map([
+export const WELL_KNOWN_CONTENT_TYPES = new Map([
 	[ 'application/json', WELL_KNOWN_JSON ],
 	[ 'application/json;charset=utf8', WELL_KNOWN_JSON ]
 ])
@@ -86,15 +86,15 @@ export function parseContentType(contentTypeHeader) {
 	if(contentTypeHeader === undefined) { return undefined }
 	if(contentTypeHeader === null) { return undefined }
 
-	const wellKnown = WELL_KNOWN.get(contentTypeHeader)
+	const wellKnown = WELL_KNOWN_CONTENT_TYPES.get(contentTypeHeader)
 	if(wellKnown !== undefined) { return wellKnown }
 
-	const [ mimetypeRaw, ...parameterSet ] = contentTypeHeader.split(SEPARATOR.PARAMETER)
+	const [ mimetypeRaw, ...parameterSet ] = contentTypeHeader.split(CONTENT_TYPE_SEPARATOR.PARAMETER)
 	if(mimetypeRaw === undefined) { return undefined }
 	if(mimetypeRaw === '') { return undefined }
 
 	const [ typeRaw, subtypeRaw ] = mimetypeRaw
-		.split(SEPARATOR.SUBTYPE)
+		.split(CONTENT_TYPE_SEPARATOR.SUBTYPE)
 		.map(t => t.toLowerCase())
 
 	if(typeRaw === undefined) { return undefined }
@@ -111,7 +111,7 @@ export function parseContentType(contentTypeHeader) {
 
 	parameterSet
 			.forEach(parameter => {
-				const [ key, value ] = parameter.split(SEPARATOR.KVP)
+				const [ key, value ] = parameter.split(CONTENT_TYPE_SEPARATOR.KVP)
 				if(key === undefined || key === '') { return }
 				if(value === undefined || value === '') { return }
 				if(hasSpecialChar(key)) { return }
@@ -129,7 +129,7 @@ export function parseContentType(contentTypeHeader) {
 	const charset = parameters.get(CHARSET)
 
 	return {
-		mimetype: `${type}${SEPARATOR.SUBTYPE}${subtype}`,
+		mimetype: `${type}${CONTENT_TYPE_SEPARATOR.SUBTYPE}${subtype}`,
 		mimetypeRaw, type, subtype,
 		charset,
 		parameters

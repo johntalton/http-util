@@ -2,7 +2,7 @@ import { parseAcceptStyleHeader } from './accept-util.js'
 
 /** @import { AcceptStyleItem } from './accept-util.js' */
 
-export const WELL_KNOWN = new Map([
+export const WELL_KNOWN_ENCODINGS = new Map([
 	[ 'gzip, deflate, br, zstd', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' }, { name: 'zstd' } ] ],
 	[ 'gzip, deflate, br', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' } ] ]
 ])
@@ -12,7 +12,7 @@ export class AcceptEncoding {
 	 * @param {string|undefined} acceptEncodingHeader
 	 */
 	static parse(acceptEncodingHeader) {
-		return parseAcceptStyleHeader(acceptEncodingHeader, WELL_KNOWN)
+		return parseAcceptStyleHeader(acceptEncodingHeader, WELL_KNOWN_ENCODINGS)
 	}
 
 	/**
