@@ -12,6 +12,9 @@
   "files": [
     "src/*.js"
   ],
+  "repository": {
+    "url": "https://github.com/johntalton/http-util"
+  },
   "dependencies": {
     "@johntalton/sse-util": "^1.0.0"
   }
