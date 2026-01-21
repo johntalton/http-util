@@ -8,7 +8,14 @@ import {
 	ENDING,
 } from '@johntalton/sse-util'
 
-import { CHARSET_UTF8, CONTENT_TYPE_JSON, CONTENT_TYPE_TEXT } from './content-type.js'
+/** @import { IncomingHttpHeaders } from 'node:http2' */
+
+import {
+	CHARSET_UTF8,
+	CONTENT_TYPE_JSON,
+	CONTENT_TYPE_TEXT,
+	MIME_TYPE_MESSAGE_HTTP
+} from './content-type.js'
 import { ServerTiming, HTTP_HEADER_SERVER_TIMING, HTTP_HEADER_TIMING_ALLOW_ORIGIN } from './server-timing.js'
 import { HTTP_HEADER_RATE_LIMIT, HTTP_HEADER_RATE_LIMIT_POLICY, RateLimit, RateLimitPolicy } from './rate-limit.js'
 
@@ -23,7 +30,9 @@ const {
 	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
 	HTTP2_HEADER_SERVER,
 	HTTP2_HEADER_RETRY_AFTER,
-	HTTP2_HEADER_CACHE_CONTROL
+	HTTP2_HEADER_CACHE_CONTROL,
+	HTTP2_HEADER_ETAG,
+	HTTP2_HEADER_ALLOW
 } = http2.constants
 
 const {
@@ -32,7 +41,8 @@ const {
 	HTTP_STATUS_UNAUTHORIZED,
 	HTTP_STATUS_NO_CONTENT,
 	HTTP_STATUS_INTERNAL_SERVER_ERROR,
-	HTTP_STATUS_TOO_MANY_REQUESTS
+	HTTP_STATUS_TOO_MANY_REQUESTS,
+	HTTP_STATUS_METHOD_NOT_ALLOWED
 } = http2.constants
 
 export const HTTP_HEADER_ORIGIN = 'origin'
@@ -63,6 +73,7 @@ export const PREFLIGHT_AGE_SECONDS = '500'
  * @property {Array<TimingsInfo>} performance
  * @property {string|undefined} servername
  * @property {string|undefined} origin
+ * @property {string|undefined} etag
  */
 
 /**
@@ -113,6 +124,20 @@ export function sendPreflight(stream, allowedOrigin, methods, meta) {
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: methods.join(','),
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: ['Authorization', HTTP2_HEADER_CONTENT_TYPE].join(','),
 		[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS,
+		[HTTP2_HEADER_SERVER]: meta.servername
+	})
+	stream.end()
+}
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {Array<string>} methods
+ * @param {Metadata} meta
+ */
+export function sendNowAllowed(stream, methods, meta) {
+	stream.respond({
+		[HTTP2_HEADER_STATUS]: HTTP_STATUS_METHOD_NOT_ALLOWED,
+		[HTTP2_HEADER_ALLOW]: methods.join(','),
 		[HTTP2_HEADER_SERVER]: meta.servername
 	})
 	stream.end()
@@ -218,11 +243,49 @@ export function sendJSON_Encoded(stream, obj, encoding, allowedOrigin, meta) {
 		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
 		[HTTP2_HEADER_SERVER]: meta.servername,
 		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: allowedOrigin,
-		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance)
+		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance),
+		[HTTP2_HEADER_ETAG]: meta.etag
 	})
 
 	// stream.write(encodedData)
 	stream.end(encodedData)
+}
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {string} method
+ * @param {URL} url
+ * @param {IncomingHttpHeaders} headers
+ * @param {Metadata} meta
+ */
+export function sendTrace(stream, method, url, headers, meta) {
+	const FILTER_KEYS = [ 'authorization', 'cookie' ]
+	const HTTP_VERSION = new Map([
+		[ 'h2', 'HTTP/2' ],
+		[ 'h2c', 'HTTP/2'],
+		[ 'http/1.1', 'HTTP/1.1']
+	])
+
+	const version = HTTP_VERSION.get(stream.session?.alpnProtocol ?? 'h2')
+
+	stream.respond({
+		[HTTP2_HEADER_CONTENT_TYPE]: MIME_TYPE_MESSAGE_HTTP,
+		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
+		[HTTP2_HEADER_SERVER]: meta.servername
+	})
+
+	const reconstructed = [
+		`${method} ${url.pathname}${url.search} ${version}`,
+		Object.entries(headers)
+			.filter(([ key ]) => !key.startsWith(':'))
+			.filter(([ key ]) => !FILTER_KEYS.includes(key))
+			.map(([ key, value ]) => `${key}: ${value}`)
+			.join('\n'),
+		'\n'
+		]
+		.join('\n')
+
+	stream.end(reconstructed)
 }
 
 /**
