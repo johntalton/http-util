@@ -113,14 +113,13 @@ export function sendError(stream, message, meta) {
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string|undefined} allowedOrigin
  * @param {Array<string>} methods
  * @param {Metadata} meta
  */
-export function sendPreflight(stream, allowedOrigin, methods, meta) {
+export function sendPreflight(stream, methods, meta) {
 	stream.respond({
 		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: allowedOrigin,
+		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: methods.join(','),
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: ['Authorization', HTTP2_HEADER_CONTENT_TYPE].join(','),
 		[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS,
@@ -213,10 +212,9 @@ export const ENCODER_MAP = new Map([
  * @param {ServerHttp2Stream} stream
  * @param {Object} obj
  * @param {string|undefined} encoding
- * @param {string|undefined} allowedOrigin
  * @param {Metadata} meta
  */
-export function sendJSON_Encoded(stream, obj, encoding, allowedOrigin, meta) {
+export function sendJSON_Encoded(stream, obj, encoding, meta) {
 	if(stream.closed) { return }
 
 	const json = JSON.stringify(obj)
@@ -235,14 +233,14 @@ export function sendJSON_Encoded(stream, obj, encoding, allowedOrigin, meta) {
 	)
 
 	stream.respond({
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: allowedOrigin,
+		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
 		[HTTP2_HEADER_CONTENT_TYPE]: CONTENT_TYPE_JSON,
 		[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
 		[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
 		[HTTP2_HEADER_CACHE_CONTROL]: 'private',
 		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
 		[HTTP2_HEADER_SERVER]: meta.servername,
-		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: allowedOrigin,
+		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: meta.origin,
 		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance),
 		[HTTP2_HEADER_ETAG]: meta.etag
 	})
@@ -271,7 +269,9 @@ export function sendTrace(stream, method, url, headers, meta) {
 	stream.respond({
 		[HTTP2_HEADER_CONTENT_TYPE]: MIME_TYPE_MESSAGE_HTTP,
 		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
-		[HTTP2_HEADER_SERVER]: meta.servername
+		[HTTP2_HEADER_SERVER]: meta.servername,
+		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: meta.origin,
+		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance),
 	})
 
 	const reconstructed = [
@@ -290,10 +290,9 @@ export function sendTrace(stream, method, url, headers, meta) {
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string|undefined} allowedOrigin
  * @param {SSEOptions & Metadata} meta
  */
-export function sendSSE(stream, allowedOrigin, meta) {
+export function sendSSE(stream, meta) {
 	// stream.setTimeout(0)
 	// stream.session?.setTimeout(0)
 	// stream.session?.socket.setTimeout(0)
@@ -307,7 +306,7 @@ export function sendSSE(stream, allowedOrigin, meta) {
 	const sendBOM = meta.bom ?? true
 
 	stream.respond({
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: allowedOrigin,
+		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
 		[HTTP2_HEADER_CONTENT_TYPE]: SSE_MIME,
 		[HTTP2_HEADER_STATUS]: activeStream ? HTTP_STATUS_OK : HTTP_STATUS_NO_CONTENT, // SSE_INACTIVE_STATUS_CODE
 		// [HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true'
