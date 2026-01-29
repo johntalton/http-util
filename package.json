@@ -1,16 +1,18 @@
 {
   "name": "@johntalton/http-util",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
     "./headers": "./src/index.js",
     "./body": "./src/body.js",
-    "./response": "./src/handle-stream-util.js"
+    "./response": "./src/response/index.js",
+    "./response/object": "./src/response/response.js"
   },
   "files": [
-    "src/*.js"
+    "src/*.js",
+    "src/response/*.js"
   ],
   "repository": {
     "url": "https://github.com/johntalton/http-util"
