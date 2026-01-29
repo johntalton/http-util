@@ -24,6 +24,7 @@ const {
  */
 export function sendNotFound(stream, message, meta) {
 	console.log('404', message)
+
 	stream.respond({
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
 		[HTTP2_HEADER_STATUS]: HTTP_STATUS_NOT_FOUND,

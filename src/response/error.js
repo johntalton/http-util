@@ -1,5 +1,4 @@
 import http2 from 'node:http2'
-
 import {
 	CONTENT_TYPE_TEXT
 } from '../content-type.js'

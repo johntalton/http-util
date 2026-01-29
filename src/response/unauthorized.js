@@ -24,6 +24,7 @@ export function sendUnauthorized(stream, meta) {
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
 		[HTTP2_HEADER_STATUS]: HTTP_STATUS_UNAUTHORIZED,
 		[HTTP2_HEADER_SERVER]: meta.servername
+		//  WWW-Authenticate
 	})
 	stream.end()
 }
