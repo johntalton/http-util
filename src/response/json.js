@@ -6,6 +6,11 @@ import {
 	CONTENT_TYPE_JSON
 } from '../content-type.js'
 
+/** @import { ServerHttp2Stream } from 'node:http2' */
+/** @import { Metadata } from './defs.js' */
+
+/** @typedef { (data: string, charset: BufferEncoding) => Buffer } EncoderFun */
+
 const {
   HTTP2_HEADER_STATUS,
   HTTP2_HEADER_CONTENT_TYPE,
@@ -20,10 +25,6 @@ const {
 const {
   HTTP_STATUS_OK
 } = http2.constants
-
-/** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from './defs.js' */
-/** @typedef { (data: string, charset: BufferEncoding) => Buffer } EncoderFun */
 
 /** @type {Map<string, EncoderFun>} */
 export const ENCODER_MAP = new Map([

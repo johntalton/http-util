@@ -8,6 +8,7 @@ export const HTTP_HEADER_SEC_CH_MOBILE = 'sec-ch-ua-mobile'
 export const HTTP_HEADER_SEC_FETCH_SITE = 'sec-fetch-site'
 export const HTTP_HEADER_SEC_FETCH_MODE = 'sec-fetch-mode'
 export const HTTP_HEADER_SEC_FETCH_DEST = 'sec-fetch-dest'
+export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
 
 export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]
 
