@@ -228,6 +228,9 @@ export async function bodyArrayBuffer(reader) {
  * @param {ReadableStream} reader
  */
 export async function bodyUint8Array(reader) {
+	// const blob = await bodyBlob(reader)
+	// return blob.bytes()
+
 	const buffer = await bodyArrayBuffer(reader)
 	return new Uint8Array(buffer)
 
