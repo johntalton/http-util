@@ -79,6 +79,31 @@ export function isQuoted(etag) {
 	return true
 }
 
+export class ETag {
+	/**
+	 * @param {string} etag
+	 * @returns {WeakEtagItem}
+	 */
+	static weak(etag) {
+		if(!isValidEtag(etag)) { throw new Error('invalid etag format') }
+		return { any: false, weak: true, etag }
+	}
+
+	/**
+	 * @param {string} etag
+	 * @returns {NotWeakEtagItem}
+	 */
+	static strong(etag) {
+		if(!isValidEtag(etag)) { throw new Error('invalid etag format') }
+		return { any: false, weak: false, etag }
+	}
+
+	/**
+	 * @returns {AnyEtagItem}
+	 */
+	static any() { return ANY_ETAG_ITEM }
+}
+
 export class Conditional {
 	/**
 	 * @param {EtagItem|undefined} etagItem
