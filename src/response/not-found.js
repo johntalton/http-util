@@ -1,8 +1,6 @@
 import http2 from 'node:http2'
-import {
-	CONTENT_TYPE_TEXT
-} from '../content-type.js'
-import { coreHeaders, performanceHeaders } from './header-util.js'
+import { MIME_TYPE_TEXT } from '../content-type.js'
+import { send } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -17,13 +15,5 @@ const {
  * @param {Metadata} meta
  */
 export function sendNotFound(stream, message, meta) {
-	console.log('404', message)
-
-	stream.respond({
-		...coreHeaders(HTTP_STATUS_NOT_FOUND, CONTENT_TYPE_TEXT, meta),
-		...performanceHeaders(meta)
-	})
-
-	if(message !== undefined) { stream.write(message) }
-	stream.end()
+	send(stream, HTTP_STATUS_NOT_FOUND, {}, MIME_TYPE_TEXT, message, meta)
 }

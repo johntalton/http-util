@@ -2,7 +2,7 @@ import http2 from 'node:http2'
 import {
 	MIME_TYPE_MESSAGE_HTTP
 } from '../content-type.js'
-import { coreHeaders, performanceHeaders } from './header-util.js'
+import { send } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { IncomingHttpHeaders } from 'node:http2' */
@@ -28,12 +28,6 @@ export function sendTrace(stream, method, url, headers, meta) {
 	])
 
 	const version = HTTP_VERSION.get(stream.session?.alpnProtocol ?? 'h2')
-
-	stream.respond({
-		...coreHeaders(HTTP_STATUS_OK, MIME_TYPE_MESSAGE_HTTP, meta),
-		...performanceHeaders(meta)
-	})
-
 	const reconstructed = [
 		`${method} ${url.pathname}${url.search} ${version}`,
 		Object.entries(headers)
@@ -45,6 +39,6 @@ export function sendTrace(stream, method, url, headers, meta) {
 		]
 		.join('\n')
 
-	stream.end(reconstructed)
+	send(stream, HTTP_STATUS_OK, {}, MIME_TYPE_MESSAGE_HTTP, reconstructed, meta)
 }
 

@@ -1,10 +1,15 @@
 import http2 from 'node:http2'
-import { brotliCompressSync, deflateSync, gzipSync, zstdCompressSync } from 'node:zlib'
+import {
+	brotliCompressSync,
+	deflateSync,
+	gzipSync,
+	zstdCompressSync
+} from 'node:zlib'
 import {
 	CHARSET_UTF8,
 	CONTENT_TYPE_JSON
 } from '../content-type.js'
-import { coreHeaders, performanceHeaders } from './header-util.js'
+import { send } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -54,18 +59,11 @@ export function sendJSON_Encoded(stream, obj, encoding, meta) {
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
 
-	stream.respond({
-		...coreHeaders(HTTP_STATUS_OK, CONTENT_TYPE_JSON, meta),
-		...performanceHeaders(meta),
-
-		[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
-		[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
-		[HTTP2_HEADER_CACHE_CONTROL]: 'private',
-		[HTTP2_HEADER_ETAG]: `"${meta.etag}"`
-		// [HTTP2_HEADER_AGE]: age
-	})
-
-	// stream.write(encodedData)
-	stream.end(encodedData)
+	send(stream, HTTP_STATUS_OK, {
+			[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
+			[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
+			[HTTP2_HEADER_CACHE_CONTROL]: 'private',
+			[HTTP2_HEADER_ETAG]: `"${meta.etag}"`
+			// [HTTP2_HEADER_AGE]: age
+		}, CONTENT_TYPE_JSON, encodedData, meta)
 }
-

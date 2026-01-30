@@ -1,10 +1,5 @@
 import http2 from 'node:http2'
-import {
-	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
-	HTTP_HEADER_SERVER_TIMING,
-	ServerTiming
-} from '../server-timing.js'
-import { coreHeaders, performanceHeaders } from './header-util.js'
+import { send } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -14,9 +9,6 @@ const {
 } = http2.constants
 
 const {
-	HTTP2_HEADER_STATUS,
-	HTTP2_HEADER_SERVER,
-	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
 	HTTP2_HEADER_AGE,
 	HTTP2_HEADER_ETAG,
 	HTTP2_HEADER_VARY,
@@ -29,14 +21,10 @@ const {
  * @param {Metadata} meta
  */
 export function sendNotModified(stream, age, meta) {
-	stream.respond({
-		...coreHeaders(HTTP_STATUS_NOT_MODIFIED, undefined, meta),
-		...performanceHeaders(meta),
-
-		[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
-		[HTTP2_HEADER_CACHE_CONTROL]: 'private',
-		[HTTP2_HEADER_ETAG]: `"${meta.etag}"`,
-		[HTTP2_HEADER_AGE]: age
-	})
-	stream.end()
+	send(stream, HTTP_STATUS_NOT_MODIFIED, {
+			[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
+			[HTTP2_HEADER_CACHE_CONTROL]: 'private',
+			[HTTP2_HEADER_ETAG]: `"${meta.etag}"`,
+			[HTTP2_HEADER_AGE]: `${age}`
+		}, undefined, undefined, meta)
 }

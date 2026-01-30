@@ -1,5 +1,5 @@
 import http2 from 'node:http2'
-import { coreHeaders, performanceHeaders } from './header-util.js'
+import { send } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -18,11 +18,7 @@ const {
  * @param {Metadata} meta
  */
 export function sendNotAllowed(stream, methods, meta) {
-	stream.respond({
-		...coreHeaders(HTTP_STATUS_METHOD_NOT_ALLOWED, undefined, meta),
-		...performanceHeaders(meta),
-
-		[HTTP2_HEADER_ALLOW]: methods.join(',')
-	})
-	stream.end()
+	send(stream, HTTP_STATUS_METHOD_NOT_ALLOWED, {
+			[HTTP2_HEADER_ALLOW]: methods.join(',')
+		}, undefined, undefined, meta)
 }

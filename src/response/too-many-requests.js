@@ -6,7 +6,7 @@ import {
 	RateLimit,
 	RateLimitPolicy
 } from '../rate-limit.js'
-import { coreHeaders, performanceHeaders } from './header-util.js'
+import { send } from './send-util.js'
 
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
@@ -27,17 +27,13 @@ const {
  * @param {Metadata} meta
  */
 export function sendTooManyRequests(stream, limitInfo, policies, meta) {
-	stream.respond({
-		...coreHeaders(HTTP_STATUS_TOO_MANY_REQUESTS, CONTENT_TYPE_TEXT, meta),
-		...performanceHeaders(meta),
-
-		[HTTP2_HEADER_RETRY_AFTER]: limitInfo.retryAfterS,
-		[HTTP_HEADER_RATE_LIMIT]: RateLimit.from(limitInfo),
-		[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.from(...policies)
-	})
-
-	stream.write(`Retry After ${limitInfo.retryAfterS} Seconds`)
-
-	stream.end()
+	send(stream, HTTP_STATUS_TOO_MANY_REQUESTS, {
+			[HTTP2_HEADER_RETRY_AFTER]: limitInfo.retryAfterS,
+			[HTTP_HEADER_RATE_LIMIT]: RateLimit.from(limitInfo),
+			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.from(...policies)
+		},
+		CONTENT_TYPE_TEXT,
+		`Retry After ${limitInfo.retryAfterS} Seconds`,
+		meta)
 }
 
