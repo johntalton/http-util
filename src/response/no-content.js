@@ -5,12 +5,10 @@ import { send } from './send-util.js'
 /** @import { Metadata } from './defs.js' */
 
 const {
-	HTTP_STATUS_NO_CONTENT
-} = http2.constants
-
-const {
 	HTTP2_HEADER_ETAG
 } = http2.constants
+
+const { HTTP_STATUS_NO_CONTENT } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

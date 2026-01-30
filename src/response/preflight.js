@@ -14,9 +14,7 @@ const {
 	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS
 } = http2.constants
 
-const {
-	HTTP_STATUS_OK
-} = http2.constants
+const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

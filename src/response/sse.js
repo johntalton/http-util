@@ -10,10 +10,7 @@ import { coreHeaders, performanceHeaders } from './header-util.js'
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata, SSEOptions } from './defs.js' */
 
-const {
-	HTTP_STATUS_OK,
-	HTTP_STATUS_NO_CONTENT
-} = http2.constants
+const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -23,19 +20,19 @@ export function sendSSE(stream, meta) {
 	const activeStream = meta.active ?? true
 	const sendBOM = meta.bom ?? true
 
-	const status = activeStream ? HTTP_STATUS_OK : HTTP_STATUS_NO_CONTENT // SSE_INACTIVE_STATUS_CODE
+	const status = activeStream ? HTTP_STATUS_OK : SSE_INACTIVE_STATUS_CODE
 
 	stream.respond({
 		...coreHeaders(status, SSE_MIME, meta),
 		...performanceHeaders(meta)
 
 		// [HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true'
-	 })
+	})
 
-	 if(!activeStream) {
+	if(!activeStream) {
 		stream.end()
 		return
-	 }
+	}
 
 	if(sendBOM) {
 		stream.write(SSE_BOM + ENDING.CRLF)

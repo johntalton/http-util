@@ -23,9 +23,7 @@ const {
   HTTP2_HEADER_ETAG
 } = http2.constants
 
-const {
-  HTTP_STATUS_OK
-} = http2.constants
+const { HTTP_STATUS_OK } = http2.constants
 
 /** @type {Map<string, EncoderFun>} */
 export const ENCODER_MAP = new Map([

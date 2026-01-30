@@ -8,9 +8,7 @@ const {
 	HTTP_STATUS_REQUEST_TIMEOUT
 } = http2.constants
 
-const {
-	HTTP2_HEADER_CONNECTION
-} = http2.constants
+const { HTTP2_HEADER_CONNECTION } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

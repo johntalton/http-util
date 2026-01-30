@@ -22,12 +22,12 @@ const {
  * @returns {OutgoingHttpHeaders}
  */
 export function coreHeaders(status, contentType, meta) {
-  return {
-    [HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-    [HTTP2_HEADER_STATUS]: status,
-    [HTTP2_HEADER_CONTENT_TYPE]: contentType,
-    [HTTP2_HEADER_SERVER]: meta.servername
-  }
+	return {
+		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
+		[HTTP2_HEADER_STATUS]: status,
+		[HTTP2_HEADER_CONTENT_TYPE]: contentType,
+		[HTTP2_HEADER_SERVER]: meta.servername
+	}
 }
 
 /**
@@ -35,8 +35,8 @@ export function coreHeaders(status, contentType, meta) {
  * @returns {OutgoingHttpHeaders}
  */
 export function performanceHeaders(meta) {
-  return {
-    [HTTP_HEADER_TIMING_ALLOW_ORIGIN]: meta.origin,
+	return {
+		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: meta.origin,
 		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance)
-  }
+	}
 }

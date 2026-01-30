@@ -8,7 +8,6 @@ import {
 } from '../rate-limit.js'
 import { send } from './send-util.js'
 
-
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
 
@@ -16,9 +15,7 @@ const {
 	HTTP2_HEADER_RETRY_AFTER
 } = http2.constants
 
-const {
-	HTTP_STATUS_TOO_MANY_REQUESTS
-} = http2.constants
+const { HTTP_STATUS_TOO_MANY_REQUESTS } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -36,4 +33,3 @@ export function sendTooManyRequests(stream, limitInfo, policies, meta) {
 		`Retry After ${limitInfo.retryAfterS} Seconds`,
 		meta)
 }
-

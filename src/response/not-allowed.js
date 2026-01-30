@@ -5,12 +5,10 @@ import { send } from './send-util.js'
 /** @import { Metadata } from './defs.js' */
 
 const {
-	HTTP2_HEADER_ALLOW
-} = http2.constants
-
-const {
 	HTTP_STATUS_METHOD_NOT_ALLOWED
 } = http2.constants
+
+const { HTTP2_HEADER_ALLOW } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

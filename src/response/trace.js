@@ -1,16 +1,12 @@
 import http2 from 'node:http2'
-import {
-	MIME_TYPE_MESSAGE_HTTP
-} from '../content-type.js'
+import { CONTENT_TYPE_MESSAGE_HTTP } from '../content-type.js'
 import { send } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { IncomingHttpHeaders } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
 
-const {
-	HTTP_STATUS_OK
-} = http2.constants
+const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -39,6 +35,5 @@ export function sendTrace(stream, method, url, headers, meta) {
 		]
 		.join('\n')
 
-	send(stream, HTTP_STATUS_OK, {}, MIME_TYPE_MESSAGE_HTTP, reconstructed, meta)
+	send(stream, HTTP_STATUS_OK, {}, CONTENT_TYPE_MESSAGE_HTTP, reconstructed, meta)
 }
-
