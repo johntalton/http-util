@@ -10,9 +10,11 @@ import {
 	CONTENT_TYPE_JSON
 } from '../content-type.js'
 import { send } from './send-util.js'
+import { Conditional } from '../conditional.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
+/** @import { EtagItem } from '../conditional.js' */
 
 /** @typedef { (data: string, charset: BufferEncoding) => Buffer } EncoderFun */
 
@@ -37,9 +39,10 @@ export const ENCODER_MAP = new Map([
  * @param {ServerHttp2Stream} stream
  * @param {Object} obj
  * @param {string|undefined} encoding
+ * @param {EtagItem|undefined} etag
  * @param {Metadata} meta
  */
-export function sendJSON_Encoded(stream, obj, encoding, meta) {
+export function sendJSON_Encoded(stream, obj, encoding, etag, meta) {
 	if(stream.closed) { return }
 
 	const json = JSON.stringify(obj)
@@ -61,7 +64,7 @@ export function sendJSON_Encoded(stream, obj, encoding, meta) {
 			[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
 			[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
 			[HTTP2_HEADER_CACHE_CONTROL]: 'private',
-			[HTTP2_HEADER_ETAG]: `"${meta.etag}"`
+			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag)
 			// [HTTP2_HEADER_AGE]: age
 		}, CONTENT_TYPE_JSON, encodedData, meta)
 }

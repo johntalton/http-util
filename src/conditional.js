@@ -1,7 +1,46 @@
+
+/**
+ * @typedef {Object} WeakEtagItem
+ * @property {true} weak
+ * @property {false} any
+ * @property {string} etag
+ */
+
+/**
+ * @typedef {Object} AnyEtagItem
+ * @property {boolean} weak
+ * @property {true} any
+ * @property {'*'} etag
+ */
+
+/**
+ * @typedef {Object} NotWeakEtagItem
+ * @property {false} weak
+ * @property {false} any
+ * @property {string} etag
+ */
+
+/** @typedef {WeakEtagItem | NotWeakEtagItem | AnyEtagItem } EtagItem */
+
+/**
+ * @typedef {Object} IMFFixDate
+ * @property {typeof DATE_DAYS[number]} dayName
+ * @property {number} day
+ * @property {typeof DATE_MONTHS[number]} month
+ * @property {number} year
+ * @property {number} hour
+ * @property {number} minute
+ * @property {number} second
+ * @property {Date} date
+ */
+
 export const CONDITION_ETAG_SEPARATOR = ','
 export const CONDITION_ETAG_ANY = '*'
 export const CONDITION_ETAG_WEAK_PREFIX = 'W/'
 export const ETAG_QUOTE = '"'
+
+/** @type {AnyEtagItem} */
+export const ANY_ETAG_ITEM = { any: true, weak: false, etag: CONDITION_ETAG_ANY }
 
 export const DATE_SPACE = ' '
 export const DATE_DAYS = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
@@ -40,26 +79,25 @@ export function isQuoted(etag) {
 	return true
 }
 
-/**
- * @typedef {Object} EtagItem
- * @property {boolean} weak
- * @property {boolean} any
- * @property {string} etag
- */
-
-/**
- * @typedef {Object} IMFFixDate
- * @property {typeof DATE_DAYS[number]} dayName
- * @property {number} day
- * @property {typeof DATE_MONTHS[number]} month
- * @property {number} year
- * @property {number} hour
- * @property {number} minute
- * @property {number} second
- * @property {Date} date
- */
-
 export class Conditional {
+	/**
+	 * @param {EtagItem|undefined} etagItem
+	 * @returns {string|undefined}
+	 */
+	static encodeEtag(etagItem) {
+		if(etagItem === undefined) { return undefined }
+		if(etagItem.any) {
+			if(etagItem.etag !== CONDITION_ETAG_ANY) { return undefined }
+			return CONDITION_ETAG_ANY
+		}
+
+		if(etagItem.etag === CONDITION_ETAG_ANY) { return undefined }
+		if(!isValidEtag(etagItem.etag)) { return undefined }
+
+		const prefix = etagItem.weak ? CONDITION_ETAG_WEAK_PREFIX : ''
+		return `${prefix}${ETAG_QUOTE}${etagItem.etag}${ETAG_QUOTE}`
+	}
+
 	/**
 	 * @param {string|undefined} matchHeader
 	 * @returns {Array<EtagItem>}
@@ -85,12 +123,7 @@ export class Conditional {
 				}
 			})
 			.map(item => {
-				if(item.etag === CONDITION_ETAG_ANY) {
-					return {
-						...item,
-						any: true
-					}
-				}
+				if(item.etag === CONDITION_ETAG_ANY) { return ANY_ETAG_ITEM }
 
 				// validated quoted
 				if(!isQuoted(item.etag)) { return undefined }
@@ -98,11 +131,14 @@ export class Conditional {
 				if(!isValidEtag(etag)) { return undefined }
 				if(etag === CONDITION_ETAG_ANY) { return undefined }
 
-				return {
+				/** @type {WeakEtagItem | NotWeakEtagItem} */
+				const result = {
 					weak: item.weak,
 					any: false,
 					etag
 				}
+
+				return result
 			})
 			.filter(item => item !== undefined)
 	}
@@ -188,6 +224,20 @@ export class Conditional {
 }
 
 // Ok
+// console.log(Conditional.encodeEtag({ any: true, weak: false, etag: '*' }))
+// console.log(Conditional.encodeEtag({ any: true, weak: true, etag: '*' }))
+// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: 'Foo' }))
+// console.log(Conditional.encodeEtag({ any: false, weak: true, etag: 'WeakFoo' }))
+
+// Error
+// console.log(Conditional.encodeEtag(undefined))
+// console.log(Conditional.encodeEtag({ any: true, weak: false, etag: 'NotAsterisk' }))
+// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: 'Foo\tBar' }))
+// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: 'Foo"Bar' }))
+// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: '*' }))
+
+
+// Ok
 // console.log(Conditional.parseEtagList('"bfc13a64729c4290ef5b2c2730249c88ca92d82d"'))
 // console.log(Conditional.parseEtagList('W/"67ab43", "54ed21", "7892dd"'))
 // console.log(Conditional.parseEtagList('*'))
@@ -224,6 +274,8 @@ export class Conditional {
 // 		break
 // 	}
 // }
+
+
 
 // const testBad = [
 // 	undefined,

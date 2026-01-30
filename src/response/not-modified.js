@@ -1,8 +1,10 @@
 import http2 from 'node:http2'
 import { send } from './send-util.js'
+import { Conditional } from '../conditional.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
+/** @import { EtagItem } from '../conditional.js' */
 
 const {
 	HTTP2_HEADER_AGE,
@@ -15,14 +17,15 @@ const { HTTP_STATUS_NOT_MODIFIED } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {number} age
+ * @param {EtagItem|undefined} etag
+ * @param {number|undefined} age
  * @param {Metadata} meta
  */
-export function sendNotModified(stream, age, meta) {
+export function sendNotModified(stream, etag, age, meta) {
 	send(stream, HTTP_STATUS_NOT_MODIFIED, {
 			[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
 			[HTTP2_HEADER_CACHE_CONTROL]: 'private',
-			[HTTP2_HEADER_ETAG]: `"${meta.etag}"`,
-			[HTTP2_HEADER_AGE]: `${age}`
+			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
+			[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined
 		}, undefined, undefined, meta)
 }
