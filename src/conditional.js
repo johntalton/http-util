@@ -196,7 +196,7 @@ export class Conditional {
 // console.log(Conditional.parseEtagList('"!","ÿ"   ,\t"©"'))
 
 // Error
-console.log(Conditional.parseEtagList('"*"'))
+// console.log(Conditional.parseEtagList('"*"'))
 // console.log(Conditional.parseEtagList('W/'))
 // console.log(Conditional.parseEtagList('W/"'))
 // console.log(Conditional.parseEtagList('W/""'))

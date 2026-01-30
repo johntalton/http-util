@@ -19,7 +19,7 @@ const {
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string} message
+ * @param {string|undefined} message
  * @param {Metadata} meta
  */
 export function sendNotFound(stream, message, meta) {
