@@ -16,6 +16,7 @@ Set of utilities to aid in building from-scratch [node:http2](https://nodejs.org
 - Forwarded - `parse` with select-right-most helper
 - Multipart - parse into `FormData`
 - Content Disposition - for use inside of Multipart
+- Conditionals - Etag / FixDate for IfMatch, IfModifiedSince etc
 
 ### Server Sent:
 - Rate Limit
