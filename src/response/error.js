@@ -2,6 +2,7 @@ import http2 from 'node:http2'
 import {
 	CONTENT_TYPE_TEXT
 } from '../content-type.js'
+import { coreHeaders, performanceHeaders } from './header-util.js'
 
 const {
 	HTTP2_HEADER_STATUS,
@@ -30,10 +31,8 @@ export function sendError(stream, message, meta) {
 
 	if(!stream.headersSent) {
 		stream.respond({
-			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-			[HTTP2_HEADER_STATUS]: HTTP_STATUS_INTERNAL_SERVER_ERROR,
-			[HTTP2_HEADER_CONTENT_TYPE]: CONTENT_TYPE_TEXT,
-			[HTTP2_HEADER_SERVER]: meta.servername
+			...coreHeaders(HTTP_STATUS_INTERNAL_SERVER_ERROR, CONTENT_TYPE_TEXT, meta),
+			...performanceHeaders(meta)
 		})
 	}
 

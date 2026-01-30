@@ -8,6 +8,7 @@ import { sendNotAcceptable } from './not-acceptable.js'
 import { sendNotAllowed } from './not-allowed.js'
 import { sendNotFound } from './not-found.js'
 import { sendNotModified } from './not-modified.js'
+import { sendPreconditionFailed } from './precondition-failed.js'
 import { sendPreflight } from './preflight.js'
 import { sendSSE } from './sse.js'
 import { sendTimeout } from './timeout.js'
@@ -28,6 +29,7 @@ export const Response = {
 	notAllowed: sendNotAllowed,
 	notFound: sendNotFound,
 	notModified: sendNotModified,
+	preconditionFailed: sendPreconditionFailed,
 	preflight: sendPreflight,
 	sse: sendSSE,
 	timeout: sendTimeout,

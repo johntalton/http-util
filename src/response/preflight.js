@@ -3,14 +3,13 @@ import {
 	HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE,
 	PREFLIGHT_AGE_SECONDS
 } from './defs.js'
+import { coreHeaders, performanceHeaders } from './header-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
 
 const {
-	HTTP2_HEADER_STATUS,
 	HTTP2_HEADER_CONTENT_TYPE,
-	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
 	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS,
 	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
 	HTTP2_HEADER_SERVER
@@ -27,12 +26,12 @@ const {
  */
 export function sendPreflight(stream, methods, meta) {
 	stream.respond({
-		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
+		...coreHeaders(HTTP_STATUS_OK, undefined, meta),
+		...performanceHeaders(meta),
+
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: methods.join(','),
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: ['Authorization', HTTP2_HEADER_CONTENT_TYPE].join(','),
-		[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS,
-		[HTTP2_HEADER_SERVER]: meta.servername
+		[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS
 	})
 	stream.end()
 }

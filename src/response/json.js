@@ -1,10 +1,10 @@
 import http2 from 'node:http2'
 import { brotliCompressSync, deflateSync, gzipSync, zstdCompressSync } from 'node:zlib'
-import { ServerTiming, HTTP_HEADER_SERVER_TIMING, HTTP_HEADER_TIMING_ALLOW_ORIGIN } from '../server-timing.js'
 import {
 	CHARSET_UTF8,
 	CONTENT_TYPE_JSON
 } from '../content-type.js'
+import { coreHeaders, performanceHeaders } from './header-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -12,10 +12,6 @@ import {
 /** @typedef { (data: string, charset: BufferEncoding) => Buffer } EncoderFun */
 
 const {
-  HTTP2_HEADER_STATUS,
-  HTTP2_HEADER_CONTENT_TYPE,
-  HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-  HTTP2_HEADER_SERVER,
   HTTP2_HEADER_CONTENT_ENCODING,
   HTTP2_HEADER_VARY,
   HTTP2_HEADER_CACHE_CONTROL,
@@ -59,15 +55,12 @@ export function sendJSON_Encoded(stream, obj, encoding, meta) {
 	)
 
 	stream.respond({
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-		[HTTP2_HEADER_CONTENT_TYPE]: CONTENT_TYPE_JSON,
+		...coreHeaders(HTTP_STATUS_OK, CONTENT_TYPE_JSON, meta),
+		...performanceHeaders(meta),
+
 		[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
 		[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
 		[HTTP2_HEADER_CACHE_CONTROL]: 'private',
-		[HTTP2_HEADER_STATUS]: HTTP_STATUS_OK,
-		[HTTP2_HEADER_SERVER]: meta.servername,
-		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: meta.origin,
-		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance),
 		[HTTP2_HEADER_ETAG]: `"${meta.etag}"`
 		// [HTTP2_HEADER_AGE]: age
 	})

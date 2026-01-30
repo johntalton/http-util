@@ -4,6 +4,7 @@ import {
 	HTTP_HEADER_SERVER_TIMING,
 	ServerTiming
 } from '../server-timing.js'
+import { coreHeaders, performanceHeaders } from './header-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -29,13 +30,11 @@ const {
  */
 export function sendNotModified(stream, age, meta) {
 	stream.respond({
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-		[HTTP2_HEADER_STATUS]: HTTP_STATUS_NOT_MODIFIED,
+		...coreHeaders(HTTP_STATUS_NOT_MODIFIED, undefined, meta),
+		...performanceHeaders(meta),
+
 		[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
 		[HTTP2_HEADER_CACHE_CONTROL]: 'private',
-		[HTTP2_HEADER_SERVER]: meta.servername,
-		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: meta.origin,
-		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance),
 		[HTTP2_HEADER_ETAG]: `"${meta.etag}"`,
 		[HTTP2_HEADER_AGE]: age
 	})

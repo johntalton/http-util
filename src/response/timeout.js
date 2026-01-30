@@ -1,10 +1,6 @@
 import http2 from 'node:http2'
 import { CONTENT_TYPE_JSON } from '../content-type.js'
-import {
-	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
-	HTTP_HEADER_SERVER_TIMING,
-	ServerTiming
-} from '../server-timing.js'
+import { coreHeaders, performanceHeaders } from './header-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -14,9 +10,6 @@ const {
 } = http2.constants
 
 const {
-	HTTP2_HEADER_STATUS,
-	HTTP2_HEADER_SERVER,
-	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
 	HTTP2_HEADER_CONNECTION
 } = http2.constants
 
@@ -26,12 +19,9 @@ const {
  */
 export function sendTimeout(stream, meta) {
 	stream.respond({
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-		[HTTP2_HEADER_STATUS]: HTTP_STATUS_REQUEST_TIMEOUT,
-		// [HTTP2_HEADER_CONTENT_TYPE]: CONTENT_TYPE_JSON,
-		[HTTP2_HEADER_SERVER]: meta.servername,
-		[HTTP_HEADER_TIMING_ALLOW_ORIGIN]: meta.origin,
-		[HTTP_HEADER_SERVER_TIMING]: ServerTiming.encode(meta.performance),
+		...coreHeaders(HTTP_STATUS_REQUEST_TIMEOUT, undefined, meta),
+		...performanceHeaders(meta),
+
 		[HTTP2_HEADER_CONNECTION]: 'close'
 	})
 

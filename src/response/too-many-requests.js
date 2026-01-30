@@ -6,17 +6,14 @@ import {
 	RateLimit,
 	RateLimitPolicy
 } from '../rate-limit.js'
+import { coreHeaders, performanceHeaders } from './header-util.js'
 
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
 
 const {
-	HTTP2_HEADER_STATUS,
-	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-	HTTP2_HEADER_SERVER,
-	HTTP2_HEADER_RETRY_AFTER,
-	HTTP2_HEADER_CONTENT_TYPE
+	HTTP2_HEADER_RETRY_AFTER
 } = http2.constants
 
 const {
@@ -31,10 +28,9 @@ const {
  */
 export function sendTooManyRequests(stream, limitInfo, policies, meta) {
 	stream.respond({
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-		[HTTP2_HEADER_STATUS]: HTTP_STATUS_TOO_MANY_REQUESTS,
-		[HTTP2_HEADER_CONTENT_TYPE]: CONTENT_TYPE_TEXT,
-		[HTTP2_HEADER_SERVER]: meta.servername,
+		...coreHeaders(HTTP_STATUS_TOO_MANY_REQUESTS, CONTENT_TYPE_TEXT, meta),
+		...performanceHeaders(meta),
+
 		[HTTP2_HEADER_RETRY_AFTER]: limitInfo.retryAfterS,
 		[HTTP_HEADER_RATE_LIMIT]: RateLimit.from(limitInfo),
 		[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.from(...policies)
