@@ -15,16 +15,16 @@ import { sendTimeout } from './timeout.js'
 import { sendTooManyRequests } from './too-many-requests.js'
 import { sendTrace } from './trace.js'
 import { sendUnauthorized } from './unauthorized.js'
-import { sendUnsupportedMediaType } from './unsupported-media.js'
 import { sendUnprocessable } from './unprocessable.js'
+import { sendUnsupportedMediaType } from './unsupported-media.js'
 
 export const Response = {
 	accepted: sendAccepted,
 	conflict: sendConflict,
 	created: sendCreated,
 	error: sendError,
-	noContent: sendNoContent,
 	json: sendJSON_Encoded,
+	noContent: sendNoContent,
 	notAcceptable: sendNotAcceptable,
 	notAllowed: sendNotAllowed,
 	notFound: sendNotFound,
@@ -36,6 +36,6 @@ export const Response = {
 	tooManyRequests: sendTooManyRequests,
 	trace: sendTrace,
 	unauthorized: sendUnauthorized,
-	unsupportedMediaType: sendUnsupportedMediaType,
-	unprocessable: sendUnprocessable
+	unprocessable: sendUnprocessable,
+	unsupportedMediaType: sendUnsupportedMediaType
 }
