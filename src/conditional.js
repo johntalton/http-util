@@ -31,7 +31,7 @@
  * @property {number} hour
  * @property {number} minute
  * @property {number} second
- * @property {Date} date
+ * @property {Date|undefined} [date]
  */
 
 export const CONDITION_ETAG_SEPARATOR = ','
@@ -166,6 +166,34 @@ export class Conditional {
 				return result
 			})
 			.filter(item => item !== undefined)
+	}
+
+	/**
+	 * @param {Array<EtagItem>} etagItemList
+	 */
+	static hasAny(etagItemList) {
+		return etagItemList.find(item => item.any) !== undefined
+	}
+
+	/**
+	 * @param {Array<EtagItem>} etagItemList
+	 * @param {string} etag
+	 */
+	static hasEtag(etagItemList, etag) {
+		return etagItemList.find(item => item.etag === etag) !== undefined
+	}
+
+	/**
+	 * @param {IMFFixDate|undefined} fixDate
+	 * @returns {string|undefined}
+	 */
+	static encodeFixDate(fixDate) {
+		if(fixDate === undefined) { return undefined }
+		if(fixDate.date !== undefined) { return fixDate.date.toUTCString() }
+
+		const { year, month, day, hour, minute, second } = fixDate
+		const d = new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second))
+		return d.toUTCString()
 	}
 
 	/**

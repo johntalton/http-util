@@ -11,7 +11,10 @@ import { send } from './send-util.js'
 const {
 	HTTP2_HEADER_CONTENT_TYPE,
 	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS,
-	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS
+	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
+	HTTP2_HEADER_IF_MATCH,
+	HTTP2_HEADER_IF_NONE_MATCH,
+	HTTP2_HEADER_AUTHORIZATION
 } = http2.constants
 
 const { HTTP_STATUS_OK } = http2.constants
@@ -24,7 +27,13 @@ const { HTTP_STATUS_OK } = http2.constants
 export function sendPreflight(stream, methods, meta) {
 	send(stream, HTTP_STATUS_OK, {
 			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: methods.join(','),
-			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: ['Authorization', HTTP2_HEADER_CONTENT_TYPE].join(','),
+			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: [
+				HTTP2_HEADER_IF_MATCH,
+				HTTP2_HEADER_IF_NONE_MATCH,
+				HTTP2_HEADER_AUTHORIZATION,
+				HTTP2_HEADER_CONTENT_TYPE
+			].join(','),
 			[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS
+			// Access-Control-Allow-Credentials
 		}, undefined, undefined, meta)
 }

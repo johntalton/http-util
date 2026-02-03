@@ -24,6 +24,8 @@ const {
 export function coreHeaders(status, contentType, meta) {
 	return {
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
+		// Access-Control-Expose-Headers
+		// Access-Control-Allow-Credentials // for non-preflight
 		[HTTP2_HEADER_STATUS]: status,
 		[HTTP2_HEADER_CONTENT_TYPE]: contentType,
 		[HTTP2_HEADER_SERVER]: meta.servername
