@@ -23,5 +23,5 @@ export function sendCreated(stream, location, etag, meta) {
 	send(stream, HTTP_STATUS_CREATED, {
 			[HTTP2_HEADER_LOCATION]: location.href,
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag)
-		}, undefined, undefined, meta)
+		}, [ HTTP2_HEADER_LOCATION ], undefined, undefined, meta)
 }

@@ -11,5 +11,5 @@ const { HTTP_STATUS_PRECONDITION_FAILED } = http2.constants
  * @param {Metadata} meta
  */
 export function sendPreconditionFailed(stream, meta) {
-	send(stream, HTTP_STATUS_PRECONDITION_FAILED, {}, undefined, undefined, meta)
+	send(stream, HTTP_STATUS_PRECONDITION_FAILED, {}, [], undefined, undefined, meta)
 }

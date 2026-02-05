@@ -14,8 +14,8 @@ export const DEFAULT_BYTE_LIMIT = 1024 * 1024 //
 /**
  * @typedef {Object} BodyOptions
  * @property {AbortSignal|undefined} [signal]
- * @property {number} [byteLimit]
- * @property {number} [contentLength]
+ * @property {number|undefined} [byteLimit]
+ * @property {number|undefined} [contentLength]
  * @property {ContentType|undefined} [contentType]
  */
 

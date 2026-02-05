@@ -19,6 +19,7 @@ export function sendNotAcceptable(stream, supportedTypes, meta) {
 	send(stream,
 		HTTP_STATUS_NOT_ACCEPTABLE,
 		{},
+		[],
 		has ? CONTENT_TYPE_JSON : undefined,
 		has ? JSON.stringify(supportedTypes) : undefined,
 		meta)

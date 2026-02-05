@@ -11,5 +11,5 @@ const { HTTP_STATUS_CONFLICT } = http2.constants
  * @param {Metadata} meta
  */
 export function sendConflict(stream, meta) {
-	send(stream, HTTP_STATUS_CONFLICT, {}, undefined, undefined, meta)
+	send(stream, HTTP_STATUS_CONFLICT, {}, [], undefined, undefined, meta)
 }

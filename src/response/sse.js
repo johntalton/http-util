@@ -23,7 +23,7 @@ export function sendSSE(stream, meta) {
 	const status = activeStream ? HTTP_STATUS_OK : SSE_INACTIVE_STATUS_CODE
 
 	stream.respond({
-		...coreHeaders(status, SSE_MIME, meta),
+		...coreHeaders(status, SSE_MIME, [], meta),
 		...performanceHeaders(meta)
 
 		// [HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true'

@@ -7,6 +7,7 @@ import { sendNoContent } from './no-content.js'
 import { sendNotAcceptable } from './not-acceptable.js'
 import { sendNotAllowed } from './not-allowed.js'
 import { sendNotFound } from './not-found.js'
+import { sendNotImplemented } from './not-implemented.js'
 import { sendNotModified } from './not-modified.js'
 import { sendPreconditionFailed } from './precondition-failed.js'
 import { sendPreflight } from './preflight.js'
@@ -15,6 +16,7 @@ import { sendTimeout } from './timeout.js'
 import { sendTooManyRequests } from './too-many-requests.js'
 import { sendTrace } from './trace.js'
 import { sendUnauthorized } from './unauthorized.js'
+import { sendUnavailable } from './unavailable.js'
 import { sendUnprocessable } from './unprocessable.js'
 import { sendUnsupportedMediaType } from './unsupported-media.js'
 
@@ -28,6 +30,7 @@ export const Response = {
 	notAcceptable: sendNotAcceptable,
 	notAllowed: sendNotAllowed,
 	notFound: sendNotFound,
+	notImplemented: sendNotImplemented,
 	notModified: sendNotModified,
 	preconditionFailed: sendPreconditionFailed,
 	preflight: sendPreflight,
@@ -36,6 +39,7 @@ export const Response = {
 	tooManyRequests: sendTooManyRequests,
 	trace: sendTrace,
 	unauthorized: sendUnauthorized,
+	unavailable: sendUnavailable,
 	unprocessable: sendUnprocessable,
 	unsupportedMediaType: sendUnsupportedMediaType
 }

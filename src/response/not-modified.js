@@ -30,5 +30,5 @@ export function sendNotModified(stream, etag, age, cacheControl, meta) {
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
 			[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined
-		}, undefined, undefined, meta)
+		}, [ HTTP2_HEADER_AGE ], undefined, undefined, meta)
 }

@@ -11,5 +11,5 @@ const { HTTP_STATUS_UNPROCESSABLE_ENTITY } = http2.constants
  * @param {Metadata} meta
  */
 export function sendUnprocessable(stream, meta) {
-	send(stream, HTTP_STATUS_UNPROCESSABLE_ENTITY, {}, undefined, undefined, meta)
+	send(stream, HTTP_STATUS_UNPROCESSABLE_ENTITY, {}, [], undefined, undefined, meta)
 }

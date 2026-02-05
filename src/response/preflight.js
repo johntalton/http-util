@@ -35,5 +35,5 @@ export function sendPreflight(stream, methods, meta) {
 			].join(','),
 			[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS
 			// Access-Control-Allow-Credentials
-		}, undefined, undefined, meta)
+		}, [], undefined, undefined, meta)
 }

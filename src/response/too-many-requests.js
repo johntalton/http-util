@@ -30,6 +30,11 @@ export function sendTooManyRequests(stream, limitInfo, policies, meta) {
 			[HTTP_HEADER_RATE_LIMIT]: RateLimit.from(limitInfo),
 			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.from(...policies)
 		},
+		[
+			HTTP2_HEADER_RETRY_AFTER,
+			HTTP_HEADER_RATE_LIMIT,
+			HTTP_HEADER_RATE_LIMIT_POLICY
+		],
 		CONTENT_TYPE_TEXT,
 		`Retry After ${limitInfo.resetSeconds} Seconds`,
 		meta)

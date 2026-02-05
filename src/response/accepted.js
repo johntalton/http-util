@@ -11,5 +11,5 @@ const { HTTP_STATUS_ACCEPTED } = http2.constants
  * @param {Metadata} meta
  */
 export function sendAccepted(stream, meta) {
-	send(stream, HTTP_STATUS_ACCEPTED, {}, undefined, undefined, meta)
+	send(stream, HTTP_STATUS_ACCEPTED, {}, [], undefined, undefined, meta)
 }

@@ -17,5 +17,5 @@ const { HTTP2_HEADER_CONNECTION } = http2.constants
 export function sendTimeout(stream, meta) {
 	send(stream, HTTP_STATUS_REQUEST_TIMEOUT, {
 			[HTTP2_HEADER_CONNECTION]: 'close'
-		}, undefined, undefined, meta)
+		}, [], undefined, undefined, meta)
 }

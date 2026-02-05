@@ -18,5 +18,5 @@ const { HTTP2_HEADER_ALLOW } = http2.constants
 export function sendNotAllowed(stream, methods, meta) {
 	send(stream, HTTP_STATUS_METHOD_NOT_ALLOWED, {
 			[HTTP2_HEADER_ALLOW]: methods.join(',')
-		}, undefined, undefined, meta)
+		}, [ HTTP2_HEADER_ALLOW ], undefined, undefined, meta)
 }

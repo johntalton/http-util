@@ -17,5 +17,5 @@ export function sendUnsupportedMediaType(stream, acceptableMediaType, meta) {
 
 	send(stream, HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, {
 			[HTTP_HEADER_ACCEPT_POST]: acceptable.join(',')
-		}, undefined, undefined, meta)
+		}, [ HTTP_HEADER_ACCEPT_POST ], undefined, undefined, meta)
 }

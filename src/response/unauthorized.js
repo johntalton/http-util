@@ -13,5 +13,5 @@ const { HTTP_STATUS_UNAUTHORIZED } = http2.constants
 export function sendUnauthorized(stream, meta) {
 	send(stream, HTTP_STATUS_UNAUTHORIZED, {
 			//  WWW-Authenticate
-		}, undefined, undefined, meta)
+		}, [], undefined, undefined, meta)
 }

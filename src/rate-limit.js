@@ -1,3 +1,5 @@
+// https://www.ietf.org/archive/id/draft-ietf-httpapi-ratelimit-headers-10.html
+
 export  const HTTP_HEADER_RATE_LIMIT = 'RateLimit'
 export const HTTP_HEADER_RATE_LIMIT_POLICY = 'RateLimit-Policy'
 

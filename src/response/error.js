@@ -13,5 +13,5 @@ const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = http2.constants
  * @param {Metadata} meta
  */
 export function sendError(stream, message, meta) {
-	send(stream, HTTP_STATUS_INTERNAL_SERVER_ERROR, {}, CONTENT_TYPE_TEXT, message, meta)
+	send(stream, HTTP_STATUS_INTERNAL_SERVER_ERROR, {}, [], CONTENT_TYPE_TEXT, message, meta)
 }

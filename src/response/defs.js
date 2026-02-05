@@ -23,6 +23,7 @@ export const PREFLIGHT_AGE_SECONDS = '500'
  * @property {Array<TimingsInfo>} performance
  * @property {string|undefined} servername
  * @property {string|undefined} origin
+ * @property {Array<[ string, string ]>} customHeaders
  */
 
 /**

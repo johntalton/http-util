@@ -20,5 +20,5 @@ const { HTTP_STATUS_NO_CONTENT } = http2.constants
 export function sendNoContent(stream, etag, meta) {
 	send(stream, HTTP_STATUS_NO_CONTENT, {
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag)
-		}, undefined, undefined, meta)
+		}, [], undefined, undefined, meta)
 }
