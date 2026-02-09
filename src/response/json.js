@@ -5,13 +5,15 @@ import {
 	gzipSync,
 	zstdCompressSync
 } from 'node:zlib'
+
+import { HTTP_HEADER_ACCEPT_QUERY } from './defs.js'
+import { send } from './send-util.js'
+import { Conditional } from '../conditional.js'
+import { CacheControl } from '../cache-control.js'
 import {
 	CHARSET_UTF8,
 	CONTENT_TYPE_JSON
 } from '../content-type.js'
-import { send } from './send-util.js'
-import { Conditional } from '../conditional.js'
-import { CacheControl } from '../cache-control.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
@@ -45,9 +47,10 @@ export const ENCODER_MAP = new Map([
  * @param {EtagItem|undefined} etag
  * @param {number|undefined} age
  * @param {CacheControlOptions} cacheControl
+ * @param {Array<string>|undefined} supportedQueryTypes
  * @param {Metadata} meta
  */
-export function sendJSON_Encoded(stream, obj, encoding, etag, age, cacheControl, meta) {
+export function sendJSON_Encoded(stream, obj, encoding, etag, age, cacheControl, supportedQueryTypes, meta) {
 	if(stream.closed) { return }
 
 	const json = JSON.stringify(obj)
@@ -65,11 +68,16 @@ export function sendJSON_Encoded(stream, obj, encoding, etag, age, cacheControl,
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
 
+	const baseExposedHeaders = [ HTTP2_HEADER_AGE ]
+	const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
+	const exposedHeaders = supportsQuery ? [ HTTP_HEADER_ACCEPT_QUERY, ...baseExposedHeaders ] : [ ...baseExposedHeaders ]
+
 	send(stream, HTTP_STATUS_OK, {
 			[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
 			[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
-			[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined
-		}, [ HTTP2_HEADER_AGE ], CONTENT_TYPE_JSON, encodedData, meta)
+			[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined,
+			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(',')
+		}, exposedHeaders, CONTENT_TYPE_JSON, encodedData, meta)
 }

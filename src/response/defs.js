@@ -10,6 +10,9 @@ export const HTTP_HEADER_SEC_FETCH_MODE = 'sec-fetch-mode'
 export const HTTP_HEADER_SEC_FETCH_DEST = 'sec-fetch-dest'
 export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
 
+export const HTTP_METHOD_QUERY = 'QUERY'
+export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
+
 export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]
 
 export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
@@ -19,11 +22,15 @@ export const PREFLIGHT_AGE_SECONDS = '500'
 /** @import { TimingsInfo } from '../server-timing.js' */
 
 /**
+ * @typedef {`X-${string}`} CustomHeaderKey
+ */
+
+/**
  * @typedef {Object} Metadata
  * @property {Array<TimingsInfo>} performance
  * @property {string|undefined} servername
  * @property {string|undefined} origin
- * @property {Array<[ string, string ]>} customHeaders
+ * @property {Array<[ CustomHeaderKey, string ]>} customHeaders
  */
 
 /**
