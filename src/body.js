@@ -94,7 +94,8 @@ export function requestBody(stream, options) {
 
 
 			const listener = () => {
-				controller.error(new Error('Abort Signal Timed out'))
+				stats.closed = true
+				controller.error(new Error('Abort Signal'))
 			}
 
 			signal?.addEventListener('abort', listener, { once: true })
@@ -146,6 +147,8 @@ export function requestBody(stream, options) {
 
 			stream.on('close', () => {
 				// console.log('body reader stream close')
+				signal?.removeEventListener('abort', listener)
+
 				if(!stats.closed) {
 					stats.closed = true
 					controller.close()
