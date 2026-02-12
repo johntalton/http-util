@@ -1,5 +1,14 @@
 import { parseContentDisposition } from './content-disposition.js'
 import { parseContentType } from './content-type.js'
+import { ContentRange } from './content-range.js'
+
+/** @import { ContentRangeDirective } from './content-range.js' */
+
+/**
+ * @typedef {Object} MultipartBytePart
+ * @property {ArrayBufferLike|ArrayBufferView} obj
+ * @property {ContentRangeDirective} range
+ */
 
 export const DISPOSITION_FORM_DATA = 'form-data'
 
@@ -12,7 +21,8 @@ export const EMPTY = ''
 
 export const MULTIPART_HEADER = {
 	CONTENT_DISPOSITION: 'content-disposition',
-	CONTENT_TYPE: 'content-type'
+	CONTENT_TYPE: 'content-type',
+	CONTENT_RANGE: 'content-range'
 }
 
 export const MULTIPART_STATE = {
@@ -29,6 +39,16 @@ export class Multipart {
 	 * @param {string} [charset='utf8']
 	 */
 	static parse(text, boundary, charset = 'utf8') {
+		return Multipart.parse_FormData(text, boundary, charset)
+	}
+
+
+	/**
+	 * @param {string} text
+	 * @param {string} boundary
+	 * @param {string} [charset='utf8']
+	 */
+	static parse_FormData(text, boundary, charset = 'utf8') {
 		// console.log({ boundary, text })
 		const formData = new FormData()
 
@@ -114,8 +134,48 @@ export class Multipart {
 
 		return formData
 	}
+
+
+	static parse_Bytes(text, boundary, charset = 'utf8') {
+
+	}
+
+	/**
+	 * @param {string} contentType
+	 * @param {Array<MultipartBytePart>} parts
+	 * @param {number|undefined} contentLength
+	 * @param {string} boundary
+	 */
+	static encode_Bytes(contentType, parts, contentLength, boundary) {
+		const boundaryBegin = `${BOUNDARY_MARK}${boundary}`
+		const boundaryEnd = `${BOUNDARY_MARK}${boundary}${BOUNDARY_MARK}`
+
+		// const encoder = new TextEncoder()
+
+		return Array.from([ ...parts
+			.map(part => {
+				return [
+					boundaryBegin, MULTIPART_SEPARATOR,
+					`${MULTIPART_HEADER.CONTENT_TYPE}: ${contentType}`, MULTIPART_SEPARATOR,
+					`${MULTIPART_HEADER.CONTENT_RANGE}: ${ContentRange.encode({ ...part.range, size: contentLength })}`, MULTIPART_SEPARATOR,
+					part.obj, MULTIPART_SEPARATOR
+				]
+			}), boundaryEnd ])
+			.flat()
+			.join('')
+	}
 }
 
+
+// console.log(Multipart.encode_Bytes('text/plain', [
+// 	{ obj: 'This is part A', range: { range: { start: 0, end: 14 }, size: 500 } },
+// 	{ obj: 'this is part B', range: {} }
+// ], 'FAKE_IT'))
+
+console.log(Multipart.encode_Bytes('text/plain', [
+	{ obj: Uint8Array.from([ 1,2,3,4 ]), range: { range: { start: 0, end: 14 }, size: 500 } },
+	{ obj: 'this is part B', range: {} }
+], 'FAKE_IT'))
 
 
 // const test = '--X-INSOMNIA-BOUNDARY\r\n' +

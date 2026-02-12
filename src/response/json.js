@@ -6,10 +6,7 @@ import {
 	zstdCompressSync
 } from 'node:zlib'
 
-import { HTTP_HEADER_ACCEPT_QUERY } from './defs.js'
-import { send } from './send-util.js'
-import { Conditional } from '../conditional.js'
-import { CacheControl } from '../cache-control.js'
+import { send_bytes } from './send-util.js'
 import {
 	CHARSET_UTF8,
 	CONTENT_TYPE_JSON
@@ -21,14 +18,6 @@ import {
 /** @import { CacheControlOptions } from '../cache-control.js' */
 
 /** @typedef { (data: string, charset: BufferEncoding) => Buffer } EncoderFun */
-
-const {
-  HTTP2_HEADER_CONTENT_ENCODING,
-  HTTP2_HEADER_VARY,
-  HTTP2_HEADER_CACHE_CONTROL,
-  HTTP2_HEADER_ETAG,
-	HTTP2_HEADER_AGE
-} = http2.constants
 
 const { HTTP_STATUS_OK } = http2.constants
 
@@ -68,16 +57,18 @@ export function sendJSON_Encoded(stream, obj, encoding, etag, age, cacheControl,
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
 
-	const baseExposedHeaders = [ HTTP2_HEADER_AGE ]
-	const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
-	const exposedHeaders = supportsQuery ? [ HTTP_HEADER_ACCEPT_QUERY, ...baseExposedHeaders ] : [ ...baseExposedHeaders ]
+	// const baseExposedHeaders = [ HTTP2_HEADER_AGE ]
+	// const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
+	// const exposedHeaders = supportsQuery ? [ HTTP_HEADER_ACCEPT_QUERY, ...baseExposedHeaders ] : [ ...baseExposedHeaders ]
 
-	send(stream, HTTP_STATUS_OK, {
-			[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
-			[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
-			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
-			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
-			[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined,
-			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(',')
-		}, exposedHeaders, CONTENT_TYPE_JSON, encodedData, meta)
+	send_bytes(stream, HTTP_STATUS_OK, CONTENT_TYPE_JSON, encodedData, undefined, undefined, actualEncoding, etag, age, cacheControl, undefined, supportedQueryTypes, meta )
+
+	// send(stream, HTTP_STATUS_OK, {
+	// 		[HTTP2_HEADER_CONTENT_ENCODING]: actualEncoding,
+	// 		[HTTP2_HEADER_VARY]: 'Accept, Accept-Encoding',
+	// 		[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
+	// 		[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
+	// 		[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined,
+	// 		[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(',')
+	// 	}, exposedHeaders, CONTENT_TYPE_JSON, encodedData, meta)
 }

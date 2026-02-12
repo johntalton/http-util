@@ -1,12 +1,75 @@
+import http2 from 'node:http2'
 import {
 	coreHeaders,
 	customHeaders,
 	performanceHeaders
 } from './header-util.js'
+import { ContentRange } from '../content-range.js'
+import { CacheControl } from '../cache-control.js'
+import { Conditional } from '../conditional.js'
+import { HTTP_HEADER_ACCEPT_QUERY } from './defs.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { IncomingHttpHeaders } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */
+/** @import { EtagItem } from '../conditional.js' */
+/** @import { CacheControlOptions } from '../cache-control.js' */
+/** @import { ContentRangeDirective } from '../content-range.js' */
+
+const {
+	HTTP2_HEADER_CONTENT_ENCODING,
+	HTTP2_HEADER_VARY,
+	HTTP2_HEADER_CACHE_CONTROL,
+	HTTP2_HEADER_ETAG,
+	HTTP2_HEADER_AGE,
+	HTTP2_HEADER_ACCEPT_RANGES,
+	HTTP2_HEADER_CONTENT_RANGE,
+	HTTP2_HEADER_CONTENT_LENGTH,
+	HTTP2_HEADER_ACCEPT,
+	HTTP2_HEADER_ACCEPT_ENCODING,
+	HTTP2_HEADER_RANGE
+} = http2.constants
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {number} status
+ * @param {string|undefined} contentType
+ * @param {ArrayBufferLike|ArrayBufferView|string|undefined} obj
+ * @param {ContentRangeDirective|undefined} range
+ * @param {number|undefined} contentLength
+ * @param {string|undefined} encoding
+ * @param {EtagItem|undefined} etag
+ * @param {number|undefined} age
+ * @param {CacheControlOptions|undefined} cacheControl
+ * @param {'bytes'|'none'|undefined} acceptRanges
+ * @param {Array<string>|undefined} supportedQueryTypes
+ * @param {Metadata} meta
+ */
+export function send_bytes(stream, status, contentType, obj, range, contentLength, encoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+	const contentLen = Number.isInteger(contentLength) ? `${contentLength}` : undefined
+	const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
+
+	const exposedHeaders = [ ]
+	if(age !== undefined) { exposedHeaders.push(HTTP2_HEADER_AGE) }
+	if(acceptRanges !== undefined) { exposedHeaders.push(HTTP2_HEADER_ACCEPT_RANGES) }
+	if(range !== undefined) { exposedHeaders.push(HTTP2_HEADER_CONTENT_RANGE) }
+	if(supportsQuery) { exposedHeaders.push(HTTP_HEADER_ACCEPT_QUERY) }
+
+	const varyHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
+	if(range !== undefined) { varyHeaders.push(HTTP2_HEADER_RANGE) }
+
+	send(stream, status, {
+			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
+			[HTTP2_HEADER_VARY]: varyHeaders.join(','),
+			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
+			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
+			[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined,
+			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
+			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
+			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
+			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(',')
+		}, exposedHeaders, contentType, obj, meta)
+}
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -39,6 +102,12 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 	}
 
 	if(stream.writable && body !== undefined) {
+		// if(body instanceof ReadableStream) {
+		// 	Readable.fromWeb(body).pipe(stream)
+		// 	stream.end()
+		// 	return
+		// }
+
 		stream.end(body)
 		return
 	}
