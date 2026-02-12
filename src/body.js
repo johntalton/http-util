@@ -1,15 +1,14 @@
-import { CHARSET_UTF8, MIME_TYPE_MULTIPART_FORM_DATA, MIME_TYPE_URL_FORM_DATA } from './content-type.js'
+import {
+	CHARSET_UTF8,
+	MIME_TYPE_MULTIPART_FORM_DATA,
+	MIME_TYPE_URL_FORM_DATA
+} from './content-type.js'
 import { Multipart } from './multipart.js'
 
 export const DEFAULT_BYTE_LIMIT = 1024 * 1024 //
 
-/**
- * @import { Readable } from 'node:stream'
- */
-
-/**
- * @import { ContentType } from './content-type.js'
- */
+/** @import { Readable } from 'node:stream' */
+/** @import { ContentType } from './content-type.js' */
 
 /**
  * @typedef {Object} BodyOptions
@@ -31,7 +30,6 @@ export const DEFAULT_BYTE_LIMIT = 1024 * 1024 //
  * @property { () => Promise<FormData>} formData
  * @property { () => Promise<any> } json
  */
-
 
 /**
  * @param {Readable} stream
@@ -91,7 +89,6 @@ export function requestBody(stream, options) {
 				// controller.close()
 				// return
 			}
-
 
 			const listener = () => {
 				stats.closed = true
