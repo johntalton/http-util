@@ -18,6 +18,10 @@ export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]
 export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
 export const PREFLIGHT_AGE_SECONDS = '500'
 
+/** @type {'bytes'} */
+export const RANGE_UNITS_BYTES = 'bytes'
+/** @type {'none'} */
+export const RANGE_UNITS_NONE = 'none'
 
 /** @import { TimingsInfo } from '../server-timing.js' */
 

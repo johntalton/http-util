@@ -5,8 +5,10 @@ export const MIME_TYPE_EVENT_STREAM = 'text/event-stream'
 export const MIME_TYPE_XML = 'application/xml'
 export const MIME_TYPE_URL_FORM_DATA = 'application/x-www-form-urlencoded'
 export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
+export const MIME_TYPE_MULTIPART_RANGE = 'multipart/byteranges'
 export const MIME_TYPE_OCTET_STREAM = 'application/octet-stream'
 export const MIME_TYPE_MESSAGE_HTTP = 'message/http'
+
 
 export const KNOWN_CONTENT_TYPES = [
 	'application', 'audio', 'image', 'message',

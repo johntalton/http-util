@@ -12,10 +12,12 @@
 
 export class CacheControl {
 	/**
-	 * @param {CacheControlOptions} options
+	 * @param {CacheControlOptions|undefined} options
 	 * @returns {string|undefined}
 	 */
 	static encode(options) {
+		if(options === undefined) { return undefined }
+
 		const {
 			pub,
 			priv,
