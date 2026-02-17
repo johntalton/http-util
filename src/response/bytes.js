@@ -5,12 +5,13 @@ import { send_bytes } from './send-util.js'
 /** @import { Metadata } from './defs.js' */
 /** @import { EtagItem } from '../conditional.js' */
 /** @import { CacheControlOptions } from '../cache-control.js' */
+/** @import { SendBody } from './send-util.js' */
 
 const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {ArrayBufferLike|ArrayBufferView|undefined} obj
+ * @param {SendBody|undefined} obj
  * @param {string|undefined} contentType
  * @param {number|undefined} contentLength
  * @param {string|undefined} encoding

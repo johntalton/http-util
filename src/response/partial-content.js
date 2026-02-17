@@ -9,6 +9,7 @@ import { MIME_TYPE_MULTIPART_RANGE } from '../content-type.js'
 /** @import { EtagItem } from '../conditional.js' */
 /** @import { CacheControlOptions } from '../cache-control.js' */
 /** @import { ContentRangeDirective } from '../content-range.js' */
+/** @import { SendBody } from './send-util.js' */
 
 const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
@@ -19,7 +20,7 @@ const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
 /**
  * @typedef {Object} PartialBytes
- * @property {ArrayBufferLike|ArrayBufferView} obj
+ * @property {SendBody} obj
  * @property {ContentRangeDirective} range
  */
 
@@ -40,6 +41,7 @@ export function sendPartialContent(stream, contentType, objs, contentLength, enc
 
 	if(Array.isArray(objs) && objs.length > 1) {
 		// send using multipart bytes
+		// console.log('sendPartialContent - mulipart')
 
 		const boundary = 'PARTIAL_CONTENT_BOUNDARY' // todo make unique for content
 		const obj = Multipart.encode_Bytes(contentType, objs, contentLength, boundary)

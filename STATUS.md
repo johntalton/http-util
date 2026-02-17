@@ -3,12 +3,13 @@
 | trace                     | 200 |     |     |     |
 | preflight                 | 200 |     |     |     |
 | json                      | 200 |     |     |     |
+| bytes                     | 200 |     |     |     |
 | sse                       | 200 |     |     |     |
 | created                   | 201 |     |     |     |
 | accepted                  | 202 |     |     |     |
 | no-content                | 204 |     |     |     |
 | *partial-content*         | 206 |     |     |     |
-| *multiple-choices*        |     | 300 |     |     |
+| ~~multiple-choices~~      |     | 300 |     |     |
 | moved-permanently         |     | 301 |     |     |
 | see-other                 |     | 303 |     |     |
 | not-modified              |     | 304 |     |     |

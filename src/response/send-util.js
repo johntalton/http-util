@@ -1,4 +1,7 @@
 import http2 from 'node:http2'
+import { Readable } from 'node:stream'
+import { ReadableStream } from 'node:stream/web'
+
 import {
 	coreHeaders,
 	customHeaders,
@@ -15,6 +18,8 @@ import { HTTP_HEADER_ACCEPT_QUERY } from './defs.js'
 /** @import { EtagItem } from '../conditional.js' */
 /** @import { CacheControlOptions } from '../cache-control.js' */
 /** @import { ContentRangeDirective } from '../content-range.js' */
+
+/** @typedef {ArrayBufferLike|ArrayBufferView|ReadableStream|string} SendBody */
 
 const {
 	HTTP2_HEADER_CONTENT_ENCODING,
@@ -34,7 +39,7 @@ const {
  * @param {ServerHttp2Stream} stream
  * @param {number} status
  * @param {string|undefined} contentType
- * @param {ArrayBufferLike|ArrayBufferView|string|undefined} obj
+ * @param {SendBody|undefined} obj
  * @param {ContentRangeDirective|undefined} range
  * @param {number|undefined} contentLength
  * @param {string|undefined} encoding
@@ -77,7 +82,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
  * @param {IncomingHttpHeaders} headers
  * @param {Array<string>} exposedHeaders
  * @param {string|undefined} contentType
- * @param {ArrayBufferLike|ArrayBufferView|string|undefined} body
+ * @param {SendBody|undefined} body
  * @param {Metadata} meta
  */
 export function send(stream, status, headers, exposedHeaders, contentType, body, meta) {
@@ -85,9 +90,10 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 	if(status === 401) { console.warn(status, body) }
 	if(status === 404) { console.warn(status, body) }
 	if(status >= 500) { console.warn(status, body) }
+	// console.log('SEND', status, body?.byteLength)
 
-	if(stream === undefined) { return }
-	if(stream.closed) { return }
+	if(stream === undefined) { console.log('send - end stream undef'); return }
+	if(stream.closed) { console.log('send - end closed'); return }
 
 	if(!stream.headersSent) {
 		const custom = customHeaders(meta)
@@ -102,11 +108,10 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 	}
 
 	if(stream.writable && body !== undefined) {
-		// if(body instanceof ReadableStream) {
-		// 	Readable.fromWeb(body).pipe(stream)
-		// 	stream.end()
-		// 	return
-		// }
+		if(body instanceof ReadableStream) {
+			Readable.fromWeb(body).pipe(stream)
+			return
+		}
 
 		stream.end(body)
 		return
