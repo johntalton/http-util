@@ -48,6 +48,9 @@ export class CacheControl {
 			result.push(`stale-if-error=${staleIfError}`)
 		}
 
+		//
+		if(result.length === 0) { return undefined }
+
 		return result.join(', ')
 	}
 }
