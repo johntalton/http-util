@@ -1,4 +1,5 @@
 import http2 from 'node:http2'
+
 import { send_bytes } from './send-util.js'
 import { RANGE_UNITS_BYTES } from "./defs.js"
 import { Multipart } from '../multipart.js'
@@ -41,8 +42,6 @@ export function sendPartialContent(stream, contentType, objs, contentLength, enc
 
 	if(Array.isArray(objs) && objs.length > 1) {
 		// send using multipart bytes
-		// console.log('sendPartialContent - mulipart')
-
 		const boundary = 'PARTIAL_CONTENT_BOUNDARY' // todo make unique for content
 		const obj = Multipart.encode_Bytes(contentType, objs, contentLength, boundary)
 
@@ -66,7 +65,7 @@ export function sendPartialContent(stream, contentType, objs, contentLength, enc
 		return
 	}
 
-
+	// single range, send as regular object
 	const obj = Array.isArray(objs) ? objs[0] : objs
 	send_bytes(stream, HTTP_STATUS_PARTIAL_CONTENT, contentType, obj.obj, obj.range, undefined, encoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
 }

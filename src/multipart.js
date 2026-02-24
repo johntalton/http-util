@@ -1,3 +1,5 @@
+import { ReadableStream } from 'node:stream/web'
+
 import { parseContentDisposition } from './content-disposition.js'
 import { parseContentType } from './content-type.js'
 import { ContentRange } from './content-range.js'
@@ -42,7 +44,6 @@ export class Multipart {
 	static parse(text, boundary, charset = 'utf8') {
 		return Multipart.parse_FormData(text, boundary, charset)
 	}
-
 
 	/**
 	 * @param {string} text
@@ -136,128 +137,61 @@ export class Multipart {
 		return formData
 	}
 
-
-	static parse_Bytes(text, boundary, charset = 'utf8') {
-
-	}
-
 	/**
 	 * @param {string} contentType
 	 * @param {Array<MultipartBytePart>} parts
 	 * @param {number|undefined} contentLength
 	 * @param {string} boundary
-	 * @returns {Generator<Uint8Array, void, unknown>}
+	 * @returns {ReadableStream<Uint8Array>}
 	 */
-	static *#encode_Bytes(contentType, parts, contentLength, boundary) {
+	static encode_Bytes(contentType, parts, contentLength, boundary) {
 		const boundaryBegin = `${BOUNDARY_MARK}${boundary}`
 		const boundaryEnd = `${BOUNDARY_MARK}${boundary}${BOUNDARY_MARK}`
 
-		const encoder = new TextEncoder()
+		return new ReadableStream({
+			type: 'bytes',
+			async start(controller) {
+				const encoder = new TextEncoder()
 
-		for(const part of parts) {
-			yield encoder.encode(`${boundaryBegin}${MULTIPART_SEPARATOR}`)
-			yield encoder.encode(`${MULTIPART_HEADER.CONTENT_TYPE}: ${contentType}${MULTIPART_SEPARATOR}`)
-			yield encoder.encode(`${MULTIPART_HEADER.CONTENT_RANGE}: ${ContentRange.encode({ ...part.range, size: contentLength })}${MULTIPART_SEPARATOR}`)
-			yield encoder.encode(MULTIPART_SEPARATOR)
+				for (const part of parts) {
+					controller.enqueue(encoder.encode(`${boundaryBegin}${MULTIPART_SEPARATOR}`))
+					controller.enqueue(encoder.encode(`${MULTIPART_HEADER.CONTENT_TYPE}: ${contentType}${MULTIPART_SEPARATOR}`))
+					controller.enqueue(encoder.encode(`${MULTIPART_HEADER.CONTENT_RANGE}: ${ContentRange.encode({ ...part.range, size: contentLength })}${MULTIPART_SEPARATOR}`))
+					controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
+					// controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
 
-			if(typeof part.obj === 'string') {
-				yield encoder.encode(part.obj)
+					if(part.obj instanceof ReadableStream) {
+						for await (const chunk of part.obj) {
+							if(chunk instanceof ArrayBuffer || ArrayBuffer.isView(chunk)) {
+								controller.enqueue(chunk)
+							}
+							else if(typeof chunk === 'string'){
+								controller.enqueue(encoder.encode(chunk))
+							}
+							else {
+								// console.log('chunk type', typeof chunk)
+								controller.enqueue(Uint8Array.from([ chunk ]))
+							}
+						}
+					}
+					else if(part.obj instanceof ArrayBuffer || ArrayBuffer.isView(part.obj)) {
+						controller.enqueue(part.obj)
+					}
+					else if(typeof part.obj === 'string'){
+						controller.enqueue(encoder.encode(part.obj))
+					}
+					else {
+						// console.log('error', typeof part.obj, part.obj)
+						throw new Error('unknown part type')
+					}
+
+					controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
+				}
+
+				controller.enqueue(encoder.encode(boundaryEnd))
+
+      	controller.close()
 			}
-			else {
-				yield ArrayBuffer.isView(part.obj) ?
-					new Uint8Array(part.obj.buffer, part.obj.byteOffset, part.obj.byteLength) :
-					new Uint8Array(part.obj)
-			}
-
-
-			yield encoder.encode(MULTIPART_SEPARATOR)
-		}
-
-		yield encoder.encode(boundaryEnd)
-	}
-
-
-	/**
-	 * @param {string} contentType
-	 * @param {Array<MultipartBytePart>} parts
-	 * @param {number|undefined} contentLength
-	 * @param {string} boundary
-	 */
-	static encode_Bytes(contentType, parts, contentLength, boundary) {
-		const allParts = Array.from(Multipart.#encode_Bytes(contentType, parts, contentLength, boundary))
-		// return Buffer.concat([...allParts])
-
-		const allPartsLength = allParts.reduce((acc, item) => acc + item.byteLength, 0)
-		const result = new Uint8Array(allPartsLength)
-		let offset = 0
-		for(const allPart of allParts) {
-			result.set(allPart, offset)
-			offset += allPart.byteLength
-		}
-		return result
+		})
 	}
 }
-
-
-function parseMultipartBody (body, boundary) {
-  return body.split(`--${boundary}`).reduce((parts, part) => {
-    if (part && part !== '--') {
-      const [ head, body ] = part.trim().split(/\r\n\r\n/g)
-      parts.push({
-        body: body,
-        headers: head.split(/\r\n/g).reduce((headers, header) => {
-          const [ key, value ] = header.split(/:\s+/)
-          headers[key.toLowerCase()] = value
-          return headers
-        }, {})
-      })
-    }
-    return parts
-  }, [])
-}
-
-// console.log(Multipart.encode_Bytes('text/plain', [
-// 	{ obj: 'This is part A', range: { range: { start: 0, end: 14 }, size: 500 } },
-// 	{ obj: 'this is part B', range: {} }
-// ], 'FAKE_IT'))
-
-// const body = Multipart.encode_Bytes('text/plain', [
-// 	{ obj: Uint8Array.from([ 1,2,3,4 ]), range: { range: { start: 0, end: 14 }, size: 500 } },
-// 	{ obj: 'this is part B', range: {} }
-// ], 666, 'FAKE_IT')
-
-// const decoder = new TextDecoder('utf8', { fatal: true })
-// const encoder = new TextEncoder()
-// const result = parseMultipartBody(decoder.decode(body), 'FAKE_IT')
-// console.log(result.map(({ body }) => encoder.encode(body)))
-
-
-// const test = '--X-INSOMNIA-BOUNDARY\r\n' +
-//     'Content-Disposition: form-data; name="u"\r\n' +
-//     '\r\n' +
-//     'alice\r\n' +
-//     '--X-INSOMNIA-BOUNDARY\r\n' +
-//     'Content-Disposition: form-data; name="user"\r\n' +
-//     '\r\n' +
-//     'jeff\r\n' +
-//     '--X-INSOMNIA-BOUNDARY--\r\n'
-// const result = Multipart.parse(test, 'X-INSOMNIA-BOUNDARY')
-// console.log(result)
-
-
-// const test = [
-// 	'-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k',
-//  'Content-Disposition: form-data; '
-//    + 'name="upload_file_0"; filename="テスト.dat"',
-//  'Content-Type: application/octet-stream',
-//  '',
-//  'A'.repeat(1023),
-//  '-----------------------------paZqsnEHRufoShdX6fh0lUhXBP4k--'
-// ].join('\r\n')
-// const result = Multipart.parse(test, '---------------------------paZqsnEHRufoShdX6fh0lUhXBP4k')
-// console.log(result)
-
-
-// const test = '--X-INSOMNIA-BOUNDARY--\r\n'
-// const result = Multipart.parse(test, 'X-INSOMNIA-BOUNDARY')
-// console.log(result)

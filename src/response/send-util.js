@@ -61,7 +61,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 	if(supportsQuery) { exposedHeaders.push(HTTP_HEADER_ACCEPT_QUERY) }
 
 	const varyHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
-	if(range !== undefined) { varyHeaders.push(HTTP2_HEADER_RANGE) }
+	if(range !== undefined) { varyHeaders.push(HTTP2_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
 
 	send(stream, status, {
 			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
