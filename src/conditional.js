@@ -102,6 +102,31 @@ export class ETag {
 	 * @returns {AnyEtagItem}
 	 */
 	static any() { return ANY_ETAG_ITEM }
+
+	/**
+	 * @param {string|undefined} raw
+	 * @returns {EtagItem|undefined}
+	 */
+	static parse(raw) {
+		if(raw === undefined) { return undefined }
+
+		const rawEtag = raw.trim()
+		const weak = rawEtag.startsWith(CONDITION_ETAG_WEAK_PREFIX)
+		const quotedEtag = weak ? rawEtag.substring(CONDITION_ETAG_WEAK_PREFIX.length) : rawEtag
+
+		if(quotedEtag === CONDITION_ETAG_ANY) { return ANY_ETAG_ITEM }
+
+		if(!isQuoted(quotedEtag)) { return undefined }
+		const etag = stripQuotes(quotedEtag)
+		if(!isValidEtag(etag)) { return undefined }
+		if(etag === CONDITION_ETAG_ANY) { return undefined }
+
+		return {
+			weak,
+			any: false,
+			etag
+		}
+	}
 }
 
 export class Conditional {
@@ -131,40 +156,7 @@ export class Conditional {
 		if(matchHeader === undefined) { return [] }
 
 		return matchHeader.split(CONDITION_ETAG_SEPARATOR)
-			.map(etag => etag.trim())
-			.map(etag => {
-				if(etag.startsWith(CONDITION_ETAG_WEAK_PREFIX)) {
-					// weak
-					return {
-						weak: true,
-						etag: etag.substring(CONDITION_ETAG_WEAK_PREFIX.length)
-					}
-				}
-
-				// strong
-				return {
-					weak: false,
-					etag
-				}
-			})
-			.map(item => {
-				if(item.etag === CONDITION_ETAG_ANY) { return ANY_ETAG_ITEM }
-
-				// validated quoted
-				if(!isQuoted(item.etag)) { return undefined }
-				const etag = stripQuotes(item.etag)
-				if(!isValidEtag(etag)) { return undefined }
-				if(etag === CONDITION_ETAG_ANY) { return undefined }
-
-				/** @type {WeakEtagItem | NotWeakEtagItem} */
-				const result = {
-					weak: item.weak,
-					any: false,
-					etag
-				}
-
-				return result
-			})
+			.map(ETag.parse)
 			.filter(item => item !== undefined)
 	}
 
