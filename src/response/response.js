@@ -4,6 +4,7 @@ import { sendConflict } from './conflict.js'
 import { sendContentTooLarge } from './content-too-large.js'
 import { sendCreated } from './created.js'
 import { sendError } from './error.js'
+import { sendForbidden } from './forbidden.js'
 import { sendGone } from './gone.js'
 import { sendImATeapot } from './im-a-teapot.js'
 import { sendInsufficientStorage } from './insufficient-storage.js'
@@ -17,6 +18,7 @@ import { sendNotFound } from './not-found.js'
 import { sendNotImplemented } from './not-implemented.js'
 import { sendNotModified } from './not-modified.js'
 import { sendPartialContent } from './partial-content.js'
+import { sendPermanentRedirect } from './permanent-redirect.js'
 import { sendPreconditionFailed } from './precondition-failed.js'
 import { sendPreflight } from './preflight.js'
 import { sendRangeNotSatisfiable } from './range-not-satisfiable.js'
@@ -38,6 +40,7 @@ export const Response = {
 	contentTooLarge: sendContentTooLarge,
 	created: sendCreated,
 	error: sendError,
+	forbidden: sendForbidden,
 	gone: sendGone,
 	imATeapot: sendImATeapot,
 	insufficientStorage: sendInsufficientStorage,
@@ -51,6 +54,7 @@ export const Response = {
 	notImplemented: sendNotImplemented,
 	notModified: sendNotModified,
 	partialContent: sendPartialContent,
+	permanentRedirect: sendPermanentRedirect,
 	preconditionFailed: sendPreconditionFailed,
 	preflight: sendPreflight,
 	rangeNotSatisfiable: sendRangeNotSatisfiable,

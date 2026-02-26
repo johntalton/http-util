@@ -1,6 +1,12 @@
 import http2 from 'node:http2'
 import { Readable } from 'node:stream'
 import { ReadableStream } from 'node:stream/web'
+import {
+	brotliCompressSync,
+	deflateSync,
+	gzipSync,
+	zstdCompressSync
+} from 'node:zlib'
 
 import {
 	coreHeaders,
@@ -11,9 +17,11 @@ import { ContentRange } from '../content-range.js'
 import { CacheControl } from '../cache-control.js'
 import { Conditional } from '../conditional.js'
 import { HTTP_HEADER_ACCEPT_QUERY } from './defs.js'
+import { CHARSET_UTF8 } from '../content-type.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { IncomingHttpHeaders } from 'node:http2' */
+/** @import { InputType } from 'node:zlib' */
 /** @import { Metadata } from './defs.js' */
 /** @import { EtagItem } from '../conditional.js' */
 /** @import { CacheControlOptions } from '../cache-control.js' */
@@ -34,6 +42,49 @@ const {
 	HTTP2_HEADER_ACCEPT_ENCODING,
 	HTTP2_HEADER_RANGE
 } = http2.constants
+
+/** @typedef { (data: InputType) => Buffer } EncoderFun */
+
+/** @type {Map<string, EncoderFun>} */
+export const ENCODER_MAP = new Map([
+	[ 'br', data => brotliCompressSync(data) ],
+	[ 'gzip', data => gzipSync(data) ],
+	[ 'deflate', data => deflateSync(data) ],
+	[ 'zstd', data => zstdCompressSync(data) ]
+])
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {number} status
+ * @param {string|undefined} contentType
+ * @param {SendBody} body
+ * @param {string|undefined} encoding
+ * @param {EtagItem|undefined} etag
+ * @param {number|undefined} age
+ * @param {CacheControlOptions|undefined} cacheControl
+ * @param {'bytes'|'none'|undefined} acceptRanges
+ * @param {Array<string>|undefined} supportedQueryTypes
+ * @param {Metadata} meta
+ */
+export function send_encoded(stream, status, contentType, body, encoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+	const obj = (typeof body === 'string') ? Buffer.from(body, CHARSET_UTF8) : body
+
+	const useIdentity = encoding === 'identity'
+	const encoder = encoding !== undefined ? ENCODER_MAP.get(encoding) : undefined
+	const hasEncoder = encoder !== undefined
+	const actualEncoding = hasEncoder ? encoding : undefined
+
+	const encodeStart = performance.now()
+	const encodedData = (hasEncoder && !useIdentity) ? encoder(obj) : obj
+	const encodeEnd = performance.now()
+
+	meta.performance.push(
+		{ name: 'encode', duration: encodeEnd - encodeStart }
+	)
+
+	send_bytes(stream, status, contentType, encodedData, undefined, undefined, actualEncoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta )
+}
+
 
 /**
  * @param {ServerHttp2Stream} stream

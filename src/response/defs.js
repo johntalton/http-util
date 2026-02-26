@@ -9,6 +9,7 @@ export const HTTP_HEADER_SEC_FETCH_SITE = 'sec-fetch-site'
 export const HTTP_HEADER_SEC_FETCH_MODE = 'sec-fetch-mode'
 export const HTTP_HEADER_SEC_FETCH_DEST = 'sec-fetch-dest'
 export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
+export const HTTP_HEADER_ACCEPT_PATCH = 'accept-patch'
 
 export const HTTP_METHOD_QUERY = 'QUERY'
 export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
