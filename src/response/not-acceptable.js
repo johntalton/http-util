@@ -1,4 +1,5 @@
 import http2 from 'node:http2'
+
 import { CONTENT_TYPE_JSON } from '../content-type.js'
 import { send } from './send-util.js'
 

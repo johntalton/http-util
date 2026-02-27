@@ -1,9 +1,10 @@
 import http2 from 'node:http2'
+
 import {
-	SSE_MIME,
-	SSE_INACTIVE_STATUS_CODE,
-	SSE_BOM,
 	ENDING,
+	SSE_BOM,
+	SSE_INACTIVE_STATUS_CODE,
+	SSE_MIME,
 } from '@johntalton/sse-util'
 import { coreHeaders, performanceHeaders } from './header-util.js'
 

@@ -1,6 +1,7 @@
 import http2 from 'node:http2'
-import { send } from './send-util.js'
+
 import { CONTENT_RANGE_UNKNOWN, ContentRange } from '../content-range.js'
+import { send } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */

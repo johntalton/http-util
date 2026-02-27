@@ -1,7 +1,8 @@
 import http2 from 'node:http2'
+
 import {
-	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
 	HTTP_HEADER_SERVER_TIMING,
+	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
 	ServerTiming
 } from '../server-timing.js'
 

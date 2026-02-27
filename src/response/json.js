@@ -1,7 +1,7 @@
 import http2 from 'node:http2'
 
-import { send_encoded } from './send-util.js'
 import { CONTENT_TYPE_JSON } from '../content-type.js'
+import { send_encoded } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from './defs.js' */

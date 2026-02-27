@@ -1,8 +1,9 @@
 import http2 from 'node:http2'
+
 import {
-	HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE,
 	HTTP_HEADER_ACCEPT_QUERY,
 	HTTP_METHOD_QUERY,
+	HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE,
 	PREFLIGHT_AGE_SECONDS
 } from './defs.js'
 import { send } from './send-util.js'
