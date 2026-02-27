@@ -23,7 +23,7 @@ export class AcceptLanguage {
 	 */
 	static select(acceptLanguageHeader, supportedTypes) {
 		const accepts = AcceptLanguage.parse(acceptLanguageHeader)
-		return this.selectFrom(accepts, supportedTypes)
+		return AcceptLanguage.selectFrom(accepts, supportedTypes)
 	}
 
 	/**

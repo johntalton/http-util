@@ -64,7 +64,7 @@ export class Accept {
 	 */
 	static select(acceptHeader, supportedTypes) {
 		const accepts = Accept.parse(acceptHeader)
-		return this.selectFrom(accepts, supportedTypes)
+		return Accept.selectFrom(accepts, supportedTypes)
 	}
 
 	/**

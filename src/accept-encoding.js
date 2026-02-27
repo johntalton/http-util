@@ -21,7 +21,7 @@ export class AcceptEncoding {
 	 */
 	static select(acceptEncodingHeader, supportedTypes) {
 		const accepts = AcceptEncoding.parse(acceptEncodingHeader)
-		return this.selectFrom(accepts, supportedTypes)
+		return AcceptEncoding.selectFrom(accepts, supportedTypes)
 	}
 
 	/**
