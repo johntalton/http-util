@@ -43,7 +43,7 @@ export function requestBody(stream, options) {
 	const charset = options?.contentType?.charset ?? CHARSET_UTF8
 	const contentType = options?.contentType
 
-	const invalidContentLength = (contentLength === undefined || isNaN(contentLength))
+	const invalidContentLength = (contentLength === undefined || Number.isNaN(contentLength))
 	// if(contentLength > byteLimit) {
 		// console.log(contentLength, invalidContentLength)
 	// 	throw new Error('contentLength exceeds limit')

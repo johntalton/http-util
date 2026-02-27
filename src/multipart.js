@@ -1,8 +1,8 @@
 import { ReadableStream } from 'node:stream/web'
 
 import { parseContentDisposition } from './content-disposition.js'
-import { parseContentType } from './content-type.js'
 import { ContentRange } from './content-range.js'
+import { parseContentType } from './content-type.js'
 
 /** @import { ContentRangeDirective } from './content-range.js' */
 /** @import { SendBody } from './response/send-util.js' */
@@ -48,9 +48,9 @@ export class Multipart {
 	/**
 	 * @param {string} text
 	 * @param {string} boundary
-	 * @param {string} [charset='utf8']
+	 * @param {string} [_charset='utf8']
 	 */
-	static parse_FormData(text, boundary, charset = 'utf8') {
+	static parse_FormData(text, boundary, _charset = 'utf8') {
 		// console.log({ boundary, text })
 		const formData = new FormData()
 
@@ -91,10 +91,10 @@ export class Multipart {
 				if(line === EMPTY) { state = MULTIPART_STATE.VALUE }
 				else {
 					const [ rawName, value ] = line.split(HEADER_SEPARATOR)
-					const name = rawName.toLowerCase()
+					const name = rawName?.toLowerCase()
 					// console.log('header', name, value)
 					if(name === MULTIPART_HEADER.CONTENT_TYPE) {
-						const contentType = parseContentType(value)
+						const _contentType = parseContentType(value)
 						// console.log({ contentType })
 					}
 					else if(name === MULTIPART_HEADER.CONTENT_DISPOSITION) {

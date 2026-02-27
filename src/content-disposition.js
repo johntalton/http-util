@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} Disposition
  * @property {string} disposition
- * @property {Map<string, string>} parameters
+ * @property {Map<string, string|undefined>} parameters
  * @property {string} [name]
  * @property {string} [filename]
  */
@@ -15,13 +15,14 @@ export const DISPOSITION_PARAM_NAME = 'name'
 export const DISPOSITION_PARAM_FILENAME = 'filename'
 
 /**
- * @param {string} contentDispositionHeader
+ * @param {string|undefined} contentDispositionHeader
  * @returns {Disposition|undefined}
  */
 export function parseContentDisposition(contentDispositionHeader) {
 	if(contentDispositionHeader === undefined) { return undefined }
 
 	const [ disposition, ...parameterSet ] = contentDispositionHeader.trim().split(DISPOSITION_SEPARATOR.PARAMETER).map(entry => entry.trim())
+	if(disposition === undefined) { return undefined }
 	const parameters = new Map(parameterSet.map(parameter => {
 		const [ key, value ] = parameter.split(DISPOSITION_SEPARATOR.KVP).map(p => p.trim())
 		return [ key, value ]

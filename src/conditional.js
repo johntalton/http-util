@@ -201,7 +201,7 @@ export class Conditional {
 		// <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
 		// day-name "," SP date1 SP time-of-day SP GMT
 
-		if(matchHeader.length != 29) { return undefined }
+		if(matchHeader.length !== 29) { return undefined }
 
 		//
 		const spaces = [
