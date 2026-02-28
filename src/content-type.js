@@ -122,9 +122,9 @@ export function parseContentType(contentTypeHeader) {
 		const [ key, value ] = parameter.split(CONTENT_TYPE_SEPARATOR.KVP)
 		if(key === undefined || key === '') { continue }
 		if(value === undefined || value === '') { continue }
-		if(hasSpecialChar(key)) { continue }
 
 		const actualKey = key?.trim().toLowerCase()
+		if(hasSpecialChar(actualKey)) { continue }
 
 		const quoted = (value.at(0) === '"' && value.at(-1) === '"')
 		const actualValue = quoted ? value.substring(1, value.length - 1) : value
@@ -144,4 +144,5 @@ export function parseContentType(contentTypeHeader) {
 	}
 }
 
+//
 // console.log(parseContentType('multipart/form-data; boundary=----WebKitFormBoundaryJZy5maoMBkBMoGjt'))
