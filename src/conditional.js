@@ -49,6 +49,9 @@ export const DATE_SEPARATOR = ','
 export const DATE_TIME_SEPARATOR = ':'
 export const DATE_ZONE = 'GMT'
 
+export const MINIMUM_YEAR = 1900
+export const MAXIMUM_DAY = 31
+
 /**
  * @param {string} etag
  */
@@ -230,12 +233,12 @@ export class Conditional {
 
 		//
 		const dayName = matchHeader.substring(0, 3)
-		const day = parseInt(matchHeader.substring(5, 7))
+		const day = Number.parseInt(matchHeader.substring(5, 7))
 		const month = matchHeader.substring(8, 11)
-		const year = parseInt(matchHeader.substring(12, 16))
-		const hour = parseInt(matchHeader.substring(17, 19))
-		const minute = parseInt(matchHeader.substring(20, 22))
-		const second = parseInt(matchHeader.substring(23, 25))
+		const year = Number.parseInt(matchHeader.substring(12, 16))
+		const hour = Number.parseInt(matchHeader.substring(17, 19))
+		const minute = Number.parseInt(matchHeader.substring(20, 22))
+		const second = Number.parseInt(matchHeader.substring(23, 25))
 
 		//
 		if(!DATE_DAYS.includes(dayName)) { return undefined }
@@ -247,8 +250,8 @@ export class Conditional {
 		if(!Number.isInteger(second)) { return undefined }
 
 		//
-		if(day > 31 || day <= 0) { return undefined }
-		if(year < 1900) { return undefined }
+		if(day > MAXIMUM_DAY || day <= 0) { return undefined }
+		if(year < MINIMUM_YEAR) { return undefined }
 		if(hour > 24 || hour < 0) { return undefined }
 		if(minute > 60 || minute < 0) { return undefined }
 		if(second > 60 || second < 0) { return undefined }

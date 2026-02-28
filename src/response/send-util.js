@@ -30,6 +30,12 @@ import {
 /** @typedef {ArrayBufferLike|ArrayBufferView|ReadableStream|string} SendBody */
 
 const {
+	HTTP_STATUS_INTERNAL_SERVER_ERROR,
+	HTTP_STATUS_NOT_FOUND,
+	HTTP_STATUS_UNAUTHORIZED
+} = http2.constants
+
+const {
 	HTTP2_HEADER_CONTENT_ENCODING,
 	HTTP2_HEADER_VARY,
 	HTTP2_HEADER_CACHE_CONTROL,
@@ -138,9 +144,9 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
  */
 export function send(stream, status, headers, exposedHeaders, contentType, body, meta) {
 	// if(status >= 400) { console.warn(status, body) }
-	if(status === 401) { console.warn(status, body) }
-	if(status === 404) { console.warn(status, body) }
-	if(status >= 500) { console.warn(status, body) }
+	if(status === HTTP_STATUS_UNAUTHORIZED) { console.warn(status, body) }
+	if(status === HTTP_STATUS_NOT_FOUND) { console.warn(status, body) }
+	if(status >= HTTP_STATUS_INTERNAL_SERVER_ERROR) { console.warn(status, body) }
 	// console.log('SEND', status, body?.byteLength)
 
 	if(stream === undefined) { console.log('send - end stream undef'); return }

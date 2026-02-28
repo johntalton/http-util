@@ -106,7 +106,7 @@ export class Preferences {
 		const asynchronous = preferences.get(DIRECTIVE_RESPOND_ASYNC) !== undefined
 		const representation = preferences.get(DIRECTIVE_REPRESENTATION)?.value
 		const handling = preferences.get(DIRECTIVE_HANDLING)?.value
-		const wait = parseInt(preferences.get(DIRECTIVE_WAIT)?.value ?? '')
+		const wait = Number.parseInt(preferences.get(DIRECTIVE_WAIT)?.value ?? '')
 		const timezone = preferences.get(DIRECTIVE_TIMEZONE)?.value
 
 		return {

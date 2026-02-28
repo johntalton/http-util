@@ -29,10 +29,12 @@ export const SPECIAL_CHARS = [
 	'\n', '\r', '\t'
 ]
 
+export const WHITESPACE_REGEX = /\s/
+
 /**
  * @param {string} c
  */
-export function isWhitespace(c){ return /\s/.test(c) }
+export function isWhitespace(c){ return WHITESPACE_REGEX.test(c) }
 
 /**
  * @param {string|undefined} value
@@ -116,22 +118,21 @@ export function parseContentType(contentTypeHeader) {
 
 	const parameters = new Map()
 
-	parameterSet
-			.forEach(parameter => {
-				const [ key, value ] = parameter.split(CONTENT_TYPE_SEPARATOR.KVP)
-				if(key === undefined || key === '') { return }
-				if(value === undefined || value === '') { return }
-				if(hasSpecialChar(key)) { return }
+	for(const parameter of parameterSet) {
+		const [ key, value ] = parameter.split(CONTENT_TYPE_SEPARATOR.KVP)
+		if(key === undefined || key === '') { return }
+		if(value === undefined || value === '') { return }
+		if(hasSpecialChar(key)) { return }
 
-				const actualKey = key?.trim().toLowerCase()
+		const actualKey = key?.trim().toLowerCase()
 
-				const quoted = (value.charAt(0) === '"' && value.charAt(value.length - 1) === '"')
-				const actualValue = quoted ? value.substring(1, value.length - 1) : value
+		const quoted = (value.at(0) === '"' && value.at(-1) === '"')
+		const actualValue = quoted ? value.substring(1, value.length - 1) : value
 
-				if(!parameters.has(actualKey)) {
-					parameters.set(actualKey, actualValue)
-				}
-			})
+		if(!parameters.has(actualKey)) {
+			parameters.set(actualKey, actualValue)
+		}
+	}
 
 	const charset = parameters.get(CHARSET)
 

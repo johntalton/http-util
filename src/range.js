@@ -77,7 +77,7 @@ export class Range {
 					return { start, end: RANGE_EMPTY }
 				}
 
-				if(!Number.isInteger(start) || !Number.isInteger(end)) { return undefined }
+				if(!(Number.isInteger(start) && Number.isInteger(end))) { return undefined }
 				return { start, end }
 			})
 			.filter(range => range !== undefined)
@@ -105,19 +105,14 @@ export class Range {
 			return { start, end }
 		})
 
-		const exceeds = normalizedRanges.reduce((acc, value) => {
-			return acc || (value.start >= contentLength) || (value.end >= contentLength)
-		}, false)
+		const exceeds = normalizedRanges.reduce((acc, value) => (acc || (value.start >= contentLength) || (value.end >= contentLength)), false)
 
-		const overlap = normalizedRanges
+		const { overlap } = normalizedRanges
 			.toSorted((a, b) => a.start - b.start)
-			.reduce((acc, item) => {
-				return {
+			.reduce((acc, item) => ({
 					overlap: acc.overlap || acc.end > item.start,
 					end: item.end
-				}
-			}, { overlap: false, end: 0 })
-			.overlap
+				}), { overlap: false, end: 0 })
 
 		return {
 			units: directive.units,

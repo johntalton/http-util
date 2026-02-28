@@ -54,7 +54,6 @@ export class Accept {
 				const qualityB = entryB.quality ?? 0
 				const qualityA = entryA.quality ?? 0
 				return qualityB - qualityA
-				// return entryB.quality - entryA.quality
 			})
 	}
 
@@ -84,9 +83,7 @@ export class Accept {
 				quality
 			}
 		})
-		.filter(best => {
-			return best.supportedTypes.length > 0
-		})
+		.filter(best => best.supportedTypes.length > 0)
 
 		if(bests.length === 0) { return undefined }
 		const [ first ] = bests

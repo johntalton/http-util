@@ -9,6 +9,9 @@ import { send } from './send-util.js'
 
 const { HTTP_STATUS_OK } = http2.constants
 
+const LINE_ENDING = '\n'
+const PSEUDO_HEADER_PREFIX = ':'
+
 /**
  * @param {ServerHttp2Stream} stream
  * @param {string} method
@@ -28,13 +31,13 @@ export function sendTrace(stream, method, url, headers, meta) {
 	const reconstructed = [
 		`${method} ${url.pathname}${url.search} ${version}`,
 		Object.entries(headers)
-			.filter(([ key ]) => !key.startsWith(':'))
+			.filter(([ key ]) => !key.startsWith(PSEUDO_HEADER_PREFIX))
 			.filter(([ key ]) => !FILTER_KEYS.includes(key))
 			.map(([ key, value ]) => `${key}: ${value}`)
-			.join('\n'),
-		'\n'
+			.join(LINE_ENDING),
+		LINE_ENDING
 		]
-		.join('\n')
+		.join(LINE_ENDING)
 
 	send(stream, HTTP_STATUS_OK, {}, [], CONTENT_TYPE_MESSAGE_HTTP, reconstructed, meta)
 }

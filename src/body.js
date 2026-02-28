@@ -5,7 +5,8 @@ import {
 } from './content-type.js'
 import { Multipart } from './multipart.js'
 
-export const DEFAULT_BYTE_LIMIT = 1024 * 1024 //
+export const BYTE_PER_K = 1024
+export const DEFAULT_BYTE_LIMIT = BYTE_PER_K * BYTE_PER_K //
 
 /** @import { Readable } from 'node:stream' */
 /** @import { ContentType } from './content-type.js' */
@@ -278,7 +279,7 @@ export async function bodyJSON(reader, charset) {
  * @param {ReadableStream} reader
  * @param {ContentType} contentType
  */
-async function _bodyFormData_Multipart(reader, contentType) {
+export async function _bodyFormData_Multipart(reader, contentType) {
 	const MULTIPART_FORM_DATA_BOUNDARY_PARAMETER = 'boundary'
 
 	const text = await bodyText(reader, contentType.charset)
@@ -292,7 +293,7 @@ async function _bodyFormData_Multipart(reader, contentType) {
  * @param {ReadableStream} reader
  * @param {ContentType} contentType
  */
-async function _bodyFormData_URL(reader, contentType) {
+export async function _bodyFormData_URL(reader, contentType) {
 	const text = await bodyText(reader, contentType.charset)
 	const sp = new URLSearchParams(text)
 	const formData = new FormData()

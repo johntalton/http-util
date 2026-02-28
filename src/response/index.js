@@ -1,5 +1,8 @@
+/** biome-ignore-all lint/performance/noBarrelFile: entry point */
+/** biome-ignore-all lint/performance/noReExportAll: entry point */
 export * from './defs.js'
 export * from './send-util.js'
+// end common headers
 
 export * from './accepted.js'
 export * from './bytes.js'

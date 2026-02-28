@@ -15,7 +15,7 @@ const { HTTP_STATUS_NOT_ACCEPTABLE } = http2.constants
  */
 export function sendNotAcceptable(stream, supportedTypes, meta) {
 	const supportedTypesList = Array.isArray(supportedTypes) ? supportedTypes : [ supportedTypes ]
-	const has = supportedTypesList.length !== 0
+	const has = supportedTypesList.length > 0
 
 	send(stream,
 		HTTP_STATUS_NOT_ACCEPTABLE,

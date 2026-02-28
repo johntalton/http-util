@@ -49,7 +49,7 @@ export class Forwarded {
 					})
 					.filter(item => item !== undefined))
 			)
-			.filter(m => m.size !== 0)
+			.filter(m => m.size > 0)
 	}
 
 	/**

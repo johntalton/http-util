@@ -39,7 +39,7 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 				}))
 
 				if(!parameters.has(QUALITY)) { parameters.set(QUALITY, DEFAULT_QUALITY_STRING) }
-				const quality = parseFloat(parameters.get(QUALITY) ?? DEFAULT_QUALITY_STRING)
+				const quality = Number.parseFloat(parameters.get(QUALITY) ?? DEFAULT_QUALITY_STRING)
 
 				return {
 					name,
