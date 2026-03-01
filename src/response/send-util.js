@@ -20,7 +20,7 @@ import {
 } from './header-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { IncomingHttpHeaders } from 'node:http2' */
+/** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { InputType } from 'node:zlib' */
 /** @import { Metadata } from './defs.js' */
 /** @import { EtagItem } from '../conditional.js' */
@@ -136,7 +136,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 /**
  * @param {ServerHttp2Stream} stream
  * @param {number} status
- * @param {IncomingHttpHeaders} headers
+ * @param {OutgoingHttpHeaders} headers
  * @param {Array<string>} exposedHeaders
  * @param {string|undefined} contentType
  * @param {SendBody|undefined} body

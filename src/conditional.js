@@ -1,3 +1,4 @@
+import { isQuoted, stripQuotes } from './quote.js'
 
 /**
  * @typedef {Object} WeakEtagItem
@@ -65,23 +66,6 @@ export function isValidEtag(etag) {
 	return true
 }
 
-/**
- * @param {string} etag
- */
-export function stripQuotes(etag) {
-	return etag.substring(1, etag.length - 1)
-}
-
-/**
- * @param {string} etag
- */
-export function isQuoted(etag) {
-	if(etag.length <= 2) { return false }
-	if(!etag.startsWith(ETAG_QUOTE)) { return false }
-	if(!etag.endsWith(ETAG_QUOTE)) { return false }
-	return true
-}
-
 export class ETag {
 	/**
 	 * @param {string} etag
@@ -121,6 +105,7 @@ export class ETag {
 
 		if(!isQuoted(quotedEtag)) { return undefined }
 		const etag = stripQuotes(quotedEtag)
+		if(etag === undefined) { return undefined }
 		if(!isValidEtag(etag)) { return undefined }
 		if(etag === CONDITION_ETAG_ANY) { return undefined }
 

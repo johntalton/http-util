@@ -1,14 +1,14 @@
 // https://datatracker.ietf.org/doc/html/rfc7240
 // https://www.rfc-editor.org/rfc/rfc7240#section-3
 
-export const SEPARATOR = {
+import { isQuoted, stripQuotes } from './quote.js'
+
+export const PREFERENCE_SEPARATOR = {
 	PREFERENCE: ',',
 	PARAMS: ';',
 	PARAM_KVP: '=',
 	KVP: '='
 }
-
-export const QUOTE = '"'
 
 export const DIRECTIVE_RESPOND_ASYNC = 'respond-async'
 export const DIRECTIVE_WAIT = 'wait'
@@ -22,26 +22,6 @@ export const DIRECTIVE_HANDLING_LENIENT = 'lenient'
 export const DIRECTIVE_REPRESENTATION_MINIMAL = 'minimal'
 export const DIRECTIVE_REPRESENTATION_HEADERS_ONLY = 'headers-only'
 export const DIRECTIVE_REPRESENTATION_FULL = 'representation'
-
-
-/**
- * @param {string|undefined} value
- */
-export function stripQuotes(value) {
-	if(value === undefined) { return undefined }
-	return value.substring(1, value.length - 1)
-}
-
-/**
- * @param {string|undefined} value
- */
-export function isQuoted(value) {
-	if(value === undefined) { return false }
-	if(value.length < 2) { return false }
-	if(!value.startsWith(QUOTE)) { return false }
-	if(!value.endsWith(QUOTE)) { return false }
-	return true
-}
 
 /**
  * @typedef {Object} Preference
@@ -71,10 +51,10 @@ export class Preferences {
 	static parse(header) {
 		if(header === undefined) { return undefined }
 
-		const preferences = new Map(header.split(SEPARATOR.PREFERENCE)
+		const preferences = new Map(header.split(PREFERENCE_SEPARATOR.PREFERENCE)
 			.map(pref => {
-				const [ kvp, ...params ] = pref.trim().split(SEPARATOR.PARAMS)
-				const [ key, rawValue ] = kvp?.split(SEPARATOR.KVP) ?? []
+				const [ kvp, ...params ] = pref.trim().split(PREFERENCE_SEPARATOR.PARAMS)
+				const [ key, rawValue ] = kvp?.split(PREFERENCE_SEPARATOR.KVP) ?? []
 
 				if(key === undefined) { return {} }
 				const valueOrEmpty = isQuoted(rawValue) ? stripQuotes(rawValue) : rawValue
@@ -82,7 +62,7 @@ export class Preferences {
 
 				const parameters = new Map(params
 					.map(param => {
-						const [ pKey, rawPValue ] = param.split(SEPARATOR.PARAM_KVP)
+						const [ pKey, rawPValue ] = param.split(PREFERENCE_SEPARATOR.PARAM_KVP)
 						if(pKey === undefined) { return {} }
 						const trimmedRawPValue = rawPValue?.trim()
 						const pValueOrEmpty = isQuoted(trimmedRawPValue) ? stripQuotes(trimmedRawPValue) : trimmedRawPValue
@@ -129,10 +109,10 @@ export class AppliedPreferences {
 		return [ ...preferences.entries()
 			.map(([ key, value ]) => {
 				// todo check if value should be quoted
-				if(value !== undefined) { return `${key}${SEPARATOR.KVP}${value}` }
+				if(value !== undefined) { return `${key}${PREFERENCE_SEPARATOR.KVP}${value}` }
 				return key
 			}) ]
-			.join(SEPARATOR.PREFERENCE)
+			.join(PREFERENCE_SEPARATOR.PREFERENCE)
 	}
 
 	/**

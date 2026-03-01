@@ -8,7 +8,7 @@ export const HTTP_HEADER_RATE_LIMIT_POLICY = 'RateLimit-Policy'
  * @property {string} name
  * @property {number} remaining
  * @property {number} resetSeconds
- * @property {string} partitionKey
+ * @property {string|undefined} [partitionKey]
  */
 
 /**
@@ -50,7 +50,7 @@ export class RateLimit {
 		if(name === undefined || remaining === undefined) { return undefined }
 
 		const rs = resetSeconds ? `;${LIMIT_PARAMETERS.TIME_TILL_RESET_SECONDS}=${resetSeconds}` : ''
-		const pk = partitionKey ? `'${LIMIT_PARAMETERS.PARTITION_KEY}=${partitionKey}` : ''
+		const pk = partitionKey ? `;${LIMIT_PARAMETERS.PARTITION_KEY}=${partitionKey}` : ''
 		return `"${name}";${LIMIT_PARAMETERS.REMAINING_QUOTA}=${remaining}${rs}${pk}`
 	}
 }
