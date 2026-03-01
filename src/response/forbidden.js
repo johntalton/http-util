@@ -11,7 +11,6 @@ const { HTTP_STATUS_FORBIDDEN} = http2.constants
  * @param {Metadata} meta
  */
 export function sendForbidden(stream, meta) {
-	throw new Error('unsupported')
 	send(stream, HTTP_STATUS_FORBIDDEN, {
 	}, [], undefined, undefined, meta)
 }
