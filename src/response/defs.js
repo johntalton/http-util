@@ -37,7 +37,7 @@ export const RANGE_UNITS_NONE = 'none'
  * @property {Array<TimingsInfo>} performance
  * @property {string|undefined} servername
  * @property {string|undefined} origin
- * @property {Array<[ CustomHeaderKey, string ]>} customHeaders
+ * @property {Array<[ CustomHeaderKey, string ]>|undefined} [customHeaders]
  */
 
 /**
