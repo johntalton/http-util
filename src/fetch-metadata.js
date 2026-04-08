@@ -55,7 +55,6 @@ export const SEC_FETCH_DEST_WEB_IDENTITY = 'webidentity'
 export const SEC_FETCH_DEST_WORKER = 'worker'
 export const SEC_FETCH_DEST_XSLT = 'xslt'
 
-
 export const SEC_FETCH_DEST_EMPTY = 'empty'
 
 export const KNOWN_SEC_FETCH_DEST = [
