@@ -16,9 +16,9 @@ export const HTTP_HEADER_RATE_LIMIT_POLICY = 'RateLimit-Policy'
  * @property {string} name
  * @property {number} quota
  * @property {number} size
- * @property {number} quotaUnits
+ * @property {string} quotaUnits
  * @property {number} windowSeconds
- * @property {string} [partitionKey]
+ * @property {string|undefined} [partitionKey]
  */
 
 export const LIMIT_PARAMETERS = {
