@@ -161,6 +161,7 @@ export class Multipart {
 					// controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
 
 					if(part.obj instanceof ReadableStream) {
+						// biome-ignore lint/performance/noAwaitInLoops: readable
 						for await (const chunk of part.obj) {
 							if(chunk instanceof ArrayBuffer || ArrayBuffer.isView(chunk)) {
 								controller.enqueue(chunk)

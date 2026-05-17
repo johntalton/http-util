@@ -1,4 +1,4 @@
-import { RANGE_UNITS_BYTES } from "./response/defs.js"
+import { RANGE_UNITS_BYTES } from './response/defs.js'
 
 export const CONTENT_RANGE_UNKNOWN = '*'
 export const CONTENT_RANGE_SEPARATOR = '-'

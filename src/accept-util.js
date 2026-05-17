@@ -53,3 +53,5 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 				return entryB.quality - entryA.quality
 			})
 }
+
+// console.log(parseAcceptStyleHeader('*'))

@@ -2,7 +2,7 @@ import http2 from 'node:http2'
 
 import { MIME_TYPE_MULTIPART_RANGE } from '../content-type.js'
 import { Multipart } from '../multipart.js'
-import { RANGE_UNITS_BYTES } from "./defs.js"
+import { RANGE_UNITS_BYTES } from './defs.js'
 import { send_bytes } from './send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */

@@ -1,4 +1,3 @@
-
 export const MIME_TYPE_JSON = 'application/json'
 export const MIME_TYPE_TEXT = 'text/plain'
 export const MIME_TYPE_EVENT_STREAM = 'text/event-stream'
@@ -19,10 +18,12 @@ export const TYPE_X_TOKEN_PREFIX = 'X-'
 
 export const SPECIAL_CHARS = [
 	// special
-	'(', ')', '<', '>',
+	'(', ')',
+	'<', '>',
+	'[', ']',
+	'{', '}',
 	'@', ',', ';', ':',
-	'\\', '"', '/', '[',
-	']', '?', '.', '=',
+	'\\', '"', '/',  '?', '.', '=',
 	// space
 	' ', '\u000B', '\u000C',
 	// control
@@ -42,7 +43,7 @@ export function isWhitespace(c){ return WHITESPACE_REGEX.test(c) }
 export function hasSpecialChar(value) {
   if(value === undefined) { return false }
   for(const special of SPECIAL_CHARS) {
-    if(value.includes(special)) { return true}
+    if(value.includes(special)) { return true }
   }
 
   return false
@@ -86,7 +87,6 @@ export const WELL_KNOWN_CONTENT_TYPES = new Map([
 	[ 'application/json;charset=utf8', WELL_KNOWN_JSON ]
 ])
 
-
 /**
  * @param {string|undefined} contentTypeHeader
  * @returns {ContentType|undefined}
@@ -126,6 +126,7 @@ export function parseContentType(contentTypeHeader) {
 		const actualKey = key?.trim().toLowerCase()
 		if(hasSpecialChar(actualKey)) { continue }
 
+		// TODO use isQuoted and friends
 		const quoted = (value.at(0) === '"' && value.at(-1) === '"')
 		const actualValue = quoted ? value.substring(1, value.length - 1) : value
 
@@ -146,3 +147,5 @@ export function parseContentType(contentTypeHeader) {
 
 //
 // console.log(parseContentType('multipart/form-data; boundary=----WebKitFormBoundaryJZy5maoMBkBMoGjt'))
+// console.log(parseContentType('*'))
+// console.log(parseContentType('*/*'))

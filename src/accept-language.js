@@ -1,12 +1,11 @@
 import { parseAcceptStyleHeader } from './accept-util.js'
 
-/**
- * @import { AcceptStyleItem } from './accept-util.js'
- */
+/** @import { AcceptStyleItem } from './accept-util.js' */
 
 export const WELL_KNOWN_LANGUAGES = new Map([
 	[ 'en-US,en;q=0.5', [ { name: 'en-US', quality: 1 }, { name: 'en', quality: 0.5 } ] ],
-	[ 'en-US,en;q=0.9', [ { name: 'en-US', quality: 1 }, { name: 'en', quality: 0.9 } ] ]
+	[ 'en-US,en;q=0.9', [ { name: 'en-US', quality: 1 }, { name: 'en', quality: 0.9 } ] ],
+	// [ '*', [ { name: '*', quality: 1 } ]]
 ])
 
 export class AcceptLanguage {
