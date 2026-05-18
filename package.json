@@ -1,18 +1,23 @@
 {
   "name": "@johntalton/http-util",
-  "version": "5.1.7",
+  "version": "5.2.0",
   "license": "MIT",
   "type": "module",
+  "imports": {
+    "#util": "./src/util/index.js"
+  },
   "exports": {
     ".": "./src/index.js",
     "./headers": "./src/index.js",
     "./body": "./src/body.js",
     "./response": "./src/response/index.js",
-    "./response/object": "./src/response/response.js"
+    "./response/object": "./src/response/response.js",
+    "./util": "./src/util/index.js"
   },
   "files": [
     "src/*.js",
-    "src/response/*.js"
+    "src/response/*.js",
+    "src/util/*.js"
   ],
   "repository": {
     "url": "https://github.com/johntalton/http-util"

@@ -1,3 +1,5 @@
+import { KVP } from './util/kvp.js'
+
 export const FORWARDED_KEY_BY = 'by'
 export const FORWARDED_KEY_FOR = 'for'
 export const FORWARDED_KEY_HOST = 'host'
@@ -13,11 +15,8 @@ export const KNOWN_FORWARDED_KEYS = [
 export const SKIP_ANY = '*'
 
 export const FORWARDED_SEPARATOR = {
-	ITEM: ',',
-	ELEMENT: ';',
-	KVP: '='
+	ITEM: ','
 }
-
 export class Forwarded {
 	/**
 	 * @param {string|undefined} header
@@ -30,26 +29,10 @@ export class Forwarded {
 		return header
 			.trim()
 			.split(FORWARDED_SEPARATOR.ITEM)
-			.map(single => new Map(single
-					.trim()
-					.split(FORWARDED_SEPARATOR.ELEMENT)
-					.map(kvp => {
-						const [ rawKey, rawValue ] = kvp.trim().split(FORWARDED_SEPARATOR.KVP)
-
-						const key = rawKey?.trim()?.toLowerCase()
-						if (key === undefined || !acceptedKeys.includes(key)) { return undefined }
-
-						const value = rawValue?.trim()
-						if(value === undefined) { return undefined }
-						if(value.length <= 0) { return undefined }
-
-						/** @type {[string, string]} */
-						const result = [ key, value ]
-						return result
-					})
-					.filter(item => item !== undefined))
-			)
+			.map(single => KVP.parseParameters(single, acceptedKeys)?.parameters)
+			.filter(m => m !== undefined)
 			.filter(m => m.size > 0)
+			.filter(m => m.get(FORWARDED_KEY_FOR) !== undefined)
 	}
 
 	/**

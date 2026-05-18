@@ -1,4 +1,4 @@
-import { isQuoted, stripQuotes } from './quote.js'
+import { isQuoted, stripQuotes } from './util/quote.js'
 
 /**
  * @typedef {Object} WeakEtagItem

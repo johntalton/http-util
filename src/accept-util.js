@@ -1,8 +1,8 @@
+import { KVP } from './util/kvp.js'
+
 export const QUALITY = 'q'
 export const SEPARATOR = {
-	MEDIA_RANGE: ',',
-	PARAMETER: ';',
-	KVP: '='
+	MEDIA_RANGE: ','
 }
 
 export const DEFAULT_QUALITY_STRING = '1'
@@ -29,16 +29,10 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 		.trim()
 			.split(SEPARATOR.MEDIA_RANGE)
 			.map(mediaRange => {
-				const [ name, ...parametersSet ] = mediaRange
-					.trim()
-					.split(SEPARATOR.PARAMETER)
+				const { name, parameters } = KVP.parse(mediaRange) ?? { parameters: new Map() }
+				if(name === undefined) { return undefined }
+				if(name === '') { return undefined }
 
-				const parameters = new Map(parametersSet.map(parameter => {
-					const [ key, value ] = parameter.split(SEPARATOR.KVP).map(p => p.trim())
-					return [ key, value ]
-				}))
-
-				if(!parameters.has(QUALITY)) { parameters.set(QUALITY, DEFAULT_QUALITY_STRING) }
 				const quality = Number.parseFloat(parameters.get(QUALITY) ?? DEFAULT_QUALITY_STRING)
 
 				return {
@@ -47,11 +41,9 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 					parameters
 				}
 			})
-			.filter(entry => entry.name !== undefined && entry.name !== '')
+			.filter(entry => entry !== undefined)
 			.sort((entryA, entryB) => {
 				// B - A descending order
 				return entryB.quality - entryA.quality
 			})
 }
-
-// console.log(parseAcceptStyleHeader('*'))

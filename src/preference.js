@@ -1,7 +1,8 @@
 // https://datatracker.ietf.org/doc/html/rfc7240
 // https://www.rfc-editor.org/rfc/rfc7240#section-3
 
-import { isQuoted, stripQuotes } from './quote.js'
+import { KVP } from './util/kvp.js'
+import { isQuoted, stripQuotes } from './util/quote.js'
 
 export const PREFERENCE_SEPARATOR = {
 	PREFERENCE: ',',
@@ -53,25 +54,12 @@ export class Preferences {
 
 		const preferences = new Map(header.split(PREFERENCE_SEPARATOR.PREFERENCE)
 			.map(pref => {
-				const [ kvp, ...params ] = pref.trim().split(PREFERENCE_SEPARATOR.PARAMS)
+				const { name: kvp, parameters } = KVP.parse(pref) ?? { parameters: new Map() }
 				const [ key, rawValue ] = kvp?.split(PREFERENCE_SEPARATOR.KVP) ?? []
 
 				if(key === undefined) { return {} }
 				const valueOrEmpty = isQuoted(rawValue) ? stripQuotes(rawValue) : rawValue
 				const value = (valueOrEmpty !== '') ? valueOrEmpty : undefined
-
-				const parameters = new Map(params
-					.map(param => {
-						const [ pKey, rawPValue ] = param.split(PREFERENCE_SEPARATOR.PARAM_KVP)
-						if(pKey === undefined) { return {} }
-						const trimmedRawPValue = rawPValue?.trim()
-						const pValueOrEmpty = isQuoted(trimmedRawPValue) ? stripQuotes(trimmedRawPValue) : trimmedRawPValue
-						const pValue = (pValueOrEmpty !== '') ? pValueOrEmpty : undefined
-						return { key: pKey.trim(), value: pValue }
-					})
-					.filter(item => item.key !== undefined)
-					.map(item => ([ item.key, item.value ]))
-				)
 
 				return { key, value, parameters }
 			})

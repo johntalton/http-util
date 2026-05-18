@@ -1,22 +1,10 @@
 import { parseAcceptStyleHeader } from './accept-util.js'
+import { MIME_ANY, Mime } from './util/mime.js'
 
-/**
- * @import { AcceptStyleItem } from './accept-util.js'
- */
+/** @import { AcceptStyleItem } from './accept-util.js' */
+/** @import { MimeItem } from './util/mime.js' */
 
-/**
- * @typedef {Object} AcceptExtensionItem
- * @property {string} mimetype
- * @property {string} type
- * @property {string} subtype
- */
-
-/**
- * @typedef {AcceptStyleItem & AcceptExtensionItem} AcceptItem
- */
-
-export const ACCEPT_SEPARATOR = { SUBTYPE: '/' }
-export const ACCEPT_ANY = '*'
+/** @typedef {AcceptStyleItem & MimeItem} AcceptItem */
 
 export const WELL_KNOWN = new Map([
 	[ '*/*', [ { name: '*/*', quality: 1 } ] ],
@@ -31,22 +19,23 @@ export class Accept {
 	static parse(acceptHeader) {
 		return parseAcceptStyleHeader(acceptHeader, WELL_KNOWN)
 			.map(({ name, quality, parameters }) => {
-				const [ type, subtype ] = name
-					.split(ACCEPT_SEPARATOR.SUBTYPE)
-					.map(t => t.trim())
+
+				const mime = Mime.parse(name)
+				if(mime === undefined) { return undefined }
 
 				return {
-					mimetype: `${type}${ACCEPT_SEPARATOR.SUBTYPE}${subtype ?? ACCEPT_ANY}`,
-					name, type, subtype,
+					name,
+					...mime,
 					quality,
 					parameters
 				}
 			})
+			.filter(entry => entry !== undefined)
 			.sort((entryA, entryB) => {
 				if(entryA.quality === entryB.quality) {
 					// prefer things with less ANY
-					const specificityA = (entryA.type === ACCEPT_ANY ? 1 : 0) + (entryA.subtype === ACCEPT_ANY ? 1 : 0)
-					const specificityB = (entryB.type === ACCEPT_ANY ? 1 : 0) + (entryB.subtype === ACCEPT_ANY ? 1 : 0)
+					const specificityA = (entryA.type === MIME_ANY ? 1 : 0) + (entryA.subtype === MIME_ANY ? 1 : 0)
+					const specificityB = (entryB.type === MIME_ANY ? 1 : 0) + (entryB.subtype === MIME_ANY ? 1 : 0)
 					return specificityA - specificityB
 				}
 
@@ -74,8 +63,9 @@ export class Accept {
 		const bests = accepts.map(accept => {
 			const { type, subtype, quality } = accept
 			const st = supportedTypes.filter(supportedType => {
-				const [ stType, stSubtype ] = supportedType.split(ACCEPT_SEPARATOR.SUBTYPE)
-				return ((stType === type || type === ACCEPT_ANY) && (stSubtype === subtype || subtype === ACCEPT_ANY))
+				const supportedMime = Mime.parse(supportedType)
+				if(supportedMime === undefined) { return false }
+				return ((supportedMime.type === type || type === MIME_ANY) && (supportedMime.subtype === subtype || subtype === MIME_ANY))
 			})
 
 			return {
@@ -95,6 +85,8 @@ export class Accept {
 
 // console.log(Accept.parse('text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, text/*;q=.8, */*;q=0.7'))
 // console.log(Accept.select('text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, text/*;q=.8, */*;q=0.7', [ 'application/json', 'text/plain' ]))
+// console.log(Accept.parse('*'))
+
 
 // const tests = [
 // 	undefined,

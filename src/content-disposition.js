@@ -1,3 +1,5 @@
+import { KVP } from './util/kvp.js'
+
 /**
  * @typedef {Object} Disposition
  * @property {string} disposition
@@ -5,11 +7,6 @@
  * @property {string|undefined} [name]
  * @property {string|undefined} [filename]
  */
-
-export const DISPOSITION_SEPARATOR = {
-	PARAMETER: ';',
-	KVP: '='
-}
 
 export const DISPOSITION_PARAM_NAME = 'name'
 export const DISPOSITION_PARAM_FILENAME = 'filename'
@@ -21,16 +18,8 @@ export const DISPOSITION_PARAM_FILENAME = 'filename'
 export function parseContentDisposition(contentDispositionHeader) {
 	if(contentDispositionHeader === undefined) { return undefined }
 
-	const [ disposition, ...parameterSet ] = contentDispositionHeader.trim().split(DISPOSITION_SEPARATOR.PARAMETER).map(entry => entry.trim())
+	const { name: disposition, parameters } = KVP.parse(contentDispositionHeader) ?? { parameters: new Map() }
 	if(disposition === undefined) { return undefined }
-	const parameters = new Map(parameterSet.map(parameter => {
-			const [ key, value ] = parameter.split(DISPOSITION_SEPARATOR.KVP).map(p => p.trim())
-			if(key === undefined) { return undefined }
-			return { key, value }
-		})
-		.filter(item => item !== undefined)
-		.map(({ key, value }) => ([ key, value ])))
-
 
 	const name = parameters.get(DISPOSITION_PARAM_NAME)
 	const filename = parameters.get(DISPOSITION_PARAM_FILENAME)
