@@ -4,10 +4,10 @@ import {
 	HTTP_HEADER_SERVER_TIMING,
 	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
 	ServerTiming
-} from '../server-timing.js'
+} from '../headers/server-timing.js'
 
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
-/** @import { Metadata } from './defs.js' */
+/** @import { Metadata } from '../defs.js' */
 
 const {
 	HTTP2_HEADER_STATUS,

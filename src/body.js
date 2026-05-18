@@ -2,28 +2,28 @@ import {
 	CHARSET_UTF8,
 	MIME_TYPE_MULTIPART_FORM_DATA,
 	MIME_TYPE_URL_FORM_DATA
-} from './content-type.js'
-import { Multipart } from './multipart.js'
+} from './headers/content-type.js'
+import { Multipart } from './headers/multipart.js'
 
 export const BYTE_PER_K = 1024
 export const DEFAULT_BYTE_LIMIT = BYTE_PER_K * BYTE_PER_K //
 
 /** @import { Readable } from 'node:stream' */
-/** @import { ContentType } from './content-type.js' */
+/** @import { ContentTypeItem } from './headers/content-type.js' */
 
 /**
  * @typedef {Object} BodyOptions
  * @property {AbortSignal|undefined} [signal]
  * @property {number|undefined} [byteLimit]
  * @property {number|undefined} [contentLength]
- * @property {ContentType|undefined} [contentType]
+ * @property {ContentTypeItem|undefined} [contentType]
  */
 
 /**
  * @typedef {Object} BodyFuture
  * @property {number} duration
  * @property {ReadableStream} body
- * @property {ContentType|undefined} contentType
+ * @property {ContentTypeItem|undefined} contentType
  * @property { (mimetype: string) => Promise<Blob> } blob
  * @property { () => Promise<ArrayBufferLike> } arrayBuffer
  * @property { () => Promise<Uint8Array> } bytes
@@ -277,7 +277,7 @@ export async function bodyJSON(reader, charset) {
 
 /**
  * @param {ReadableStream} reader
- * @param {ContentType} contentType
+ * @param {ContentTypeItem} contentType
  */
 export async function _bodyFormData_Multipart(reader, contentType) {
 	const MULTIPART_FORM_DATA_BOUNDARY_PARAMETER = 'boundary'
@@ -291,7 +291,7 @@ export async function _bodyFormData_Multipart(reader, contentType) {
 
 /**
  * @param {ReadableStream} reader
- * @param {ContentType} contentType
+ * @param {ContentTypeItem} contentType
  */
 export async function _bodyFormData_URL(reader, contentType) {
 	const text = await bodyText(reader, contentType.charset)
@@ -307,7 +307,7 @@ export async function _bodyFormData_URL(reader, contentType) {
 
 /**
  * @param {ReadableStream} reader
- * @param {ContentType|undefined} contentType
+ * @param {ContentTypeItem|undefined} contentType
  */
 export async function bodyFormData(reader, contentType) {
 	if(contentType === undefined) { throw new Error('undefined content type for form data') }

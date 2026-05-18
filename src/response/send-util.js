@@ -8,11 +8,11 @@ import {
 	zstdCompressSync
 } from 'node:zlib'
 
-import { CacheControl } from '../cache-control.js'
-import { Conditional } from '../conditional.js'
-import { ContentRange } from '../content-range.js'
-import { CHARSET_UTF8 } from '../content-type.js'
-import { HTTP_HEADER_ACCEPT_QUERY } from './defs.js'
+import { HTTP_HEADER_ACCEPT_QUERY } from '../defs.js'
+import { CacheControl } from '../headers/cache-control.js'
+import { Conditional } from '../headers/conditional.js'
+import { ContentRange } from '../headers/content-range.js'
+import { CHARSET_UTF8 } from '../headers/content-type.js'
 import {
 	coreHeaders,
 	customHeaders,
@@ -22,12 +22,10 @@ import {
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { InputType } from 'node:zlib' */
-/** @import { Metadata } from './defs.js' */
-/** @import { EtagItem } from '../conditional.js' */
-/** @import { CacheControlOptions } from '../cache-control.js' */
-/** @import { ContentRangeDirective } from '../content-range.js' */
-
-/** @typedef {ArrayBufferLike|ArrayBufferView|ReadableStream|string} SendBody */
+/** @import { Metadata, SendBody } from '../defs.js' */
+/** @import { EtagItem } from '../headers/conditional.js' */
+/** @import { CacheControlOptions } from '../headers/cache-control.js' */
+/** @import { ContentRangeDirective } from '../headers/content-range.js' */
 
 const {
 	HTTP_STATUS_INTERNAL_SERVER_ERROR,
@@ -76,7 +74,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
 	const obj = (typeof body === 'string') ? Buffer.from(body, CHARSET_UTF8) : body
 
 	const useIdentity = encoding === 'identity'
-	const encoder = encoding !== undefined ? ENCODER_MAP.get(encoding) : undefined
+	const encoder = encoding === undefined ? undefined : ENCODER_MAP.get(encoding)
 	const hasEncoder = encoder !== undefined
 	const actualEncoding = hasEncoder ? encoding : undefined
 
@@ -125,7 +123,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 			[HTTP2_HEADER_VARY]: varyHeaders.join(','),
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
-			[HTTP2_HEADER_AGE]: age !== undefined ? `${age}` : undefined,
+			[HTTP2_HEADER_AGE]: age === undefined ? undefined : `${age}`,
 			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
 			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,

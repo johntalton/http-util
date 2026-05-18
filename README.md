@@ -6,7 +6,7 @@ Set of utilities to aid in building from-scratch [node:http2](https://nodejs.org
 - [Stream Response methods](#response)
 - [Body parser](#body)
 
-## Header Parsers
+## Header Parsers / Encoders
 ### From Client:
 - Accept Encoding - `parse` and `select` based on server/client values
 - Accept Language - `parse` and `select`
@@ -17,10 +17,21 @@ Set of utilities to aid in building from-scratch [node:http2](https://nodejs.org
 - Multipart - parse into `FormData`
 - Content Disposition - for use inside of Multipart
 - Conditionals - Etag / FixDate for IfMatch, IfModifiedSince etc
+- Client Hints
+- Forwarded
+- Applied Preferences
 
 ### Server Sent:
 - Rate Limit
 - Server Timing
+- Cache Control
+- Clear Site Data
+- Conditional (Etag / IMF Date)
+- Content Range
+- Preferences
+- WWW Auth
+- STS
+
 
 
 ```javascript
@@ -49,11 +60,12 @@ All responders take in a `stream` as well as a metadata object to hint on server
 - [`sendContentTooLarge`](#)
 - [`sendCreated`](#responsecreated)
 - [`sendError`](#responseerror) - 500
-- [`sendGone`](#)
+- [`sendForbidden`](#responseforbidden)
+- [`sendGone`](#responsegone)
 - [`sendImATeapot`](#)
 - [`sendInsufficientStorage`](#)
 - [`sendJSON_Encoded`](#responsejson) - Standard Ok response with encoding
-- [`sendMovedPermanently`](#)
+- [`sendMovedPermanently`](#responsemovedpermanently)
 - [`sendMultipleChoices`](#)
 - [`sendNoContent`](#responsenocontent)
 - [`sendNotAcceptable`](#responsenotacceptable)
@@ -62,9 +74,10 @@ All responders take in a `stream` as well as a metadata object to hint on server
 - [`sendNotImplemented`](#responsenotimplemented)
 - [`sendNotModified`](#responsenotmodified)
 - [`sendPartialContent`](#)
+- [`sendPermanentRedirect`](#)
 - [`sendPreconditionFailed`](#responsepreconditionfailed)
 - [`sendPreflight`](#responsepreflight) - Response to OPTIONS with CORS headers
-- [`sendRangeNotSatisfiable`](#)
+- [`sendRangeNotSatisfiable`](#responserangenotsatisfiable)
 - [`sendSeeOther`](#)
 - [`sendTemporaryRedirect`](#)
 - [`sendTimeout`](#responsetimeout)
@@ -145,8 +158,8 @@ Parameters:
 
 Parameters:
 - stream
-- location
-- etag
+- location - URL to newly create object
+- etag - etag of the related object
 - meta
 
 Additional Exposed Headers:
@@ -158,6 +171,27 @@ Parameters:
 - stream
 - meta
 
+### Response.forbidden
+
+Parameters:
+- stream
+- meta
+
+### Response.gone
+
+Parameters:
+- stream
+- meta
+
+### Response.movedPermanently
+
+Parameters:
+- steam
+- location
+- meta
+
+Additional Exposed Headers:
+- location
 
 ### Response.json
 
@@ -186,7 +220,7 @@ Parameters:
 
 Parameters:
 - stream
-- supportedTypes
+- supportedTypes - array of supported types (mime/lang/encodings etc)
 - meta
 
 ### Response.notAllowed
@@ -237,10 +271,22 @@ Parameters:
 - stream
 - methods
 - supportedQueryTypes - undefined | Array of supported types
+- acceptRanges
 - meta
 
 Additional Exposed Headers:
 - accept-query
+- accept-ranges
+
+### Response.rangeNotSatisfiable
+
+Parameters:
+- stream
+- directive - specify size of acceptable range of bytes
+- meta
+
+Additional Exposed Headers:
+- content-range
 
 ### Response.sse
 
@@ -282,6 +328,7 @@ Parameters:
 
 Parameters:
 - stream
+- challenge
 - meta
 
 

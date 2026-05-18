@@ -48,7 +48,7 @@
 | ~~too-early~~             |     |     | 425 |     |
 | ~~upgrade-required~~      |     |     | 426 |     |
 |||| 427 ||
-| precondition-failed       |     |     | 428 |     |
+| ~~precondition-required~~ |     |     | 428 |     |
 | too-many-requests         |     |     | 429 |     |
 |||| 430 ||
 | ~~request-header-filed-too-larger~~ ||| 431 |     |
