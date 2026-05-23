@@ -4,7 +4,7 @@ import { CONTENT_TYPE_JSON } from '../../headers/content-type.js'
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { SendInfo, Metadata } from '../../defs.js' */
 
 const { HTTP_STATUS_NOT_ACCEPTABLE } = http2.constants
 
@@ -14,6 +14,17 @@ const { HTTP_STATUS_NOT_ACCEPTABLE } = http2.constants
  * @param {Metadata} meta
  */
 export function sendNotAcceptable(stream, supportedTypes, meta) {
+	_sendNotAcceptable(stream, { supportedTypes }, meta)
+}
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {Pick<SendInfo, 'supportedTypes'>} info
+ * @param {Metadata} meta
+ */
+export function _sendNotAcceptable(stream, info, meta) {
+	const { supportedTypes } = info
+
 	const supportedTypesList = Array.isArray(supportedTypes) ? supportedTypes : [ supportedTypes ]
 	const has = supportedTypesList.length > 0
 

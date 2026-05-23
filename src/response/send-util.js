@@ -22,7 +22,7 @@ import {
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { InputType } from 'node:zlib' */
-/** @import { Metadata, SendBody } from '../defs.js' */
+/** @import { AcceptRangeUnits, Metadata, SendBody } from '../defs.js' */
 /** @import { EtagItem, IMFFixDateInput } from '../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
@@ -68,7 +68,7 @@ export const ENCODER_MAP = new Map([
  * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
  * @param {CacheControlOptions|undefined} cacheControl
- * @param {'bytes'|'none'|undefined} acceptRanges
+ * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
  * @param {Metadata} meta
  */
@@ -104,7 +104,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
  * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
  * @param {CacheControlOptions|undefined} cacheControl
- * @param {'bytes'|'none'|undefined} acceptRanges
+ * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
  * @param {Metadata} meta
  */

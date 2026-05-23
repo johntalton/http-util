@@ -1,5 +1,7 @@
 import { RANGE_UNITS_BYTES } from '../defs.js'
 
+/** @import { AcceptRangeUnits } from '../defs.js' */
+
 export const RANGE_EQUAL = '='
 export const RANGE_SEPARATOR = '-'
 export const RANGE_LIST_SEPARATOR = ','
@@ -32,7 +34,7 @@ export const RANGE_EMPTY = ''
 /**
  * @template RV
  * @typedef {Object} RangeDirective
- * @property {'bytes'|'none'|undefined} units
+ * @property {AcceptRangeUnits|undefined} units
  * @property {Array<RV>} ranges
  */
 

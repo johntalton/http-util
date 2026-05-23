@@ -10,7 +10,7 @@ import {
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { SendInfo, Metadata } from '../../defs.js' */
 /** @import { RateLimitInfo, RateLimitPolicyInfo } from '../../headers/rate-limit.js' */
 
 const {
@@ -26,6 +26,23 @@ const { HTTP_STATUS_TOO_MANY_REQUESTS } = http2.constants
  * @param {Metadata} meta
  */
 export function sendTooManyRequests(stream, limitInfo, policies, meta) {
+	_sendTooManyRequests(stream, {
+		limitInfo,
+		policies
+	}, meta)
+}
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {Pick<SendInfo, 'limitInfo' | 'policies'>} info
+ * @param {Metadata} meta
+ */
+export function _sendTooManyRequests(stream, info, meta) {
+	const {
+		limitInfo,
+		policies
+	} = info
+
 	send(stream, HTTP_STATUS_TOO_MANY_REQUESTS, {
 			[HTTP2_HEADER_RETRY_AFTER]: `${limitInfo.resetSeconds}`,
 			[HTTP_HEADER_RATE_LIMIT]: RateLimit.from(limitInfo),

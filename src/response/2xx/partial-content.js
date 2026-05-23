@@ -1,12 +1,12 @@
 import http2 from 'node:http2'
 
 import { RANGE_UNITS_BYTES } from '../../defs.js'
-import { MIME_TYPE_MULTIPART_RANGE } from '../../headers/content-type.js'
+import { MIME_TYPE_MULTIPART_RANGE, MIME_TYPE_OCTET_STREAM } from '../../headers/content-type.js'
 import { Multipart } from '../../headers/multipart.js'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata, SendBody } from '../../defs.js' */
+/** @import { SendContent, Metadata, SendBody } from '../../defs.js' */
 /** @import { EtagItem, IMFFixDateInput } from '../../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../../headers/content-range.js' */
@@ -27,7 +27,7 @@ const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string} contentType
+ * @param {string|undefined} contentType
  * @param {NonEmptyArray<PartialBytes>|PartialBytes} objs
  * @param {number|undefined} contentLength
  * @param {string|undefined} encoding
@@ -38,13 +38,41 @@ const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
  * @param {Metadata} meta
  */
 export function sendPartialContent(stream, contentType, objs, contentLength, encoding, etag, lastModified, age, cacheControl, meta) {
+	return _sendPartialContent(stream, objs, {
+		contentType,
+		contentLength,
+		encoding,
+		etag,
+		lastModified,
+		age,
+		cacheControl
+	}, meta)
+}
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {NonEmptyArray<PartialBytes>|PartialBytes} objs
+ * @param {Omit<SendContent, 'rangeDirective'>} content
+ * @param {Metadata} meta
+ */
+export function _sendPartialContent(stream, objs, content, meta) {
+	const {
+		contentType,
+		contentLength,
+		encoding,
+		etag,
+		lastModified,
+		age,
+		cacheControl
+	} = content
+
 	const acceptRanges = RANGE_UNITS_BYTES
 	const supportedQueryTypes = undefined
 
 	if(Array.isArray(objs) && objs.length > 1) {
 		// send using multipart bytes
 		const boundary = 'PARTIAL_CONTENT_BOUNDARY' // todo make unique for content
-		const obj = Multipart.encode_Bytes(contentType, objs, contentLength, boundary)
+		const obj = Multipart.encode_Bytes(contentType ?? MIME_TYPE_OCTET_STREAM, objs, contentLength, boundary)
 
 		const multipartContentType = `${MIME_TYPE_MULTIPART_RANGE}; boundary=${boundary}`
 

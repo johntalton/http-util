@@ -26,7 +26,14 @@ export const RANGE_UNITS_BYTES = 'bytes'
 /** @type {'none'} */
 export const RANGE_UNITS_NONE = 'none'
 
+
 /** @import { TimingsInfo } from './headers/server-timing.js' */
+/** @import { EtagItem, IMFFixDateInput,  } from './headers/conditional.js' */
+/** @import { CacheControlOptions } from './headers/cache-control.js' */
+/** @import { ContentRangeDirective } from './headers/content-range.js' */
+/** @import { RateLimitPolicyInfo, RateLimitInfo } from './headers/rate-limit.js' */
+
+/** @typedef {RANGE_UNITS_BYTES | RANGE_UNITS_NONE} AcceptRangeUnits */
 
 /**
  * @typedef {`X-${string}`} CustomHeaderKey
@@ -47,3 +54,29 @@ export const RANGE_UNITS_NONE = 'none'
  */
 
 /** @typedef {ArrayBufferLike|ArrayBufferView|ReadableStream|string} SendBody */
+
+/**
+ * @typedef {Object} SendContent
+ * @property {string|undefined} contentType
+ * @property {number|undefined} contentLength
+ * @property {string|undefined} encoding
+ * @property {EtagItem|undefined} etag
+ * @property {IMFFixDateInput|string|undefined} lastModified
+ * @property {number|undefined} age
+ * @property {CacheControlOptions} cacheControl
+ * @property {ContentRangeDirective} rangeDirective
+ */
+
+/**
+ * @typedef {Object} SendInfo
+ * @property {Array<string>} supportedMethods
+ * @property {Array<string>|string} supportedTypes
+ * @property {Array<string>|string} acceptableMediaType
+ * @property {AcceptRangeUnits|undefined} acceptRanges
+ * @property {Array<string>|undefined} supportedQueryTypes
+ * @property {RateLimitInfo} limitInfo
+ * @property {Array<RateLimitPolicyInfo>} policies
+ * @property {number|undefined} retryAfter
+ */
+
+

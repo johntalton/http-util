@@ -9,7 +9,7 @@ import {
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { AcceptRangeUnits, SendInfo, Metadata } from '../../defs.js' */
 
 const {
 	HTTP2_HEADER_CONTENT_TYPE,
@@ -27,18 +27,38 @@ const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {Array<string>} methods
+ * @param {Array<string>} supportedMethods
  * @param {Array<string>|undefined} supportedQueryTypes
- * @param {'byte'|'none'|undefined} acceptRanges
+ * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Metadata} meta
  */
-export function sendPreflight(stream, methods, supportedQueryTypes, acceptRanges, meta) {
-	const supportsQuery = methods.includes(HTTP_METHOD_QUERY) && supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
+export function sendPreflight(stream, supportedMethods, supportedQueryTypes, acceptRanges, meta) {
+	_sendPreflight(stream, {
+		supportedMethods,
+		supportedQueryTypes,
+		acceptRanges
+	}, meta)
+}
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {Pick<SendInfo, 'supportedMethods' | 'supportedQueryTypes' | 'acceptRanges'>} info
+ * @param {Metadata} meta
+ */
+export function _sendPreflight(stream, info, meta) {
+	const {
+		supportedMethods,
+		supportedQueryTypes,
+		acceptRanges
+
+	} = info
+
+	const supportsQuery = supportedMethods.includes(HTTP_METHOD_QUERY) && supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
 	const exposedHeadersAcceptQuery = supportsQuery ? [ HTTP_HEADER_ACCEPT_QUERY ] : []
 	const exposedHeaders = acceptRanges === undefined ? exposedHeadersAcceptQuery : [ HTTP2_HEADER_ACCEPT_RANGES, ...exposedHeadersAcceptQuery ]
 
 	send(stream, HTTP_STATUS_OK, {
-			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: methods.join(','),
+			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: supportedMethods.join(','),
 			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: [
 				HTTP2_HEADER_IF_MATCH,
 				HTTP2_HEADER_IF_NONE_MATCH,
