@@ -5,7 +5,7 @@ import { send_encoded } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from '../../defs.js' */
-/** @import { EtagItem } from '../../headers/conditional.js' */
+/** @import { EtagItem, IMFFixDateInput } from '../../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../../headers/cache-control.js' */
 
 const { HTTP_STATUS_OK } = http2.constants
@@ -15,14 +15,15 @@ const { HTTP_STATUS_OK } = http2.constants
  * @param {Object} obj
  * @param {string|undefined} encoding
  * @param {EtagItem|undefined} etag
+ * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
  * @param {CacheControlOptions} cacheControl
  * @param {Array<string>|undefined} supportedQueryTypes
  * @param {Metadata} meta
  */
-export function sendJSON_Encoded(stream, obj, encoding, etag, age, cacheControl, supportedQueryTypes, meta) {
+export function sendJSON_Encoded(stream, obj, encoding, etag, lastModified, age, cacheControl, supportedQueryTypes, meta) {
 	if(stream.closed) { return }
 
 	const json = JSON.stringify(obj)
-	send_encoded(stream, HTTP_STATUS_OK, CONTENT_TYPE_JSON, json, encoding, etag, age, cacheControl, undefined, supportedQueryTypes, meta)
+	send_encoded(stream, HTTP_STATUS_OK, CONTENT_TYPE_JSON, json, encoding, etag, lastModified, age, cacheControl, undefined, supportedQueryTypes, meta)
 }

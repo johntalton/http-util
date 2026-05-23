@@ -7,7 +7,7 @@ import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata, SendBody } from '../../defs.js' */
-/** @import { EtagItem } from '../../headers/conditional.js' */
+/** @import { EtagItem, IMFFixDateInput } from '../../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../../headers/content-range.js' */
 
@@ -32,11 +32,12 @@ const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
  * @param {number|undefined} contentLength
  * @param {string|undefined} encoding
  * @param {EtagItem|undefined} etag
+ * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
  * @param {CacheControlOptions} cacheControl
  * @param {Metadata} meta
  */
-export function sendPartialContent(stream, contentType, objs, contentLength, encoding, etag, age, cacheControl, meta) {
+export function sendPartialContent(stream, contentType, objs, contentLength, encoding, etag, lastModified, age, cacheControl, meta) {
 	const acceptRanges = RANGE_UNITS_BYTES
 	const supportedQueryTypes = undefined
 
@@ -56,6 +57,7 @@ export function sendPartialContent(stream, contentType, objs, contentLength, enc
 			undefined,
 			encoding,
 			etag,
+			lastModified,
 			age,
 			cacheControl,
 			acceptRanges,
@@ -67,5 +69,5 @@ export function sendPartialContent(stream, contentType, objs, contentLength, enc
 
 	// single range, send as regular object
 	const obj = Array.isArray(objs) ? objs[0] : objs
-	send_bytes(stream, HTTP_STATUS_PARTIAL_CONTENT, contentType, obj.obj, obj.range, undefined, encoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
+	send_bytes(stream, HTTP_STATUS_PARTIAL_CONTENT, contentType, obj.obj, obj.range, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
 }

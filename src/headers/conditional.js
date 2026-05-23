@@ -42,10 +42,22 @@ import { isQuoted, stripQuotes } from './util/quote.js'
  * @property {Temporal.Instant|undefined} [instant]
  */
 
-/** @typedef {IMFFixDateItem|Date|Temporal.Instant|undefined} IMFFixDateInput */
 /** @typedef {IMFFixDateItem & IMFFixDateItemExtension} IMFFixDate */
+/** @typedef {IMFFixDate|Date|Temporal.Instant|undefined} IMFFixDateInput */
 
-export const FEATURE_TEMPORAL = typeof Temporal !== 'undefined'
+export const FEATURE_TEMPORAL =  typeof Temporal !== 'undefined'
+
+export const IMF_FIX_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+	timeZone: 'UTC',
+	weekday: 'short',
+	year: 'numeric',
+	month: 'short',
+	day: '2-digit',
+	hour: '2-digit',
+	minute: '2-digit',
+	second: '2-digit',
+	hour12: false
+})
 
 /**
  * @param {IMFFixDate|Date|Temporal.Instant|undefined} reference
@@ -151,6 +163,7 @@ export class FixDate {
 
 	/**
 	 * True if {@link test} is after (exclusive) the {@link reference}
+	 * (compares are seconds precision)
 	 * @param {IMFFixDateInput} reference
 	 * @param {IMFFixDateInput} test
 	 * @returns {boolean}
@@ -160,8 +173,14 @@ export class FixDate {
 		if(test === undefined) { return false }
 
 		if(FEATURE_TEMPORAL) {
-			const referenceInstant = FixDate.toInstant(reference)
-			const testInstant = FixDate.toInstant(test)
+			/** @type {Temporal.RoundingOptions<Temporal.TimeUnit>} */
+			const precision = {
+				smallestUnit: 'second',
+				roundingMode: 'trunc'
+			}
+
+			const referenceInstant = FixDate.toInstant(reference)?.round(precision)
+			const testInstant = FixDate.toInstant(test)?.round(precision)
 
 			if(referenceInstant === undefined) { return false }
 			if(testInstant === undefined) { return false }
@@ -169,7 +188,17 @@ export class FixDate {
 			return Temporal.Instant.compare(referenceInstant, testInstant) === -1
 		}
 
-		// todo
+		//
+		const referenceDate = FixDate.toDate(reference)
+		const testDate = FixDate.toDate(test)
+
+		if(referenceDate === undefined) { return false }
+		if(testDate === undefined) { return false }
+
+		referenceDate.setMilliseconds(0)
+		testDate.setMilliseconds(0)
+
+		return testDate > referenceDate
 	}
 
 	/**
@@ -177,10 +206,14 @@ export class FixDate {
 	 * @returns {Temporal.Instant|undefined}
 	 */
 	static toInstant(reference) {
+		if(!FEATURE_TEMPORAL) { return undefined }
 		if(reference === undefined) { return undefined }
 
 		if(isTemporalInstant(reference)) { return reference }
 		if(reference instanceof Date) { return reference.toTemporalInstant() }
+
+		if(reference.instant !== undefined) { return reference.instant }
+		if(reference.date !== undefined) { return reference.date.toTemporalInstant() }
 
 		const { year, month, day, hour, minute, second } = reference
 
@@ -191,8 +224,8 @@ export class FixDate {
 			hour,
 			minute,
 			second,
-			timeZone: 'GMT'
-		}, {})
+			timeZone: 'UTC'
+		})
 
 		return zdt.toInstant()
 	}
@@ -205,9 +238,10 @@ export class FixDate {
 		if(reference === undefined) { return undefined }
 
 		if(reference instanceof Date) { return reference }
-		if(isTemporalInstant(reference)) {
-			return new Date(reference.epochMilliseconds)
-		}
+		if(isTemporalInstant(reference)) { return new Date(reference.epochMilliseconds) }
+
+		if(FEATURE_TEMPORAL && (reference.instant !== undefined)) { return new Date(reference.instant.epochMilliseconds) }
+		if(reference.date !== undefined) { return reference.date }
 
 		const { year, month, day, hour, minute, second } = reference
 		return new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second))
@@ -261,17 +295,30 @@ export class Conditional {
 	}
 
 	/**
-	 * @param {IMFFixDateInput|undefined} reference
+	 * @param {IMFFixDateInput|string|undefined} reference
 	 * @returns {string|undefined}
 	 */
 	static encodeFixDate(reference) {
 		if(reference === undefined) { return undefined }
 
+		if(typeof reference === 'string') { return reference }
 		if(reference instanceof Date) { return reference.toUTCString() }
 		if(isTemporalInstant(reference)) {
-			return undefined // todo
+
+			const parts = IMF_FIX_DATE_FORMATTER.formatToParts(reference)
+			const m = new Map(parts.map(p => [ p.type, p.value ]))
+			const weekday = m.get('weekday') ?? 'ERR'
+			const day = m.get('day') ?? '00'
+			const month = m.get('month') ?? '00'
+			const year = m.get('year') ?? '0000'
+			const hour = m.get('hour') ?? '00'
+			const minute = m.get('minute') ?? '00'
+			const second = m.get('second') ?? '00'
+
+			return `${weekday}, ${day} ${month} ${year} ${hour}:${minute}:${second} ${DATE_ZONE}`
 		}
 
+		if(reference.date !== undefined) { return reference.date.toUTCString() }
 
 		const { year, month, day, hour, minute, second } = reference
 		const d = new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second))
@@ -361,6 +408,10 @@ export class Conditional {
 		}
 	}
 }
+
+
+// const fd = Conditional.encodeFixDate(Temporal.Now.instant())
+// console.log(fd, Conditional.parseFixDate(fd))
 
 // Ok
 // console.log(Conditional.encodeEtag({ any: true, weak: false, etag: '*' }))

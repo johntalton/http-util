@@ -23,7 +23,7 @@ import {
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { InputType } from 'node:zlib' */
 /** @import { Metadata, SendBody } from '../defs.js' */
-/** @import { EtagItem } from '../headers/conditional.js' */
+/** @import { EtagItem, IMFFixDateInput } from '../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
 
@@ -38,6 +38,7 @@ const {
 	HTTP2_HEADER_VARY,
 	HTTP2_HEADER_CACHE_CONTROL,
 	HTTP2_HEADER_ETAG,
+	HTTP2_HEADER_LAST_MODIFIED,
 	HTTP2_HEADER_AGE,
 	HTTP2_HEADER_ACCEPT_RANGES,
 	HTTP2_HEADER_CONTENT_RANGE,
@@ -64,13 +65,14 @@ export const ENCODER_MAP = new Map([
  * @param {SendBody} body
  * @param {string|undefined} encoding
  * @param {EtagItem|undefined} etag
+ * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
  * @param {CacheControlOptions|undefined} cacheControl
  * @param {'bytes'|'none'|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
  * @param {Metadata} meta
  */
-export function send_encoded(stream, status, contentType, body, encoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+export function send_encoded(stream, status, contentType, body, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
 	const obj = (typeof body === 'string') ? Buffer.from(body, CHARSET_UTF8) : body
 
 	const useIdentity = encoding === 'identity'
@@ -86,7 +88,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
 
-	send_bytes(stream, status, contentType, encodedData, undefined, undefined, actualEncoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta )
+	send_bytes(stream, status, contentType, encodedData, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta )
 }
 
 
@@ -99,13 +101,14 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
  * @param {number|undefined} contentLength
  * @param {string|undefined} encoding
  * @param {EtagItem|undefined} etag
+ * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
  * @param {CacheControlOptions|undefined} cacheControl
  * @param {'bytes'|'none'|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
  * @param {Metadata} meta
  */
-export function send_bytes(stream, status, contentType, obj, range, contentLength, encoding, etag, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+export function send_bytes(stream, status, contentType, obj, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
 	const contentLen = Number.isInteger(contentLength) ? `${contentLength}` : undefined
 	const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
 
@@ -123,6 +126,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 			[HTTP2_HEADER_VARY]: varyHeaders.join(','),
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
+			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified),
 			[HTTP2_HEADER_AGE]: age === undefined ? undefined : `${age}`,
 			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
 			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
