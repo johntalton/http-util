@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/nursery/noExcessiveClassesPerFile: includes helper classes */
+/** biome-ignore-all lint/nursery/noExcessiveLinesPerFile: includes temporal and date support */
 import { isQuoted, stripQuotes } from './util/quote.js'
 
 /**
@@ -24,7 +26,7 @@ import { isQuoted, stripQuotes } from './util/quote.js'
 /** @typedef {WeakEtagItem | NotWeakEtagItem | AnyEtagItem } EtagItem */
 
 /**
- * @typedef {Object} IMFFixDate
+ * @typedef {Object} IMFFixDateItem
  * @property {typeof DATE_DAYS[number]} dayName
  * @property {number} day
  * @property {typeof DATE_MONTHS[number]} month
@@ -32,8 +34,27 @@ import { isQuoted, stripQuotes } from './util/quote.js'
  * @property {number} hour
  * @property {number} minute
  * @property {number} second
- * @property {Date|undefined} [date]
  */
+
+/**
+ * @typedef {Object} IMFFixDateItemExtension
+ * @property {Date|undefined} [date]
+ * @property {Temporal.Instant|undefined} [instant]
+ */
+
+/** @typedef {IMFFixDateItem|Date|Temporal.Instant|undefined} IMFFixDateInput */
+/** @typedef {IMFFixDateItem & IMFFixDateItemExtension} IMFFixDate */
+
+export const FEATURE_TEMPORAL = typeof Temporal !== 'undefined'
+
+/**
+ * @param {IMFFixDate|Date|Temporal.Instant|undefined} reference
+ * @returns {reference is Temporal.Instant}
+ */
+export function isTemporalInstant(reference) {
+	if(!FEATURE_TEMPORAL) { return false }
+	return reference instanceof Temporal.Instant
+}
 
 export const CONDITION_ETAG_SEPARATOR = ','
 export const CONDITION_ETAG_ANY = '*'
@@ -126,6 +147,73 @@ export class ETag {
 	}
 }
 
+export class FixDate {
+
+	/**
+	 * True if {@link test} is after (exclusive) the {@link reference}
+	 * @param {IMFFixDateInput} reference
+	 * @param {IMFFixDateInput} test
+	 * @returns {boolean}
+	 */
+	static isAfter(reference, test) {
+		if(reference === undefined) { return false }
+		if(test === undefined) { return false }
+
+		if(FEATURE_TEMPORAL) {
+			const referenceInstant = FixDate.toInstant(reference)
+			const testInstant = FixDate.toInstant(test)
+
+			if(referenceInstant === undefined) { return false }
+			if(testInstant === undefined) { return false }
+
+			return Temporal.Instant.compare(referenceInstant, testInstant) === -1
+		}
+
+		// todo
+	}
+
+	/**
+	 * @param {IMFFixDateInput} reference
+	 * @returns {Temporal.Instant|undefined}
+	 */
+	static toInstant(reference) {
+		if(reference === undefined) { return undefined }
+
+		if(isTemporalInstant(reference)) { return reference }
+		if(reference instanceof Date) { return reference.toTemporalInstant() }
+
+		const { year, month, day, hour, minute, second } = reference
+
+		const zdt = Temporal.ZonedDateTime.from({
+			year,
+			month: DATE_MONTHS.indexOf(month) + 1,
+			day,
+			hour,
+			minute,
+			second,
+			timeZone: 'GMT'
+		}, {})
+
+		return zdt.toInstant()
+	}
+
+	/**
+	 * @param {IMFFixDateInput} reference
+	 * @returns {Date|undefined}
+	 */
+	static toDate(reference) {
+		if(reference === undefined) { return undefined }
+
+		if(reference instanceof Date) { return reference }
+		if(isTemporalInstant(reference)) {
+			return new Date(reference.epochMilliseconds)
+		}
+
+		const { year, month, day, hour, minute, second } = reference
+		return new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second))
+	}
+}
+
 export class Conditional {
 	/**
 	 * @param {EtagItem|undefined} etagItem
@@ -173,14 +261,19 @@ export class Conditional {
 	}
 
 	/**
-	 * @param {IMFFixDate|undefined} fixDate
+	 * @param {IMFFixDateInput|undefined} reference
 	 * @returns {string|undefined}
 	 */
-	static encodeFixDate(fixDate) {
-		if(fixDate === undefined) { return undefined }
-		if(fixDate.date !== undefined) { return fixDate.date.toUTCString() }
+	static encodeFixDate(reference) {
+		if(reference === undefined) { return undefined }
 
-		const { year, month, day, hour, minute, second } = fixDate
+		if(reference instanceof Date) { return reference.toUTCString() }
+		if(isTemporalInstant(reference)) {
+			return undefined // todo
+		}
+
+
+		const { year, month, day, hour, minute, second } = reference
 		const d = new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second))
 		return d.toUTCString()
 	}
@@ -250,17 +343,21 @@ export class Conditional {
 		if(minute > 60 || minute < 0) { return undefined }
 		if(second > 60 || second < 0) { return undefined }
 
-		//
-		return {
+		const fixDate = {
 			dayName,
 			day,
 			month,
 			year,
 			hour,
 			minute,
-			second,
-			date: new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second)),
-			// temporal:
+			second
+		}
+
+		//
+		return {
+			...fixDate,
+			date: FixDate.toDate(fixDate),
+			instant: FixDate.toInstant(fixDate)
 		}
 	}
 }

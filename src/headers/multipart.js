@@ -1,5 +1,6 @@
 import { ReadableStream } from 'node:stream/web'
 
+import { isQuoted, stripQuotes } from '../headers/util/quote.js'
 import { ContentDisposition } from './content-disposition.js'
 import { ContentRange } from './content-range.js'
 import { ContentType } from './content-type.js'
@@ -94,8 +95,8 @@ export class Multipart {
 					const name = rawName?.toLowerCase()
 					// console.log('header', name, value)
 					if(name === MULTIPART_HEADER.CONTENT_TYPE) {
-						const _contentType = ContentType.parse(value)
-						// console.log({ contentType })
+						const contentType = ContentType.parse(value)
+						//console.log({ contentType })
 					}
 					else if(name === MULTIPART_HEADER.CONTENT_DISPOSITION) {
 						const disposition = ContentDisposition.parse(value)
@@ -103,8 +104,7 @@ export class Multipart {
 							throw new Error('disposition not form-data')
 						}
 
-						// todo: are names always quoted?
-						partName = disposition.name?.slice(1, -1)
+						partName = isQuoted(disposition.name) ? stripQuotes(disposition.name) : disposition.name
 					}
 					else {
 						// unsupported part header - ignore

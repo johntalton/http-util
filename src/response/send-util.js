@@ -47,7 +47,7 @@ const {
 	HTTP2_HEADER_RANGE
 } = http2.constants
 
-/** @typedef { (data: InputType) => Buffer } EncoderFun */
+/** @typedef { (data: InputType) => Buffer<ArrayBuffer> } EncoderFun */
 
 /** @type {Map<string, EncoderFun>} */
 export const ENCODER_MAP = new Map([
@@ -164,7 +164,15 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 
 	if(stream.writable && body !== undefined) {
 		if(body instanceof ReadableStream) {
-			Readable.fromWeb(body).pipe(stream)
+
+			const signal = undefined
+			Readable.fromWeb(body, { signal })
+				.on('error', err => {
+					console.warn('send Error in ReadableStream', err.message)
+					stream.end()
+				})
+				.pipe(stream)
+
 			return
 		}
 

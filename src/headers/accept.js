@@ -100,7 +100,7 @@ export class Accept {
 // 	' text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8',
 // 	' text/*;q=0.3, text/plain;q=0.7, text/plain;format=flowed,\ntext/plain;format=fixed;q=0.4, */*;q=0.5',
 
-// 	' */*, foo/bar, foo/*, biz/bang, */*;q=.2, quix/quak;q=.1',
+// 	' */*, foo/bar, foo/*, biz/bang, */*;q=.2, red/blue;q=.1',
 // 	'foo / bar ; q = .5'
 // ]
 

@@ -3,10 +3,9 @@ import http2 from 'node:http2'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { Metadata, SendBody } from '../../defs.js' */
 /** @import { EtagItem } from '../../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../../headers/cache-control.js' */
-/** @import { SendBody } from '../send-util.js' */
 
 const { HTTP_STATUS_OK } = http2.constants
 

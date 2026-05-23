@@ -6,11 +6,11 @@ import { Multipart } from '../../headers/multipart.js'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { Metadata, SendBody } from '../../defs.js' */
 /** @import { EtagItem } from '../../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../../headers/content-range.js' */
-/** @import { SendBody } from '../send-util.js' */
+
 
 const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
