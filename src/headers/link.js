@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} LinkItem
- * @property {string} url
+ * @property {URL|string} url
  * @property {string|undefined} [relation]
  * @property {Map<string, string>|undefined} [parameters]
  */
@@ -10,7 +10,7 @@ export class Link {
 	 * @param {LinkItem} link
 	 */
 	static  *#encode(link) {
-		const encodedUri = encodeURI(link.url)
+		const encodedUri = (link.url instanceof URL) ? link.url : encodeURI(link.url)
 
 		yield `<${encodedUri}>`
 		if(link.relation !== undefined) { yield `rel="${link.relation}"` }
@@ -20,16 +20,15 @@ export class Link {
 		}
 	}
 
-
 	/**
-	 * @param {LinkItem} link
+	 * @param {Array<LinkItem>|LinkItem|undefined} links
 	 */
-	static encode(link) {
-		return [ ...Link.#encode(link) ].join('; ')
+	static encode(links) {
+		if(links === undefined) { return undefined }
+		const linkAry = Array.isArray(links) ? links : [ links ]
+		if(linkAry.length === 0) { return undefined }
+		return linkAry
+			.map(link => [ ...Link.#encode(link) ].join('; '))
+			.join(', ')
 	}
 }
-
-// console.log(Link.encode({ url: '/index.html', parameters: new Map([ [ 'as', 'style' ], [ 'fetchpriority', 'high' ] ]) }))
-//  console.log(Link.encode({ url: '/index.html', relation: 'next', parameters: new Map([  [ 'fetchpriority', 'high' ] ]) }))
-//  console.log(Link.encode({ url: '/index.html', relation: 'next' }))
-// console.log(Link.encode({ url: 'https://example.com/苗条', relation: 'preconnect' }))

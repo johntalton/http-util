@@ -7,12 +7,14 @@ import { sendPartialContent } from './2xx/partial-content.js'
 import { sendPreflight } from './2xx/preflight.js'
 import { sendSSE } from './2xx/sse.js'
 import { sendTrace } from './2xx/trace.js'
+import { sendFound } from './3xx/found.js'
 import { sendMovedPermanently } from './3xx/moved-permanently.js'
 import { sendMultipleChoices } from './3xx/multiple-choices.js'
 import { sendNotModified } from './3xx/not-modified.js'
 import { sendPermanentRedirect } from './3xx/permanent-redirect.js'
 import { sendSeeOther } from './3xx/see-other.js'
 import { sendTemporaryRedirect } from './3xx/temporary-redirect.js'
+import { sendBadRequest } from './4xx/bad-request.js'
 import { sendConflict } from './4xx/conflict.js'
 import { sendContentTooLarge } from './4xx/content-too-large.js'
 import { sendForbidden } from './4xx/forbidden.js'
@@ -21,6 +23,7 @@ import { sendImATeapot } from './4xx/im-a-teapot.js'
 import { sendNotAcceptable } from './4xx/not-acceptable.js'
 import { sendNotAllowed } from './4xx/not-allowed.js'
 import { sendNotFound } from './4xx/not-found.js'
+import { sendPaymentRequired } from './4xx/payment-required.js'
 import { sendPreconditionFailed } from './4xx/precondition-failed.js'
 import { sendRangeNotSatisfiable } from './4xx/range-not-satisfiable.js'
 import { sendTimeout } from './4xx/timeout.js'
@@ -35,12 +38,14 @@ import { sendUnavailable } from './5xx/unavailable.js'
 
 export const Response = {
 	accepted: sendAccepted,
+	badRequest: sendBadRequest,
 	bytes: sendBytes,
 	conflict: sendConflict,
 	contentTooLarge: sendContentTooLarge,
 	created: sendCreated,
 	error: sendError,
 	forbidden: sendForbidden,
+	found: sendFound,
 	gone: sendGone,
 	imATeapot: sendImATeapot,
 	insufficientStorage: sendInsufficientStorage,
@@ -54,6 +59,7 @@ export const Response = {
 	notImplemented: sendNotImplemented,
 	notModified: sendNotModified,
 	partialContent: sendPartialContent,
+	paymentRequired: sendPaymentRequired,
 	permanentRedirect: sendPermanentRedirect,
 	preconditionFailed: sendPreconditionFailed,
 	preflight: sendPreflight,
