@@ -19,7 +19,7 @@ export const SERVER_TIMING_SEPARATOR = {
 
 export class ServerTiming {
 	/**
-	 * @param {Array<TimingsInfo>} timings
+	 * @param {Array<TimingsInfo>|undefined} timings
 	 */
 	static encode(timings) {
 		if(timings === undefined) { return undefined }
@@ -36,16 +36,3 @@ export class ServerTiming {
 			.join(SERVER_TIMING_SEPARATOR.METRIC)
 	}
 }
-
-
-// console.log(ServerTiming.encode([{ name: 'missedCache' }]))
-// console.log(ServerTiming.encode([{ name: 'cpu', duration: 2.4 }]))
-
-// // cache;desc="Cache Read";dur=23.2
-// console.log(ServerTiming.encode([{ name: 'cache', duration: 23.2, description: "Cache Read" }]))
-
-// // db;dur=53, app;dur=47.2
-// console.log(ServerTiming.encode([
-// 	{ name: 'db', duration: 54 },
-// 	{ name: 'app', duration: 47.2 }
-// ]))

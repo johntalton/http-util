@@ -66,10 +66,10 @@ export class Mime {
 		// if(candidateSubtype === '') { return undefined }
 		if(hasSpecialChar(candidateSubtype)) { return undefined }
 
-		const subtype = (candidateSubtype === '') ? MIME_ANY : candidateSubtype ?? MIME_ANY
+		const subtype = (candidateSubtype === '') ? MIME_ANY : (candidateSubtype ?? MIME_ANY)
 
 		return {
-			mimetype: `${type}${MIME_SEPARATOR.SUBTYPE}${subtype ?? MIME_ANY}`,
+			mimetype: `${type}${MIME_SEPARATOR.SUBTYPE}${subtype}`,
 			type,
 			subtype
 		}

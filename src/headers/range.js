@@ -124,33 +124,3 @@ export class Range {
 		}
 	}
 }
-
-// console.log(Range.parse(''))
-// console.log(Range.parse('='))
-// console.log(Range.parse('foo'))
-// console.log(Range.parse('bytes'))
-// console.log(Range.parse('bytes='))
-// console.log(Range.parse('bytes=-'))
-// console.log(Range.parse('bytes=foo'))
-// console.log(Range.parse('bytes=0-foo'))
-// console.log(Range.parse('bytes=0-0xff'))
-// console.log()
-// console.log(Range.parse('bytes=1024-'))
-// console.log(Range.parse('bytes=-1024'))
-// console.log(Range.parse('bytes=0-1024'))
-// console.log()
-// console.log(Range.parse('bytes=0-0,-1'))
-// console.log(Range.parse('bytes=0-1024, -1024'))
-// console.log(Range.parse('bytes= 0-999, 4500-5499, -1000'))
-// console.log(Range.parse('bytes=500-600,601-999'))
-
-// console.log('------')
-// console.log(Range.normalize(Range.parse('bytes=1024-'), 5000))
-// console.log(Range.normalize(Range.parse('bytes=-1024'), 5000))
-// console.log(Range.normalize(Range.parse('bytes=0-1024'), 5000))
-// console.log(Range.normalize(Range.parse('bytes=0-0,-1'), 10000)) // 0 and 9999
-// console.log(Range.normalize(Range.parse('bytes=0-1024, -1024'), 5000))
-// console.log(Range.normalize(Range.parse('bytes= 0-999, 4500-5499, -1000'), 5000))
-// console.log(Range.normalize(Range.parse('bytes=500-600,601-999'), 5000))
-
-// console.log(Range.normalize(Range.parse('bytes=-500'), 10000)) // 9500-9999

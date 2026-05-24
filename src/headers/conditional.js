@@ -100,6 +100,8 @@ export class ETag {
 	 * @param {string} etag
 	 */
 	static isValid(etag) {
+		if(etag === undefined) { return false }
+
 		// %x21 / %x23-7E  and %x80-FF
 		for(const c of etag) {
 			if(c.charCodeAt(0) < 0x21) { return false }
@@ -148,8 +150,9 @@ export class ETag {
 		if(!isQuoted(quotedEtag)) { return undefined }
 		const etag = stripQuotes(quotedEtag)
 		if(etag === undefined) { return undefined }
+		if(etag === '') { return undefined }
+		if(etag === CONDITION_ETAG_ANY) { return ANY_ETAG_ITEM } // todo: should this return undefined?
 		if(!ETag.isValid(etag)) { return undefined }
-		if(etag === CONDITION_ETAG_ANY) { return undefined }
 
 		return {
 			weak,

@@ -54,9 +54,3 @@ export class CacheControl {
 		return result.join(', ')
 	}
 }
-
-// console.log(CacheControl.encode({
-// 	priv: true,
-// 	maxAge: 60,
-// 	directives: ['must-revalidate', 'no-transform']
-// }))
