@@ -192,8 +192,8 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 				Readable.fromWeb(body, { signal }),
 				stream,
 				err => {
-					if(err !== null) {
-						console.warn('pipeline error')
+					if(err !== null && err !== undefined) {
+						console.warn('pipeline error', err)
 					}
 				})
 
