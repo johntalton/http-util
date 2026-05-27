@@ -7,10 +7,7 @@ import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContent, Metadata, SendBody } from '../../defs.js' */
-/** @import { EtagItem, IMFFixDateInput } from '../../headers/conditional.js' */
-/** @import { CacheControlOptions } from '../../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../../headers/content-range.js' */
-
 
 const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
@@ -27,35 +24,11 @@ const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string|undefined} contentType
- * @param {NonEmptyArray<PartialBytes>|PartialBytes} objs
- * @param {number|undefined} contentLength
- * @param {string|undefined} encoding
- * @param {EtagItem|undefined} etag
- * @param {IMFFixDateInput|string|undefined} lastModified
- * @param {number|undefined} age
- * @param {CacheControlOptions} cacheControl
- * @param {Metadata} meta
- */
-export function sendPartialContent(stream, contentType, objs, contentLength, encoding, etag, lastModified, age, cacheControl, meta) {
-	return _sendPartialContent(stream, objs, {
-		contentType,
-		contentLength,
-		encoding,
-		etag,
-		lastModified,
-		age,
-		cacheControl
-	}, meta)
-}
-
-/**
- * @param {ServerHttp2Stream} stream
  * @param {NonEmptyArray<PartialBytes>|PartialBytes} objs
  * @param {Omit<SendContent, 'rangeDirective'>} content
  * @param {Metadata} meta
  */
-export function _sendPartialContent(stream, objs, content, meta) {
+export function sendPartialContent(stream, objs, content, meta) {
 	const {
 		contentType,
 		contentLength,

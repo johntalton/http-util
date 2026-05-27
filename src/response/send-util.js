@@ -12,7 +12,7 @@ import { HTTP_HEADER_ACCEPT_QUERY } from '../defs.js'
 import { CacheControl } from '../headers/cache-control.js'
 import { Conditional } from '../headers/conditional.js'
 import { ContentRange } from '../headers/content-range.js'
-import { CHARSET_UTF8 } from '../headers/content-type.js'
+import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
 import {
 	coreHeaders,
 	customHeaders,
@@ -45,8 +45,28 @@ const {
 	HTTP2_HEADER_CONTENT_LENGTH,
 	HTTP2_HEADER_ACCEPT,
 	HTTP2_HEADER_ACCEPT_ENCODING,
-	HTTP2_HEADER_RANGE
+	HTTP2_HEADER_RANGE,
+	HTTP2_HEADER_RETRY_AFTER
 } = http2.constants
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {number} status
+ * @param {string|undefined} message
+ * @param {number|undefined} retryAfter
+ * @param {Metadata} meta
+ */
+export function send_error(stream, status, message, retryAfter, meta) {
+	const obj = JSON.stringify({
+		message: message ?? 'Error'
+	})
+
+	const exposedHeaders = retryAfter === undefined ? [] : [ HTTP2_HEADER_RETRY_AFTER ]
+
+	send(stream, status, {
+		[HTTP2_HEADER_RETRY_AFTER]: Number.isInteger(retryAfter) ? `${retryAfter}` : undefined
+	}, exposedHeaders, CONTENT_TYPE_JSON, obj, meta)
+}
 
 /** @typedef { (data: InputType) => Buffer<ArrayBuffer> } EncoderFun */
 

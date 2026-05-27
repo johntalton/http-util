@@ -10,19 +10,10 @@ const { HTTP_STATUS_NOT_ACCEPTABLE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {Array<string>|string} supportedTypes
- * @param {Metadata} meta
- */
-export function sendNotAcceptable(stream, supportedTypes, meta) {
-	_sendNotAcceptable(stream, { supportedTypes }, meta)
-}
-
-/**
- * @param {ServerHttp2Stream} stream
  * @param {Pick<SendInfo, 'supportedTypes'>} info
  * @param {Metadata} meta
  */
-export function _sendNotAcceptable(stream, info, meta) {
+export function sendNotAcceptable(stream, info, meta) {
 	const { supportedTypes } = info
 
 	const supportedTypesList = Array.isArray(supportedTypes) ? supportedTypes : [ supportedTypes ]

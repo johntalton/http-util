@@ -15,19 +15,10 @@ const { HTTP_STATUS_RANGE_NOT_SATISFIABLE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {ContentRangeDirective} rangeDirective
- * @param {Metadata} meta
- */
-export function sendRangeNotSatisfiable(stream, rangeDirective, meta) {
-	_sendRangeNotSatisfiable(stream, { rangeDirective }, meta)
-}
-
-/**
- * @param {ServerHttp2Stream} stream
  * @param {Pick<SendContent, 'rangeDirective'>} content
  * @param {Metadata} meta
  */
-export function _sendRangeNotSatisfiable(stream, content, meta) {
+export function sendRangeNotSatisfiable(stream, content, meta) {
 	const { rangeDirective } = content
 
 	/** @type {ContentRangeDirective} */

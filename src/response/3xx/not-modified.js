@@ -6,8 +6,6 @@ import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContent, Metadata } from '../../defs.js' */
-/** @import { EtagItem, IMFFixDateInput } from '../../headers/conditional.js' */
-/** @import { CacheControlOptions } from '../../headers/cache-control.js' */
 
 const {
 	HTTP2_HEADER_AGE,
@@ -21,27 +19,10 @@ const { HTTP_STATUS_NOT_MODIFIED } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {EtagItem|undefined} etag
- * @param {IMFFixDateInput|string|undefined} lastModified
- * @param {number|undefined} age
- * @param {CacheControlOptions} cacheControl
- * @param {Metadata} meta
- */
-export function sendNotModified(stream, etag, lastModified, age, cacheControl, meta) {
-	_sendNotModified(stream, {
-		etag,
-		lastModified,
-		age,
-		cacheControl
-	}, meta)
-}
-
-/**
- * @param {ServerHttp2Stream} stream
  * @param {Pick<SendContent, 'etag' | 'lastModified' | 'age' | 'cacheControl'>} content
  * @param {Metadata} meta
  */
-export function _sendNotModified(stream, content, meta) {
+export function sendNotModified(stream, content, meta) {
 	const {
 		etag,
 		lastModified,

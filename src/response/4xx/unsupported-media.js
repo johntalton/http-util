@@ -12,23 +12,10 @@ const { HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {Array<string>|string} acceptableMediaType
- * @param {Array<string>|undefined} supportedQueryTypes
- * @param {Metadata} meta
- */
-export function sendUnsupportedMediaType(stream, acceptableMediaType, supportedQueryTypes, meta) {
-	_sendUnsupportedMediaType(stream, {
-		acceptableMediaType,
-		supportedQueryTypes
-	}, meta)
-}
-
-/**
- * @param {ServerHttp2Stream} stream
  * @param {Pick<SendInfo, 'acceptableMediaType' | 'supportedQueryTypes'>} info
  * @param {Metadata} meta
  */
-export function _sendUnsupportedMediaType(stream, info, meta) {
+export function sendUnsupportedMediaType(stream, info, meta) {
 	const {
 		supportedQueryTypes,
 		acceptableMediaType

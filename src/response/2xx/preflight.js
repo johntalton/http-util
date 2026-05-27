@@ -9,7 +9,7 @@ import {
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { AcceptRangeUnits, SendInfo, Metadata } from '../../defs.js' */
+/** @import { SendInfo, Metadata } from '../../defs.js' */
 
 const {
 	HTTP2_HEADER_CONTENT_TYPE,
@@ -27,25 +27,10 @@ const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {Array<string>} supportedMethods
- * @param {Array<string>|undefined} supportedQueryTypes
- * @param {AcceptRangeUnits|undefined} acceptRanges
- * @param {Metadata} meta
- */
-export function sendPreflight(stream, supportedMethods, supportedQueryTypes, acceptRanges, meta) {
-	_sendPreflight(stream, {
-		supportedMethods,
-		supportedQueryTypes,
-		acceptRanges
-	}, meta)
-}
-
-/**
- * @param {ServerHttp2Stream} stream
  * @param {Pick<SendInfo, 'supportedMethods' | 'supportedQueryTypes' | 'acceptRanges'>} info
  * @param {Metadata} meta
  */
-export function _sendPreflight(stream, info, meta) {
+export function sendPreflight(stream, info, meta) {
 	const {
 		supportedMethods,
 		supportedQueryTypes,

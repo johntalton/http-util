@@ -13,19 +13,10 @@ const { HTTP2_HEADER_ALLOW } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {Array<string>} supportedMethods
- * @param {Metadata} meta
- */
-export function sendNotAllowed(stream, supportedMethods, meta) {
-	_sendNotAllowed(stream, { supportedMethods }, meta)
-}
-
-/**
- * @param {ServerHttp2Stream} stream
  * @param {Pick<SendInfo, 'supportedMethods'>} info
  * @param {Metadata} meta
  */
-export function _sendNotAllowed(stream, info, meta) {
+export function sendNotAllowed(stream, info, meta) {
 	const { supportedMethods } = info
 
 	send(stream, HTTP_STATUS_METHOD_NOT_ALLOWED, {
