@@ -198,6 +198,7 @@ export class FixDate {
 		if(referenceDate === undefined) { return false }
 		if(testDate === undefined) { return false }
 
+		// this effectively rounds to seconds
 		referenceDate.setMilliseconds(0)
 		testDate.setMilliseconds(0)
 
@@ -218,11 +219,15 @@ export class FixDate {
 		if(reference.instant !== undefined) { return reference.instant }
 		if(reference.date !== undefined) { return reference.date.toTemporalInstant() }
 
-		const { year, month, day, hour, minute, second } = reference
+		const { year, month: monthName, day, hour, minute, second } = reference
+
+		const zeroMonth = DATE_MONTHS.indexOf(monthName)
+		if(zeroMonth === -1) { return undefined }
+		const month = zeroMonth + 1
 
 		const zdt = Temporal.ZonedDateTime.from({
 			year,
-			month: DATE_MONTHS.indexOf(month) + 1,
+			month,
 			day,
 			hour,
 			minute,
@@ -283,18 +288,18 @@ export class Conditional {
 	}
 
 	/**
-	 * @param {Array<EtagItem>} etagItemList
+	 * @param {Array<EtagItem>|undefined} etagItemList
 	 */
 	static hasAny(etagItemList) {
-		return etagItemList.find(item => item.any) !== undefined
+		return etagItemList?.find(item => item.any) !== undefined
 	}
 
 	/**
-	 * @param {Array<EtagItem>} etagItemList
-	 * @param {string} etag
+	 * @param {Array<EtagItem>|undefined} etagItemList
+	 * @param {string|undefined} etag
 	 */
 	static hasEtag(etagItemList, etag) {
-		return etagItemList.find(item => item.etag === etag) !== undefined
+		return etagItemList?.find(item => item.etag === etag) !== undefined
 	}
 
 	/**
@@ -411,95 +416,3 @@ export class Conditional {
 		}
 	}
 }
-
-
-// const fd = Conditional.encodeFixDate(Temporal.Now.instant())
-// console.log(fd, Conditional.parseFixDate(fd))
-
-// Ok
-// console.log(Conditional.encodeEtag({ any: true, weak: false, etag: '*' }))
-// console.log(Conditional.encodeEtag({ any: true, weak: true, etag: '*' }))
-// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: 'Foo' }))
-// console.log(Conditional.encodeEtag({ any: false, weak: true, etag: 'WeakFoo' }))
-
-// Error
-// console.log(Conditional.encodeEtag(undefined))
-// console.log(Conditional.encodeEtag({ any: true, weak: false, etag: 'NotAsterisk' }))
-// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: 'Foo\tBar' }))
-// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: 'Foo"Bar' }))
-// console.log(Conditional.encodeEtag({ any: false, weak: false, etag: '*' }))
-
-
-// Ok
-// console.log(Conditional.parseEtagList('"bfc13a64729c4290ef5b2c2730249c88ca92d82d"'))
-// console.log(Conditional.parseEtagList('W/"67ab43", "54ed21", "7892dd"'))
-// console.log(Conditional.parseEtagList('*'))
-// console.log(Conditional.parseEtagList('"!ÿ©"'))
-// console.log(Conditional.parseEtagList('"!","ÿ", "©"'))
-// console.log(Conditional.parseEtagList('"!","ÿ"   ,\t"©"'))
-
-// Error
-// console.log(Conditional.parseEtagList('"*"'))
-// console.log(Conditional.parseEtagList('W/'))
-// console.log(Conditional.parseEtagList('W/"'))
-// console.log(Conditional.parseEtagList('W/""'))
-// console.log(Conditional.parseEtagList(''))
-// console.log(Conditional.parseEtagList('"'))
-// console.log(Conditional.parseEtagList('""'))
-// console.log(Conditional.parseEtagList('"""'))
-// console.log(Conditional.parseEtagList('" "'))
-// console.log(Conditional.parseEtagList('"\n"'))
-// console.log(Conditional.parseEtagList('"\t"'))
-
-//
-// const testsOk = [
-// 	'Sun, 06 Nov 1994 08:49:37 GMT',
-// 	'Sun, 06 Nov 1994 00:00:00 GMT',
-// 	'Tue, 01 Nov 1994 00:00:00 GMT',
-// 	'Thu, 06 Nov 3000 08:49:37 GMT',
-// 	'Sun, 06 Nov 1994 23:59:59 GMT',
-// 	new String('Sun, 06 Nov 1994 08:49:37 GMT'),
-// ]
-// for(const test of testsOk) {
-// 	const result = Conditional.parseFixDate(test)
-// 	if(result?.date.toUTCString() !== test.toString()) {
-// 		console.log('🛑', test, result, result?.date.toUTCString())
-// 		break
-// 	}
-// }
-
-
-
-// const testBad = [
-// 	undefined,
-// 	null,
-// 	{},
-// 	new String(),
-// 	'',
-// 	'Anything',
-// 	'   ,               :  :   GMT',
-// 	'Sun,    Nov        :  :   GMT',
-// 	'Sun, 00 Nov 0000 00:00:00 GMT',
-// 	'Sun, 06 Nov 1994 08-49-37 GMT',
-// 	'Sun  06 Nov 1994 08:49:37 GMT',
-// 	'FOO, 06 Nov 1994 08:49:37 GMT',
-// 	'Sun, 32 Nov 1994 08:49:37 GMT',
-// 	'Sun, 00 Nov 1994 08:49:37 GMT',
-// 	'Sun, 06 Nov 0900 08:49:37 GMT',
-// 	'Sun, 06 Nov 1994 08:49:37 UTC',
-// 	'Sun, 06 Nov 1994 30:49:37 GMT',
-// 	'Sun,\t06 Nov 1994 08:49:37 GMT',
-
-// 	'Sunday, 06-Nov-94 08:49:37 GMT',
-// 	'Sun Nov  6 08:49:37 1994',
-// 	'Sun Nov  6 08:49:37 1994      ',
-
-// ]
-// for(const test of testBad) {
-// 	const result = Conditional.parseFixDate(test)
-// 	if(result !== undefined) {
-// 		console.log('🛑', test, result)
-// 		break
-// 	}
-// }
-
