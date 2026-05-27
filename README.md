@@ -64,7 +64,7 @@ All responders take in a `stream` as well as a metadata object to hint on server
 - [`sendGone`](#responsegone)
 - [`sendImATeapot`](#)
 - [`sendInsufficientStorage`](#)
-- [`sendJSON_Encoded`](#responsejson) - Standard Ok response with encoding
+- [`sendJSON`](#responsejson) - Standard Ok response with encoding
 - [`sendMovedPermanently`](#responsemovedpermanently)
 - [`sendMultipleChoices`](#)
 - [`sendNoContent`](#responsenocontent)
