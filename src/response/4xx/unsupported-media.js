@@ -38,7 +38,7 @@ export function _sendUnsupportedMediaType(stream, info, meta) {
 	const exposedHeaders = supportsQuery ? [ HTTP_HEADER_ACCEPT_QUERY, HTTP_HEADER_ACCEPT_POST ] : [ HTTP_HEADER_ACCEPT_POST ]
 
 	const method = HTTP2_METHOD_POST // todo pass in as parameter or split acceptable to post and patch types
-	const acceptable = Array.isArray(acceptableMediaType) ? acceptableMediaType : [ acceptableMediaType ]
+	const acceptable = Array.isArray(acceptableMediaType) ? acceptableMediaType : [ acceptableMediaType ] // todo undefined creates array of one item
 	const acceptHeader = (method === HTTP2_METHOD_POST) ? HTTP_HEADER_ACCEPT_POST : HTTP_HEADER_ACCEPT_PATCH
 	const acceptValue = ((method === HTTP2_METHOD_POST) || (method === HTTP2_METHOD_PATCH)) ? acceptable.join(',') : undefined
 

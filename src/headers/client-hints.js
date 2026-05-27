@@ -71,9 +71,16 @@ export class ClientHints {
 	 * @param {Array<String>} hints
 	 */
 	static encode(hints) {
-		return hints
+		if(hints === undefined) { return undefined }
+		if(!Array.isArray(hints)) { return undefined }
+		if(hints.length === 0) { return undefined }
+
+		const remaining = hints
 			.filter(hint => KNOWN_CLIENT_HINTS.includes(hint))
-			.join(', ')
+
+		if(remaining.length === 0) { return undefined }
+
+		return remaining.join(', ')
 	}
 }
 

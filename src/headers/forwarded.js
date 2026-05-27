@@ -41,6 +41,8 @@ export class Forwarded {
 	 * @returns {Map<string, string>|undefined}
 	 */
 	static selectRightMost(forwardedList, skipList = []) {
+		if(forwardedList === undefined) { return undefined }
+
 		const iter = skipList[Symbol.iterator]()
 
 		for(const forwarded of forwardedList.toReversed()) {
@@ -53,39 +55,6 @@ export class Forwarded {
 		return undefined
 	}
 }
-
-
-/*
-const examples = [
-	{ f: [], s: [], ef: undefined },
-
-	{ f: [], s: [ '1.1.1.1' ] , ef: undefined },
-	{ f: [], s: [ '*' ] , ef: undefined },
-
-	{ f: [ { for: '1.1.1.1' } ], s: [], ef: '1.1.1.1' },
-	{ f: [ { for: '1.1.1.1' } ], s: [ '*' ], ef: undefined },
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' } ], s: [], ef: '2.2.2.2' },
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' } ], s: [ '2.2.2.2' ], ef: '1.1.1.1' },
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' }, { for: '3.3.3.3' } ], s: [ '3.3.3.3', '2.2.2.2' ], ef: '1.1.1.1' },
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' }, { for: '3.3.3.3' } ], s: [ '3.3.3.3', '*' ], ef: '1.1.1.1' },
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' }, { for: '3.3.3.3' } ], s: [ '*', '*' ], ef: '1.1.1.1' },
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' }, { for: '3.3.3.3' } ], s: [ '*', '*', '*' ], ef: undefined },
-
-	{ f: [ { for: '1.1.1.1' } ], s: [ '*', '*' ], ef: undefined },
-
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' }, { for: '3.3.3.3' } ], s: [ '3.3.3.3'], ef: '2.2.2.2' },
-	{ f: [ { for: '1.1.1.1' }, { for: '2.2.2.2' }, { for: '3.3.3.3' } ], s: [ '*'], ef: '2.2.2.2' },
-]
-
-for(const { f, s, ef } of examples) {
-	const result = Forwarded.selectRightMost(f.map(i => new Map(Object.entries(i))), s)
-	const resultFor = result?.get('for')
-	if(resultFor !== ef) {
-		console.log(`mismatch ${ef} !== ${resultFor}`)
-	}
-}
-*/
-
 
 /*
 	const examples = [

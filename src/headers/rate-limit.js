@@ -45,6 +45,7 @@ export class RateLimit {
 	 * @param {RateLimitInfo} limitInfo
 	 */
 	static from(limitInfo) {
+		if(limitInfo === undefined) { return undefined }
 		const { name, remaining, resetSeconds, partitionKey } = limitInfo
 
 		if(name === undefined || remaining === undefined) { return undefined }
@@ -61,8 +62,12 @@ export class RateLimitPolicy {
 	 */
 	static from(...policies) {
 		if(policies === undefined) { return undefined }
+		if(policies.length === 0) { return undefined }
 
-		return policies
+		const remainingPolicies = policies.filter(pol => pol !== undefined)
+		if(remainingPolicies.length === 0) { return undefined }
+
+		return remainingPolicies
 			.filter(policy => policy.name !== undefined && policy.quota !== undefined)
 			.map(policy => {
 				const {

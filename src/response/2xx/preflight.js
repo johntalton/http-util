@@ -50,7 +50,6 @@ export function _sendPreflight(stream, info, meta) {
 		supportedMethods,
 		supportedQueryTypes,
 		acceptRanges
-
 	} = info
 
 	const supportsQuery = supportedMethods.includes(HTTP_METHOD_QUERY) && supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
@@ -69,7 +68,7 @@ export function _sendPreflight(stream, info, meta) {
 			].join(','),
 			[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS,
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
-			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(',')
+			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(',') // todo should empty array return undef
 			// Access-Control-Allow-Credentials
 		}, exposedHeaders, undefined, undefined, meta)
 }

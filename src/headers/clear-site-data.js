@@ -42,18 +42,12 @@ export class SiteData {
 		if(directives.prerenderCache === true) { result.push(CSD_DIRECTIVE_PRERENDER_CACHE) }
 		if(directives.storage === true) { result.push(CSD_DIRECTIVE_STORAGE) }
 
+		if(result.length === 0) {
+			return undefined
+		}
+
 		return result
 			.map(item => `${CSD_QUOTE}${item}${CSD_QUOTE}`)
 			.join(CSD_DIRECTIVE_SEPARATOR)
 	}
 }
-
-// console.log(SiteData.encode())
-// console.log(SiteData.encode({}))
-// console.log(SiteData.encode(false))
-// console.log(SiteData.encode('true'))
-// console.log(SiteData.encode(true))
-// console.log(SiteData.encode('*'))
-// console.log(SiteData.encode({ storage: false }))
-// console.log(SiteData.encode({ storage: true }))
-// console.log(SiteData.encode({ storage: true, cookies: true }))

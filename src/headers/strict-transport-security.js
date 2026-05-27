@@ -33,6 +33,7 @@ export class StrictTransportSecurity {
 	 * @param {StrictTransportSecurityOptions} sts
 	 */
 	static encode(sts) {
+		if(sts === undefined) { return undefined }
 		return [ ...StrictTransportSecurity.#encode(sts) ].join('; ')
 	}
 }

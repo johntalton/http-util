@@ -40,20 +40,3 @@ export class ContentRange {
 		return `${units} ${rangeStr}${CONTENT_RANGE_SIZE_SEPARATOR}${size}`
 	}
 }
-
-// console.log(ContentRange.encode({}))
-// console.log(ContentRange.encode({ size: '*' }))
-// console.log(ContentRange.encode({ units: 'bytes' }))
-// console.log(ContentRange.encode({ range: '*' }))
-// console.log(ContentRange.encode({ range: '*', size: '*' }))
-
-// console.log()
-// console.log(ContentRange.encode({ range: { start: 0, end: 1024 } }))
-// console.log(ContentRange.encode({ range: { start: 0, end: 1024 }, size: 1024  }))
-// console.log(ContentRange.encode({ range: '*', size: 1024 }))
-// console.log(ContentRange.encode({ size: 1024 }))
-
-// console.log()
-// console.log(ContentRange.encode({ units: 'bob' }))
-// console.log(ContentRange.encode({ range: 'bob' }))
-// console.log(ContentRange.encode({ size: 'bob' }))

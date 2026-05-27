@@ -83,32 +83,4 @@ export class Accept {
 	}
 }
 
-// console.log(Accept.parse('text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, text/*;q=.8, */*;q=0.7'))
-// console.log(Accept.select('text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, text/*;q=.8, */*;q=0.7', [ 'application/json', 'text/plain' ]))
-// console.log(Accept.parse('*'))
-
-
-// const tests = [
-// 	undefined,
-// 	'',
-// 	'	',
-// 	' fake',
-// 	'    application/json',
-// 	' application/xml,',
-// 	' ,application/xml   ,,',
-// 	' audio/*; q=0.2, audio/basic',
-// 	' text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8',
-// 	' text/*;q=0.3, text/plain;q=0.7, text/plain;format=flowed,\ntext/plain;format=fixed;q=0.4, */*;q=0.5',
-
-// 	' */*, foo/bar, foo/*, biz/bang, */*;q=.2, red/blue;q=.1',
-// 	'foo / bar ; q = .5'
-// ]
-
-// tests.forEach(test => {
-// 	const result = Accept.parse(test)
-// 	console.log('=============================')
-// 	console.log({ test })
-// 	console.log('---')
-// 	console.log(result)
-// })
 
