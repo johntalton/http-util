@@ -1,5 +1,5 @@
 import http2 from 'node:http2'
-import { Readable } from 'node:stream'
+import { pipeline, Readable } from 'node:stream'
 import { ReadableStream } from 'node:stream/web'
 import {
 	brotliCompressSync,
@@ -168,14 +168,15 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 
 	if(stream.writable && body !== undefined) {
 		if(body instanceof ReadableStream) {
-
-			const signal = undefined
-			Readable.fromWeb(body, { signal })
-				.on('error', err => {
-					console.warn('send Error in ReadableStream', err.message)
-					stream.end()
+			const signal = undefined // AbortSignal.timeout(1000)
+			pipeline(
+				Readable.fromWeb(body, { signal }),
+				stream,
+				err => {
+					if(err !== null) {
+						console.warn('pipeline error')
+					}
 				})
-				.pipe(stream)
 
 			return
 		}
