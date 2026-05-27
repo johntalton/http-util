@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
-import { Conditional, ETag, FixDate } from '@johntalton/http-util/headers'
+import { Conditional, ETag, FixDate, FEATURE_TEMPORAL } from '@johntalton/http-util/headers'
 
 // const DATE_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -9,9 +9,9 @@ const EXAMPLE_DATE_EARLY =  new Date(Date.UTC(2000, 2, 15, 1, 0, 0, 0))
 const EXAMPLE_DATE_MIDDLE = new Date(Date.UTC(2001, 0,  1, 0, 0, 0, 0))
 const EXAMPLE_DATE_LATE =   new Date(Date.UTC(2020, 1,  1, 0, 0, 0, 0))
 
-const EXAMPLE_TEMPORAL_EARLY =  Temporal.PlainDateTime.from('2000-03-15T01:00:00').toZonedDateTime('UTC').toInstant()
-const EXAMPLE_TEMPORAL_MIDDLE = Temporal.PlainDateTime.from('2001-01-01T00:00:00').toZonedDateTime('UTC').toInstant()
-const EXAMPLE_TEMPORAL_LATE =   Temporal.PlainDateTime.from('2020-02-01T00:00:00').toZonedDateTime('UTC').toInstant()
+const EXAMPLE_TEMPORAL_EARLY =  FEATURE_TEMPORAL ? Temporal.PlainDateTime.from('2000-03-15T01:00:00').toZonedDateTime('UTC').toInstant() : undefined
+const EXAMPLE_TEMPORAL_MIDDLE = FEATURE_TEMPORAL ? Temporal.PlainDateTime.from('2001-01-01T00:00:00').toZonedDateTime('UTC').toInstant() : undefined
+const EXAMPLE_TEMPORAL_LATE =   FEATURE_TEMPORAL ? Temporal.PlainDateTime.from('2020-02-01T00:00:00').toZonedDateTime('UTC').toInstant() : undefined
 
 const EXAMPLE_IMF_EARLY = { dayName: '', year: 2000, month: 'Mar', day: 15, hour: 0, minute: 0, second: 0 }
 const EXAMPLE_IMF_MIDDLE = { dayName: '', year: 2001, month: 'Jan', day: 1, hour: 0, minute: 0, second: 0 }
@@ -152,30 +152,32 @@ describe('FixDate', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle instant', () => {
-			const result = FixDate.toInstant(EXAMPLE_TEMPORAL_MIDDLE)
-			assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
-		})
+		if(FEATURE_TEMPORAL) {
+			it('should handle instant', () => {
+				const result = FixDate.toInstant(EXAMPLE_TEMPORAL_MIDDLE)
+				assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
+			})
 
-		it('should handle date', () => {
-			const result = FixDate.toInstant(EXAMPLE_DATE_MIDDLE)
-			assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
-		})
+			it('should handle date', () => {
+				const result = FixDate.toInstant(EXAMPLE_DATE_MIDDLE)
+				assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
+			})
 
-		it('should handle IMF', () => {
-			const result = FixDate.toInstant(EXAMPLE_IMF_MIDDLE)
-			assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
-		})
+			it('should handle IMF', () => {
+				const result = FixDate.toInstant(EXAMPLE_IMF_MIDDLE)
+				assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
+			})
 
-		it('should handle IMF with instant', () => {
-			const result = FixDate.toInstant(EXAMPLE_IMF_INSTANT_MIDDLE)
-			assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
-		})
+			it('should handle IMF with instant', () => {
+				const result = FixDate.toInstant(EXAMPLE_IMF_INSTANT_MIDDLE)
+				assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
+			})
 
-		it('should handle IMF with date', () => {
-			const result = FixDate.toInstant(EXAMPLE_IMF_DATE_MIDDLE)
-			assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
-		})
+			it('should handle IMF with date', () => {
+				const result = FixDate.toInstant(EXAMPLE_IMF_DATE_MIDDLE)
+				assert.ok(result?.equals(EXAMPLE_TEMPORAL_MIDDLE))
+			})
+		}
 	})
 
 	describe('toDate', () => {
@@ -184,10 +186,12 @@ describe('FixDate', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle instant', () => {
-			const result = FixDate.toDate(EXAMPLE_TEMPORAL_MIDDLE)
-			assert.ok(result?.getTime() === EXAMPLE_DATE_MIDDLE.getTime())
-		})
+		if(FEATURE_TEMPORAL) {
+			it('should handle instant', () => {
+				const result = FixDate.toDate(EXAMPLE_TEMPORAL_MIDDLE)
+				assert.ok(result?.getTime() === EXAMPLE_DATE_MIDDLE.getTime())
+			})
+		}
 
 		it('should handle date', () => {
 			const result = FixDate.toDate(EXAMPLE_DATE_MIDDLE)
@@ -370,10 +374,12 @@ describe('Conditional', () => {
 			assert.equal(result, EXAMPLE_STRING_MIDDLE)
 		})
 
-		it('should handle Temporal', () => {
-			const result = Conditional.encodeFixDate(EXAMPLE_TEMPORAL_MIDDLE)
-			assert.equal(result, EXAMPLE_STRING_MIDDLE)
-		})
+		if(FEATURE_TEMPORAL) {
+			it('should handle Temporal', () => {
+				const result = Conditional.encodeFixDate(EXAMPLE_TEMPORAL_MIDDLE)
+				assert.equal(result, EXAMPLE_STRING_MIDDLE)
+			})
+		}
 
 		it('should handle IMF', () => {
 			const result = Conditional.encodeFixDate(EXAMPLE_IMF_MIDDLE)
@@ -464,7 +470,7 @@ describe('Conditional', () => {
 				day: 1,
 				dayName: 'Mon',
 				hour: 0,
-				instant: Temporal.Instant.from('2001-01-01T00:00:00.000Z'),
+				instant: FEATURE_TEMPORAL ? Temporal.Instant.from('2001-01-01T00:00:00.000Z') : undefined,
 				minute: 0,
 				month: 'Jan',
 				second: 0,

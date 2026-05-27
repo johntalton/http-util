@@ -45,7 +45,7 @@ import { isQuoted, stripQuotes } from './util/quote.js'
 /** @typedef {IMFFixDateItem & IMFFixDateItemExtension} IMFFixDate */
 /** @typedef {IMFFixDate|Date|Temporal.Instant|undefined} IMFFixDateInput */
 
-export const FEATURE_TEMPORAL =  typeof Temporal !== 'undefined'
+export const FEATURE_TEMPORAL = typeof Temporal !== 'undefined'
 
 export const IMF_FIX_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
 	timeZone: 'UTC',
