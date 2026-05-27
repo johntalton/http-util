@@ -2,6 +2,8 @@ import { parseAcceptStyleHeader } from './util/accept-util.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
 
+export const LANGUAGE_ANY = '*'
+
 export const WELL_KNOWN_LANGUAGES = new Map([
 	[ 'en-US,en;q=0.5', [ { name: 'en-US', quality: 1 }, { name: 'en', quality: 0.5 } ] ],
 	[ 'en-US,en;q=0.9', [ { name: 'en-US', quality: 1 }, { name: 'en', quality: 0.9 } ] ],
@@ -30,16 +32,20 @@ export class AcceptLanguage {
 	 * @param {Array<string>} supportedTypes
 	 */
 	static selectFrom(acceptLanguages, supportedTypes) {
+		if(supportedTypes === undefined) { return undefined }
+
 		for(const acceptLanguage of acceptLanguages) {
 			const { name } = acceptLanguage
 			if(supportedTypes.includes(name)) {
 				return name
-				}
+			}
+		}
+
+		//
+		if(acceptLanguages.some(item => item.name === LANGUAGE_ANY)) {
+			return supportedTypes.at(0)
 		}
 
 		return undefined
 	}
 }
-
-// console.log(AcceptLanguage.parse('en-US,en;q=0.9'))
-// console.log(AcceptLanguage.select('foo;q=0.2, bar-BZ', [ 'bang', 'foo' ]))

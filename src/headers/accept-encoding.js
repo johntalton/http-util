@@ -2,6 +2,8 @@ import { parseAcceptStyleHeader } from './util/accept-util.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
 
+export const ENCODING_ANY = '*'
+
 export const WELL_KNOWN_ENCODINGS = new Map([
 	[ 'gzip, deflate, br, zstd', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' }, { name: 'zstd' } ] ],
 	[ 'gzip, deflate, br', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' } ] ]
@@ -29,6 +31,8 @@ export class AcceptEncoding {
 	 * @param {Array<string>} supportedTypes
 	 */
 	static selectFrom(acceptEncodings, supportedTypes) {
+		if(supportedTypes === undefined) { return undefined }
+
 		for(const acceptEncoding of acceptEncodings) {
 			const { name } = acceptEncoding
 			if(supportedTypes.includes(name)) {
@@ -36,18 +40,11 @@ export class AcceptEncoding {
 			 }
 		}
 
+		//
+		if(acceptEncodings.some(item => item.name === ENCODING_ANY)) {
+			return supportedTypes.at(0)
+		}
+
 		return undefined
 	}
 }
-
-
-// console.log(AcceptEncoding.parse(''))
-// console.log(AcceptEncoding.parse(' '))
-// console.log(AcceptEncoding.parse('zstd'))
-// console.log(AcceptEncoding.parse('identity'))
-// console.log(AcceptEncoding.parse('*'))
-// console.log(AcceptEncoding.parse('gzip, deflate, br, zstd'))
-// console.log(AcceptEncoding.parse('br;q=1.0, gzip;q=0.8, *;q=0.1'))
-// console.log(AcceptEncoding.parse('deflate, gzip;q=1.0, *;q=0.5'))
-// console.log(AcceptEncoding.parse('identity;q=0'))
-// console.log(AcceptEncoding.parse('*;q=0'))
