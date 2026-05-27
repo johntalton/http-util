@@ -61,11 +61,11 @@ export function send_error(stream, status, message, retryAfter, meta) {
 		message: message ?? 'Error'
 	})
 
-	const exposedHeaders = retryAfter === undefined ? [] : [ HTTP2_HEADER_RETRY_AFTER ]
+	const exposedHeaders = Number.isInteger(retryAfter) ? [ HTTP2_HEADER_RETRY_AFTER ] : []
 
 	send(stream, status, {
 		[HTTP2_HEADER_RETRY_AFTER]: Number.isInteger(retryAfter) ? `${retryAfter}` : undefined
-	}, exposedHeaders, CONTENT_TYPE_JSON, obj, meta)
+	}, exposedHeaders, CONTENT_TYPE_JSON, obj, meta) // todo should this be plain text
 }
 
 /** @typedef { (data: InputType) => Buffer<ArrayBuffer> } EncoderFun */
