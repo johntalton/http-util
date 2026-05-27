@@ -111,7 +111,6 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
 	send_bytes(stream, status, contentType, encodedData, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta )
 }
 
-
 /**
  * @param {ServerHttp2Stream} stream
  * @param {number} status

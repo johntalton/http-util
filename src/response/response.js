@@ -1,7 +1,7 @@
 import { sendAccepted } from './2xx/accepted.js'
 import { sendBytes } from './2xx/bytes.js'
 import { sendCreated } from './2xx/created.js'
-import { sendJSON_Encoded } from './2xx/json.js'
+import { sendJSON } from './2xx/json.js'
 import { sendNoContent } from './2xx/no-content.js'
 import { sendPartialContent } from './2xx/partial-content.js'
 import { sendPreflight } from './2xx/preflight.js'
@@ -49,7 +49,7 @@ export const Response = {
 	gone: sendGone,
 	imATeapot: sendImATeapot,
 	insufficientStorage: sendInsufficientStorage,
-	json: sendJSON_Encoded,
+	json: sendJSON,
 	movedPermanently: sendMovedPermanently,
 	multipleChoices: sendMultipleChoices,
 	noContent: sendNoContent,
