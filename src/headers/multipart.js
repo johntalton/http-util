@@ -50,10 +50,13 @@ export class Multipart {
 	 * @param {string} text
 	 * @param {string} boundary
 	 * @param {string} [_charset='utf8']
+	 * @returns {FormData}
 	 */
 	static parse_FormData(text, boundary, _charset = 'utf8') {
-		// console.log({ boundary, text })
 		const formData = new FormData()
+
+		if(text === undefined) { return formData }
+		if(boundary === undefined) { return formData }
 
 		if(text === '') {
 			// empty body
@@ -150,6 +153,7 @@ export class Multipart {
 
 		return new ReadableStream({
 			type: 'bytes',
+			// async pull(controller) {},
 			async start(controller) {
 				const encoder = new TextEncoder()
 
@@ -158,7 +162,6 @@ export class Multipart {
 					controller.enqueue(encoder.encode(`${MULTIPART_HEADER.CONTENT_TYPE}: ${contentType}${MULTIPART_SEPARATOR}`))
 					controller.enqueue(encoder.encode(`${MULTIPART_HEADER.CONTENT_RANGE}: ${ContentRange.encode({ ...part.range, size: contentLength })}${MULTIPART_SEPARATOR}`))
 					controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
-					// controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
 
 					if(part.obj instanceof ReadableStream) {
 						// biome-ignore lint/performance/noAwaitInLoops: readable
@@ -175,7 +178,10 @@ export class Multipart {
 							}
 						}
 					}
-					else if(part.obj instanceof ArrayBuffer || ArrayBuffer.isView(part.obj)) {
+					else if(part.obj instanceof ArrayBuffer) {
+						controller.enqueue(new Uint8Array(part.obj))
+					}
+					else if(ArrayBuffer.isView(part.obj)) {
 						controller.enqueue(part.obj)
 					}
 					else if(typeof part.obj === 'string'){
@@ -183,7 +189,7 @@ export class Multipart {
 					}
 					else {
 						// console.log('error', typeof part.obj, part.obj)
-						throw new Error('unknown part type')
+						controller.error(new Error('unknown part type'))
 					}
 
 					controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
@@ -191,7 +197,9 @@ export class Multipart {
 
 				controller.enqueue(encoder.encode(boundaryEnd))
 
-      	controller.close()
+				// controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
+
+				controller.close()
 			}
 		})
 	}
