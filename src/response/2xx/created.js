@@ -16,7 +16,7 @@ const { HTTP_STATUS_CREATED } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {URL} location
+ * @param {URL|string} location
  * @param {Pick<SendContent, 'etag' | 'lastModified'>} content
  * @param {Metadata} meta
  */
@@ -26,8 +26,10 @@ export function sendCreated(stream, location, content, meta) {
 		lastModified
 	} = content
 
+	const loc = (location instanceof URL) ? location.href : location
+
 	send(stream, HTTP_STATUS_CREATED, {
-			[HTTP2_HEADER_LOCATION]: location.href,
+			[HTTP2_HEADER_LOCATION]: loc,
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
 			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified)
 		}, [ HTTP2_HEADER_LOCATION ], undefined, undefined, meta)

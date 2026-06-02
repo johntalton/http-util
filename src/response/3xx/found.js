@@ -13,11 +13,13 @@ const { HTTP_STATUS_FOUND } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {URL} location
+ * @param {URL|string} location
  * @param {Metadata} meta
  */
 export function sendFound(stream, location, meta) {
+	const loc = (location instanceof URL) ? location.href : location
+
 	send(stream, HTTP_STATUS_FOUND, {
-		[HTTP2_HEADER_LOCATION]: location.href
+		[HTTP2_HEADER_LOCATION]: loc
 	}, [ HTTP2_HEADER_LOCATION ], undefined, undefined, meta)
 }
