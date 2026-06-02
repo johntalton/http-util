@@ -16,31 +16,31 @@ describe('ServerTiming', () => {
 		})
 
 		it('should handle item (undef duration)', () => {
-			const result = ServerTiming.encode([ { name: 'TEST', duration: undefined  } ])
+			const result = ServerTiming.encode([ { name: 'TEST', duration: undefined } ])
 			assert.equal(result, 'TEST')
 		})
 
 		it('should handle item', () => {
-			const result = ServerTiming.encode([ { name: 'TEST', duration: 42  } ])
+			const result = ServerTiming.encode([ { name: 'TEST', duration: 42 } ])
 			assert.equal(result, 'TEST;dur=42')
 		})
 
 		it('should handle multiple item', () => {
 			const result = ServerTiming.encode([
-				{ name: 'A', duration: 42  },
-				{ name: 'B', duration: 77  },
+				{ name: 'A', duration: 42 },
+				{ name: 'B', duration: 77 },
 			])
 			assert.equal(result, 'A;dur=42,B;dur=77')
 		})
 
 		it('should handle item with description', () => {
 			const result = ServerTiming.encode([
-				{ name: 'TEST', duration: 42, description: 'A TEST'  }])
+				{ name: 'TEST', duration: 42, description: 'A TEST' }])
 			assert.equal(result, 'TEST;desc="A TEST";dur=42')
 		})
 
 		it('should handle item and truncate duration to one digits', () => {
-			const result = ServerTiming.encode([ { name: 'TEST', duration: 42.1234  } ])
+			const result = ServerTiming.encode([ { name: 'TEST', duration: 42.1234 } ])
 			assert.equal(result, 'TEST;dur=42.1')
 		})
 	})

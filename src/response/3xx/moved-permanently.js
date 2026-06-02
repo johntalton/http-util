@@ -6,7 +6,7 @@ import { send } from '../send-util.js'
 /** @import { Metadata } from '../../defs.js' */
 
 const {
-  HTTP2_HEADER_LOCATION
+	HTTP2_HEADER_LOCATION
 } = http2.constants
 
 const { HTTP_STATUS_MOVED_PERMANENTLY } = http2.constants
@@ -17,9 +17,9 @@ const { HTTP_STATUS_MOVED_PERMANENTLY } = http2.constants
  * @param {Metadata} meta
  */
 export function sendMovedPermanently(stream, location, meta) {
-  const loc = (location instanceof URL) ? location.href : location
+	const loc = (location instanceof URL) ? location.href : location
 
-  send(stream, HTTP_STATUS_MOVED_PERMANENTLY, {
-    [HTTP2_HEADER_LOCATION]: loc
-  }, [ HTTP2_HEADER_LOCATION ], undefined, undefined, meta)
+	send(stream, HTTP_STATUS_MOVED_PERMANENTLY, {
+		[HTTP2_HEADER_LOCATION]: loc
+	}, [HTTP2_HEADER_LOCATION], undefined, undefined, meta)
 }

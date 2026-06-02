@@ -28,7 +28,7 @@ describe('CacheControl', () => {
 			const result = CacheControl.encode({
 				directives: 'no-store'
 			})
-			assert.equal(result,  'no-store')
+			assert.equal(result, 'no-store')
 		})
 
 		it('should handle public', () => {
