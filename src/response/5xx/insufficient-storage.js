@@ -12,5 +12,5 @@ const { HTTP_STATUS_INSUFFICIENT_STORAGE } = http2.constants
  * @param {Metadata} meta
  */
 export function sendInsufficientStorage(stream, meta) {
-  send_error(stream, HTTP_STATUS_INSUFFICIENT_STORAGE, 'Insufficient Storage', undefined, meta)
+	send_error(stream, HTTP_STATUS_INSUFFICIENT_STORAGE, 'Insufficient Storage', undefined, meta)
 }

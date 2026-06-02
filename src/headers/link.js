@@ -9,7 +9,7 @@ export class Link {
 	/**
 	 * @param {LinkItem} link
 	 */
-	static  *#encode(link) {
+	static *#encode(link) {
 		const encodedUri = (link.url instanceof URL) ? link.url : encodeURI(link.url)
 
 		yield `<${encodedUri}>`

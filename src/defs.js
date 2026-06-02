@@ -28,7 +28,7 @@ export const RANGE_UNITS_NONE = 'none'
 
 
 /** @import { TimingsInfo } from './headers/server-timing.js' */
-/** @import { EtagItem, IMFFixDateInput,  } from './headers/conditional.js' */
+/** @import { EtagItem, IMFFixDateInput } from './headers/conditional.js' */
 /** @import { CacheControlOptions } from './headers/cache-control.js' */
 /** @import { ContentRangeDirective } from './headers/content-range.js' */
 /** @import { RateLimitPolicyInfo, RateLimitInfo } from './headers/rate-limit.js' */

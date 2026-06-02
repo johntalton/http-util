@@ -12,5 +12,5 @@ const { HTTP_STATUS_PAYLOAD_TOO_LARGE } = http2.constants
  * @param {Metadata} meta
  */
 export function sendContentTooLarge(stream, meta) {
-  send(stream, HTTP_STATUS_PAYLOAD_TOO_LARGE, {}, [], undefined, undefined, meta)
+	send(stream, HTTP_STATUS_PAYLOAD_TOO_LARGE, {}, [], undefined, undefined, meta)
 }

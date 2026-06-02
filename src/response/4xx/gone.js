@@ -12,5 +12,5 @@ const { HTTP_STATUS_GONE } = http2.constants
  * @param {Metadata} meta
  */
 export function sendGone(stream, meta) {
-  send(stream, HTTP_STATUS_GONE, {}, [], undefined, undefined, meta)
+	send(stream, HTTP_STATUS_GONE, {}, [], undefined, undefined, meta)
 }

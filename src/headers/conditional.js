@@ -102,7 +102,7 @@ export class ETag {
 	static isValid(etag) {
 		if(etag === undefined) { return false }
 
-		// %x21 / %x23-7E  and %x80-FF
+		// %x21 / %x23-7E and %x80-FF
 		for(const c of etag) {
 			if(c.charCodeAt(0) < 0x21) { return false }
 			if(c.charCodeAt(0) > 0xFF) { return false }

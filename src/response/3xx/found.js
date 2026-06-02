@@ -1,4 +1,4 @@
-import  http2 from 'node:http2'
+import http2 from 'node:http2'
 
 import { send } from '../send-util.js'
 

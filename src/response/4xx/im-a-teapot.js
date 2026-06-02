@@ -12,5 +12,5 @@ const { HTTP_STATUS_TEAPOT } = http2.constants
  * @param {Metadata} meta
  */
 export function sendImATeapot(stream, meta) {
-  send(stream, HTTP_STATUS_TEAPOT, {}, [], undefined, undefined, meta)
+	send(stream, HTTP_STATUS_TEAPOT, {}, [], undefined, undefined, meta)
 }
