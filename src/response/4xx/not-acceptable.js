@@ -24,6 +24,6 @@ export function sendNotAcceptable(stream, info, meta) {
 		{},
 		[],
 		has ? CONTENT_TYPE_JSON : undefined,
-		has ? JSON.stringify(supportedTypes) : undefined,
+		has ? JSON.stringify({ supportedTypes: supportedTypesList }) : undefined,
 		meta)
 }
