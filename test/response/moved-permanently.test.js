@@ -34,5 +34,27 @@ describe('Response', () => {
 			const result = stream.read()
 			assert.deepEqual(result, null)
 		})
+
+		it('should handle basic values (location string)', () => {
+			const stream = new MockHttp2Stream()
+			const location = 'new.html'
+			Response.movedPermanently(stream, location, DEFAULT_META)
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 301,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server,location',
+				'content-type': undefined,
+				server: undefined,
+
+				location: 'new.html'
+			})
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
 	})
 })

@@ -6,33 +6,55 @@ import { Response } from '@johntalton/http-util/response/object'
 import { MockHttp2Stream } from '../mock-http2-stream.js'
 
 const DEFAULT_META = {
-  performance: [],
-  servername: undefined,
-  origin: undefined
+	performance: [],
+	servername: undefined,
+	origin: undefined
 }
 
 describe('Response', () => {
-  describe('seeOther', () => {
-    it('should handle basic values', () => {
-      const stream = new MockHttp2Stream()
-      const location = new URL('ftp://see/other')
-      Response.seeOther(stream, location, DEFAULT_META)
+	describe('seeOther', () => {
+		it('should handle basic values', () => {
+			const stream = new MockHttp2Stream()
+			const location = new URL('ftp://see/other')
+			Response.seeOther(stream, location, DEFAULT_META)
 
-      assert.equal(stream.headersSent, true)
-      assert.deepEqual(stream.sentHeaders, {
-        ':status': 303,
-        'Server-Timing': undefined,
-        'Timing-Allow-Origin': undefined,
-        'access-control-allow-origin': undefined,
-        'access-control-expose-headers': 'etag,server,location',
-        'content-type': undefined,
-        server: undefined,
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 303,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server,location',
+				'content-type': undefined,
+				server: undefined,
 
-        location: 'ftp://see/other'
-      })
+				location: 'ftp://see/other'
+			})
 
-      const result = stream.read()
-      assert.deepEqual(result, null)
-    })
-  })
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
+
+		it('should handle basic values (location string)', () => {
+			const stream = new MockHttp2Stream()
+			const location = 'mailto:bob'
+			Response.seeOther(stream, location, DEFAULT_META)
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 303,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server,location',
+				'content-type': undefined,
+				server: undefined,
+
+				location: 'mailto:bob'
+			})
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
+	})
 })

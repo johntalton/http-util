@@ -19,7 +19,11 @@ describe('Response', () => {
 			const supportedQueryTypes = [ 'text/sql' ]
 			const acceptRanges = undefined
 
-			Response.preflight(stream, supportedMethods, supportedQueryTypes, acceptRanges, DEFAULT_META)
+			Response.preflight(stream, {
+				supportedMethods,
+				supportedQueryTypes,
+				acceptRanges
+			}, DEFAULT_META)
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -48,7 +52,11 @@ describe('Response', () => {
 			const supportedQueryTypes = [ 'text/sql' ]
 			const acceptRanges = 'bytes'
 
-			Response.preflight(stream, supportedMethods, supportedQueryTypes, acceptRanges, DEFAULT_META)
+			Response.preflight(stream, {
+				supportedMethods,
+				supportedQueryTypes,
+				acceptRanges
+			}, DEFAULT_META)
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

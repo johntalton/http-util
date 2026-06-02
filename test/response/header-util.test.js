@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
-import { coreHeaders, customHeaders, performanceHeaders,  } from '@johntalton/http-util/response'
+import { coreHeaders, customHeaders, performanceHeaders } from '@johntalton/http-util/response'
 
 const DEFAULT_META = {
 	performance: [],

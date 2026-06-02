@@ -6,34 +6,34 @@ import { Response } from '@johntalton/http-util/response/object'
 import { MockHttp2Stream } from '../mock-http2-stream.js'
 
 const DEFAULT_META = {
-  performance: [],
-  servername: undefined,
-  origin: undefined
+	performance: [],
+	servername: undefined,
+	origin: undefined
 }
 
 
 describe('Response', () => {
-  describe('badRequest', () => {
-    it('should handle basic values', () => {
-      const stream = new MockHttp2Stream()
-      const message = 'This Is a Test'
-      Response.badRequest(stream, message, DEFAULT_META)
+	describe('badRequest', () => {
+		it('should handle basic values', () => {
+			const stream = new MockHttp2Stream()
+			const message = 'This Is a Test'
+			Response.badRequest(stream, message, DEFAULT_META)
 
-      assert.equal(stream.headersSent, true)
-      assert.deepEqual(stream.sentHeaders, {
-        ':status': 400,
-        'Server-Timing': undefined,
-        'Timing-Allow-Origin': undefined,
-        'access-control-allow-origin': undefined,
-        'access-control-expose-headers': 'etag,server',
-        'content-type': 'text/plain;charset=utf8',
-        server: undefined
-      })
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 400,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server',
+				'content-type': 'text/plain;charset=utf8',
+				server: undefined
+			})
 
-      const encoder = new TextEncoder()
+			const encoder = new TextEncoder()
 
-      const result = stream.read()
-      assert.deepEqual(result, Buffer.from(encoder.encode(message)))
-    })
-  })
+			const result = stream.read()
+			assert.deepEqual(result, Buffer.from(encoder.encode(message)))
+		})
+	})
 })

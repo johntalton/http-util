@@ -25,14 +25,16 @@ describe('Response', () => {
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server',
-				'content-type': 'text/plain;charset=utf8',
-				server: undefined
+				'content-type': 'application/json;charset=utf8',
+				server: undefined,
+
+				'retry-after': undefined
 			})
 
 			const encoder = new TextEncoder()
 
 			const result = stream.read()
-			assert.deepEqual(result, Buffer.from(encoder.encode(message)))
+			assert.deepEqual(result, Buffer.from(encoder.encode(JSON.stringify({ message }))))
 		})
 	})
 })

@@ -44,8 +44,8 @@ describe('Response', () => {
 				'\n'
 			].join('\n')
 
-      const result = stream.read()
-      assert.deepEqual(result, Buffer.from(encoder.encode(message)))
+			const result = stream.read()
+			assert.deepEqual(result, Buffer.from(encoder.encode(message)))
 		})
 	})
 })

@@ -15,9 +15,12 @@ describe('Response', () => {
 	describe('unsupportedMedia', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-      const acceptableMediaType = [ 'text/plain' ]
-      const supportedQueryTypes = undefined
-			Response.unsupportedMediaType(stream, acceptableMediaType, supportedQueryTypes, DEFAULT_META)
+			const acceptableMediaType = ['text/plain']
+			const supportedQueryTypes = undefined
+			Response.unsupportedMediaType(stream, {
+				acceptableMediaType,
+				supportedQueryTypes
+			}, DEFAULT_META)
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -28,8 +31,62 @@ describe('Response', () => {
 				'access-control-expose-headers': 'etag,server,accept-post',
 				'content-type': undefined,
 
-        'accept-post': 'text/plain',
-        'accept-query': undefined,
+				'accept-post': 'text/plain',
+				'accept-query': undefined,
+				server: undefined
+			})
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
+
+		it('should handle basic values (acceptable media singular string)', () => {
+			const stream = new MockHttp2Stream()
+			const acceptableMediaType = 'text/plain'
+			const supportedQueryTypes = undefined
+			Response.unsupportedMediaType(stream, {
+				acceptableMediaType,
+				supportedQueryTypes
+			}, DEFAULT_META)
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 415,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server,accept-post',
+				'content-type': undefined,
+
+				'accept-post': 'text/plain',
+				'accept-query': undefined,
+				server: undefined
+			})
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
+
+		it('should handle basic values (supported query type)', () => {
+			const stream = new MockHttp2Stream()
+			const acceptableMediaType = ['text/plain']
+			const supportedQueryTypes = ['application/sql']
+			Response.unsupportedMediaType(stream, {
+				acceptableMediaType,
+				supportedQueryTypes
+			}, DEFAULT_META)
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 415,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server,accept-query,accept-post',
+				'content-type': undefined,
+
+				'accept-post': 'text/plain',
+				'accept-query': 'application/sql',
 				server: undefined
 			})
 

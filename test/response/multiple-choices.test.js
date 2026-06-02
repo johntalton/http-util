@@ -6,30 +6,30 @@ import { Response } from '@johntalton/http-util/response/object'
 import { MockHttp2Stream } from '../mock-http2-stream.js'
 
 const DEFAULT_META = {
-  performance: [],
-  servername: undefined,
-  origin: undefined
+	performance: [],
+	servername: undefined,
+	origin: undefined
 }
 
 describe('Response', () => {
-  describe('multipleChoices', () => {
-    it('should handle basic values', () => {
-      const stream = new MockHttp2Stream()
-      Response.multipleChoices(stream, DEFAULT_META)
+	describe('multipleChoices', () => {
+		it('should handle basic values', () => {
+			const stream = new MockHttp2Stream()
+			Response.multipleChoices(stream, DEFAULT_META)
 
-      assert.equal(stream.headersSent, true)
-      assert.deepEqual(stream.sentHeaders, {
-        ':status': 300,
-        'Server-Timing': undefined,
-        'Timing-Allow-Origin': undefined,
-        'access-control-allow-origin': undefined,
-        'access-control-expose-headers': 'etag,server',
-        'content-type': undefined,
-        server: undefined
-      })
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 300,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server',
+				'content-type': undefined,
+				server: undefined
+			})
 
-      const result = stream.read()
-      assert.deepEqual(result, null)
-    })
-  })
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
+	})
 })

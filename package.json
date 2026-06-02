@@ -3,6 +3,7 @@
   "version": "7.0.1",
   "license": "MIT",
   "type": "module",
+  "sideEffects": false,
   "imports": {
     "#util": "./src/headers/util/index.js"
   },

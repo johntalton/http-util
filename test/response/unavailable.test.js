@@ -18,7 +18,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'This Is a Test'
 			const retryAfter = 42
-			Response.unavailable(stream, message, retryAfter, DEFAULT_META)
+			Response.unavailable(stream, message, { retryAfter }, DEFAULT_META)
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -27,7 +27,7 @@ describe('Response', () => {
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server,retry-after',
-				'content-type': 'text/plain;charset=utf8',
+				'content-type': 'application/json;charset=utf8',
 				'retry-after': '42',
 				server: undefined
 			})
@@ -35,7 +35,7 @@ describe('Response', () => {
 			const encoder = new TextEncoder()
 
 			const result = stream.read()
-			assert.deepEqual(result, Buffer.from(encoder.encode(message)))
+			assert.deepEqual(result, Buffer.from(encoder.encode(JSON.stringify({ message }))))
 		})
 	})
 })
