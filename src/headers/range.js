@@ -99,6 +99,8 @@ export class Range {
 	 */
 	static normalize(directive, contentLength) {
 		if(directive === undefined) { return undefined }
+		if(!Number.isInteger(contentLength)) { return undefined }
+		if(contentLength <= 0) { return undefined }
 
 		/** @type {Array<NormalizedRangeValue>} */
 		const normalizedRanges = directive.ranges.map(({ start, end }) => {

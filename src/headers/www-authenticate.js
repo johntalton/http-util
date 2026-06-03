@@ -31,7 +31,6 @@ export function paramNeedQuotes(paramName) {
 	return PARAMETERS_THAT_NEED_QUOTES.includes(paramName.toLowerCase())
 }
 
-
 export class Challenge {
 	/**
 	 * @param {string} realm

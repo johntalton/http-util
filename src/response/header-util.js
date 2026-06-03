@@ -27,7 +27,7 @@ const {
  * @returns {OutgoingHttpHeaders}
  */
 export function coreHeaders(status, contentType, exposedHeaders, meta) {
-	const exposed = [ HTTP2_HEADER_ETAG, HTTP2_HEADER_SERVER, ...exposedHeaders ]
+	const exposed = [ HTTP2_HEADER_ETAG, HTTP2_HEADER_SERVER, ...exposedHeaders ] // todo include lastModified
 
 	return {
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,

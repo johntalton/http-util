@@ -1,6 +1,5 @@
 import { ReadableStream } from 'node:stream/web'
 
-import { isQuoted, stripQuotes } from '../headers/util/quote.js'
 import { ContentDisposition } from './content-disposition.js'
 import { ContentRange } from './content-range.js'
 import { ContentType } from './content-type.js'
