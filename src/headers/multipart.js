@@ -65,11 +65,6 @@ export class Multipart {
 
 		const lines = text.split(MULTIPART_SEPARATOR)
 
-		if(lines.length === 0) {
-			// missing body?
-			return formData
-		}
-
 		const boundaryBegin = `${BOUNDARY_MARK}${boundary}`
 		const boundaryEnd = `${BOUNDARY_MARK}${boundary}${BOUNDARY_MARK}`
 
@@ -107,7 +102,7 @@ export class Multipart {
 							throw new Error('disposition not form-data')
 						}
 
-						partName = isQuoted(disposition.name) ? stripQuotes(disposition.name) : disposition.name
+						partName = disposition.name
 					}
 					else {
 						// unsupported part header - ignore
@@ -131,10 +126,9 @@ export class Multipart {
 				}
 				state = MULTIPART_STATE.HEADERS
 			}
-			else {
-				throw new Error('unknown state')
-			}
-
+			// else {
+			// 	throw new Error('unknown state')
+			// }
 		}
 
 		return formData

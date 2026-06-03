@@ -47,6 +47,38 @@ describe('Response', () => {
 			assert.deepEqual(result, null)
 		})
 
+		it('should handle basic values (with age)', () => {
+			const stream = new MockHttp2Stream()
+			const etag = undefined
+			const lastModified = undefined
+			const age = 42
+			const cacheControl = {}
+			Response.notModified(stream, {
+				etag,
+				lastModified,
+				age,
+				cacheControl
+			}, DEFAULT_META)
 
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 304,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server,age',
+				'content-type': undefined,
+				server: undefined,
+
+				'cache-control': undefined,
+				age: '42',
+				etag: undefined,
+				'last-modified': undefined,
+				vary: 'Accept, Accept-Encoding'
+			})
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
 	})
 })

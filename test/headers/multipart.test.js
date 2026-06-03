@@ -51,11 +51,24 @@ describe('Multipart', () => {
 			assert.equal([...result.entries()].length, 0)
 		})
 
-		// it('should handle string with no line endings', () => {
-		// 	const result = Multipart.parse('TESTING', 'BOUNDARY')
-		// 	assert.ok(result instanceof FormData)
-		//	assert.equal([...result.entries()].length, 0)
-		// })
+		it('should throw on no boundary start', () => {
+			assert.throws(() => Multipart.parse('TESTING', 'BOUNDARY'), { message: 'missing beginning boundary' })
+		})
+
+		it('should throw if disposition is not form-data', () => {
+			const content = EXAMPLE_MULTIPART_TEXT.replace('form-data', 'FAKE')
+			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), { message: 'disposition not form-data' })
+		})
+
+		it('should throw part is unnamed', () => {
+			const content = EXAMPLE_MULTIPART_TEXT.replace(';name=\"TEST\"', '')
+			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), { message: 'unnamed part' })
+		})
+
+		it('should throw if ending boundary missing', () => {
+			const content = EXAMPLE_MULTIPART_TEXT.replace('--BOUNDARY--', '')
+			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), { message: 'missing boundary or end' })
+		})
 
 		it('should handle simplified string', () => {
 			const result = Multipart.parse('--BOUNDARY\r\n', 'BOUNDARY')
@@ -75,6 +88,15 @@ describe('Multipart', () => {
 			assert.equal([...result.entries()].length, 1)
 			assert.deepEqual([...result.keys()], ['TEST'])
 			assert.equal(result.get('TEST'), 'HI')
+		})
+
+		it('should handle common data (unquoted part name)', () => {
+			const content = EXAMPLE_MULTIPART_TEXT.replace(';name=\"TEST\"', ';name=ALT_TEST')
+			const result = Multipart.parse(content, 'BOUNDARY')
+			assert.ok(result instanceof FormData)
+			assert.equal([...result.entries()].length, 1)
+			assert.deepEqual([...result.keys()], ['ALT_TEST'])
+			assert.equal(result.get('ALT_TEST'), 'HI')
 		})
 
 		it('should handle multi common data', () => {

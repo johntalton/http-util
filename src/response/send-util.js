@@ -146,7 +146,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
 			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified),
-			[HTTP2_HEADER_AGE]: (age === undefined) ? undefined : `${age}`,
+			[HTTP2_HEADER_AGE]: Number.isInteger(age) ? `${age}` : undefined,
 			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
 			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
