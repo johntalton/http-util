@@ -1,5 +1,7 @@
 import http2 from 'node:http2'
 
+import { COMMON_LIST_VALUE_JOINER_COMMA } from '../defs.js'
+
 import {
 	HTTP_HEADER_SERVER_TIMING,
 	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
@@ -31,7 +33,7 @@ export function coreHeaders(status, contentType, exposedHeaders, meta) {
 
 	return {
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-		[HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS]: exposed.join(','),
+		[HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS]: exposed.join(COMMON_LIST_VALUE_JOINER_COMMA),
 		// Access-Control-Allow-Credentials // for non-preflight
 		[HTTP2_HEADER_STATUS]: status,
 		[HTTP2_HEADER_CONTENT_TYPE]: contentType,

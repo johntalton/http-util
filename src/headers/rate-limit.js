@@ -1,3 +1,5 @@
+import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
+
 // https://www.ietf.org/archive/id/draft-ietf-httpapi-ratelimit-headers-10.html
 
 export const HTTP_HEADER_RATE_LIMIT = 'RateLimit'
@@ -86,6 +88,6 @@ export class RateLimitPolicy {
 					.filter(item => item !== undefined)
 					.join(';')
 			})
-			.join(',')
+			.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }

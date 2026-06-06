@@ -1,4 +1,4 @@
-
+import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
 
 export const CLIENT_HINT_USER_AGENT = 'Sec-CH-UA'
 export const CLIENT_HINT_ARCHITECTURE = 'Sec-CH-UA-Arch'
@@ -80,7 +80,7 @@ export class ClientHints {
 
 		if(remaining.length === 0) { return undefined }
 
-		return remaining.join(', ')
+		return remaining.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }
 

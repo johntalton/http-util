@@ -26,6 +26,11 @@ export const RANGE_UNITS_BYTES = 'bytes'
 /** @type {'none'} */
 export const RANGE_UNITS_NONE = 'none'
 
+/** @description joiner used for concatenating multiple of the same headers into one */
+export const COMMON_LIST_HEADER_JOINER_COMMA = ', '
+
+/** @description joiner used for concatenating multiple values of single header */
+export const COMMON_LIST_VALUE_JOINER_COMMA = ','
 
 /** @import { TimingsInfo } from './headers/server-timing.js' */
 /** @import { EtagItem, IMFFixDateInput } from './headers/conditional.js' */

@@ -1,5 +1,6 @@
 import http2 from 'node:http2'
 
+import { COMMON_LIST_VALUE_JOINER_COMMA } from '../../defs.js'
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
@@ -20,6 +21,6 @@ export function sendNotAllowed(stream, info, meta) {
 	const { supportedMethods } = info
 
 	send(stream, HTTP_STATUS_METHOD_NOT_ALLOWED, {
-			[HTTP2_HEADER_ALLOW]: supportedMethods.join(',')
+			[HTTP2_HEADER_ALLOW]: supportedMethods.join(COMMON_LIST_VALUE_JOINER_COMMA)
 		}, [ HTTP2_HEADER_ALLOW ], undefined, undefined, meta)
 }

@@ -16,7 +16,7 @@ export const MIME_TYPE_MESSAGE_HTTP = 'message/http'
 
 export const KNOWN_CONTENT_TYPES = [
 	'application', 'audio', 'image', 'message',
-	'multipart','text', 'video'
+	'multipart', 'text', 'video'
 ]
 
 export const TYPE_X_TOKEN_PREFIX = 'X-'

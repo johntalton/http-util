@@ -40,7 +40,7 @@ describe('Response', () => {
 				age: undefined,
 				etag: undefined,
 				'last-modified': undefined,
-				vary: 'Accept, Accept-Encoding'
+				vary: 'accept,accept-encoding'
 			})
 
 			const result = stream.read()
@@ -74,7 +74,7 @@ describe('Response', () => {
 				age: '42',
 				etag: undefined,
 				'last-modified': undefined,
-				vary: 'Accept, Accept-Encoding'
+				vary: 'accept,accept-encoding'
 			})
 
 			const result = stream.read()

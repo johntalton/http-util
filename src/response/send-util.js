@@ -8,7 +8,7 @@ import {
 	zstdCompressSync
 } from 'node:zlib'
 
-import { HTTP_HEADER_ACCEPT_QUERY } from '../defs.js'
+import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY } from '../defs.js'
 import { CacheControl } from '../headers/cache-control.js'
 import { Conditional } from '../headers/conditional.js'
 import { ContentRange } from '../headers/content-range.js'
@@ -142,7 +142,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 
 	send(stream, status, {
 			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
-			[HTTP2_HEADER_VARY]: varyHeaders.join(','),
+			[HTTP2_HEADER_VARY]: varyHeaders.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
 			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified),
@@ -150,7 +150,7 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
 			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
-			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(',')
+			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA)
 		}, exposedHeaders, contentType, obj, meta)
 }
 

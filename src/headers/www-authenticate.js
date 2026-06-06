@@ -1,3 +1,5 @@
+import { COMMON_LIST_VALUE_JOINER_COMMA } from "../defs.js"
+
 /**
  * @typedef {Object} ChallengeItem
  * @property {string} scheme
@@ -98,7 +100,7 @@ export class Challenge {
 			return `${key}=${value}`
 		})
 
-		const params = parameters === undefined ? '' : [ ...parameters ].join(',')
+		const params = parameters === undefined ? '' : [ ...parameters ].join(COMMON_LIST_VALUE_JOINER_COMMA)
 
 		return `${challenge.scheme} ${params}`
 	}

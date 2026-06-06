@@ -33,6 +33,6 @@ export class ServerTiming {
 				]
 				.filter(item => item !== undefined)
 				.join(SERVER_TIMING_SEPARATOR.PARAMETER))
-			.join(SERVER_TIMING_SEPARATOR.METRIC)
+			.join(SERVER_TIMING_SEPARATOR.METRIC) // todo COMMON_LIST_HEADER_JOINER_COMMA
 	}
 }

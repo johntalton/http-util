@@ -1,3 +1,5 @@
+import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
+
 /**
  * @typedef {Object} LinkItem
  * @property {URL|string} url
@@ -29,6 +31,6 @@ export class Link {
 		if(linkAry.length === 0) { return undefined }
 		return linkAry
 			.map(link => [ ...Link.#encode(link) ].join('; '))
-			.join(', ')
+			.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }

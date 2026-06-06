@@ -1,3 +1,5 @@
+import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
+
 /** @typedef {'no-cache'|'no-store'|'no-transform'|'must-revalidate'|'immutable'|'must-understand'} Directives */
 
 /**
@@ -51,6 +53,6 @@ export class CacheControl {
 		//
 		if(result.length === 0) { return undefined }
 
-		return result.join(', ')
+		return result.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }
