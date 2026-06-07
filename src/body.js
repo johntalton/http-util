@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream'
+
 import {
 	CHARSET_UTF8,
 	MIME_TYPE_MULTIPART_FORM_DATA,
@@ -8,7 +10,6 @@ import { Multipart } from './headers/multipart.js'
 export const BYTE_PER_K = 1024
 export const DEFAULT_BYTE_LIMIT = BYTE_PER_K * BYTE_PER_K //
 
-/** @import { Readable } from 'node:stream' */
 /** @import { ContentTypeItem } from './headers/content-type.js' */
 
 /**
@@ -24,7 +25,7 @@ export const DEFAULT_BYTE_LIMIT = BYTE_PER_K * BYTE_PER_K //
  * @property {number} duration
  * @property {ReadableStream} body
  * @property {ContentTypeItem|undefined} contentType
- * @property { (mimetype: string) => Promise<Blob> } blob
+ * @property { (mimetype?: string | undefined) => Promise<Blob> } blob
  * @property { () => Promise<ArrayBufferLike> } arrayBuffer
  * @property { () => Promise<Uint8Array> } bytes
  * @property { () => Promise<string> } text
@@ -38,6 +39,8 @@ export const DEFAULT_BYTE_LIMIT = BYTE_PER_K * BYTE_PER_K //
  * @returns {BodyFuture}
  */
 export function requestBody(stream, options) {
+	if(!(stream instanceof Readable)) { throw new Error('stream is not Readable') }
+
 	const signal = options?.signal
 	const byteLimit = options?.byteLimit ?? DEFAULT_BYTE_LIMIT
 	const contentLength = options?.contentLength
@@ -93,7 +96,7 @@ export function requestBody(stream, options) {
 
 			const listener = () => {
 				stats.closed = true
-				controller.error(new Error('Abort Signal'))
+				controller.error(new Error(`Abort Signal (${signal?.reason})`))
 			}
 
 			signal?.addEventListener('abort', listener, { once: true })
@@ -101,7 +104,7 @@ export function requestBody(stream, options) {
 			stream.on('data', chunk => {
 				if(signal?.aborted) {
 					console.log('body reader aborted')
-					controller.error(new Error('Chunk read Abort Signal Timed out'))
+					controller.error(new Error(`Chunk read Abort Signal (${signal.reason})`))
 					stats.closed = true
 					return
 				}
@@ -114,8 +117,9 @@ export function requestBody(stream, options) {
 
 				// chunk is a node Buffer (which is a TypedArray)
 				if(!ArrayBuffer.isView(chunk)) {
-					controller.error('invalid chunk type')
+					controller.error(new Error('invalid chunk type'))
 					stats.closed = true
+					return
 				}
 
 				stats.byteLength += chunk.byteLength
@@ -157,6 +161,7 @@ export function requestBody(stream, options) {
 
 		cancel(reason) {
 			console.log('body reader canceled', reason)
+			// super.cancel(reason)
 		}
 	}
 
@@ -190,7 +195,7 @@ export function requestBody(stream, options) {
 		get body() { return makeReader() },
 		get contentType() { return contentType },
 
-		blob: (/** @type {string | undefined} */ mimetype) => wrap(reader => bodyBlob(reader, mimetype ?? contentType?.mimetype)),
+		blob: (/** @type {string | undefined} */ mimetype = undefined) => wrap(reader => bodyBlob(reader, mimetype ?? contentType?.mimetype)),
 		arrayBuffer: () => wrap(reader => bodyArrayBuffer(reader)),
 		bytes: () => wrap(reader => bodyUint8Array(reader)),
 		text: () => wrap(reader => bodyText(reader, charset)),

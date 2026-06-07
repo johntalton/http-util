@@ -22,7 +22,45 @@ describe('send_util', () => {
 
 	describe('send_bytes', () => {})
 
-	describe('send_error', () => {})
+	describe('send_error', () => {
+		it('should send with default message', () => {
+			const stream = new MockHttp2Stream()
+			const message = undefined
+			send_error(stream, 500, message, undefined, structuredClone(DEFAULT_META))
+
+			const result = stream.read()
+			const decoder = new TextDecoder('utf-8')
+			const decoded = decoder.decode(result)
+			assert.equal(decoded, JSON.stringify({ message: 'Error' }))
+		})
+
+		it('should send with message', () => {
+			const stream = new MockHttp2Stream()
+			const message = 'A Message'
+			send_error(stream, 500, message, undefined, structuredClone(DEFAULT_META))
+
+			const result = stream.read()
+			const decoder = new TextDecoder('utf-8')
+			const decoded = decoder.decode(result)
+			assert.equal(decoded, JSON.stringify({ message }))
+		})
+
+		it('should send with message and retryAfter', () => {
+			const stream = new MockHttp2Stream()
+			const message = 'A Message'
+			const retryAfter = 42
+			send_error(stream, 500, message, retryAfter, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.sentHeaders[':status'], 500)
+			assert.equal(stream.sentHeaders['retry-after'], '42')
+			assert.equal(stream.sentHeaders['access-control-expose-headers'], 'etag,server,retry-after')
+
+			const result = stream.read()
+			const decoder = new TextDecoder('utf-8')
+			const decoded = decoder.decode(result)
+			assert.equal(decoded, JSON.stringify({ message }))
+		})
+	})
 
 	describe('send_encoded', () => {
 
