@@ -15,7 +15,7 @@ describe('Response', () => {
 	describe('sse', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			Response.sse(stream, DEFAULT_META)
+			Response.sse(stream, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

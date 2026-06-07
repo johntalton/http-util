@@ -15,7 +15,7 @@ describe('Response', () => {
 	describe('unprocessable', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			Response.unprocessable(stream, DEFAULT_META)
+			Response.unprocessable(stream, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

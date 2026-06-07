@@ -17,7 +17,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const etag = undefined
 			const lastModified = undefined
-			Response.preconditionFailed(stream, { etag, lastModified }, DEFAULT_META)
+			Response.preconditionFailed(stream, { etag, lastModified }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

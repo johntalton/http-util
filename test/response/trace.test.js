@@ -23,7 +23,7 @@ describe('Response', () => {
 				'cookie': 'secret-gets-dropped'
 			}
 
-			Response.trace(stream, method, url, headers, DEFAULT_META)
+			Response.trace(stream, method, url, headers, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

@@ -1,12 +1,7 @@
 import http2 from 'node:http2'
-import { pipeline, Readable } from 'node:stream'
+import { compose, pipeline, Readable } from 'node:stream'
 import { ReadableStream } from 'node:stream/web'
-import {
-	brotliCompressSync,
-	deflateSync,
-	gzipSync,
-	zstdCompressSync
-} from 'node:zlib'
+import zlib from 'node:zlib'
 
 import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY } from '../defs.js'
 import { CacheControl } from '../headers/cache-control.js'
@@ -21,7 +16,7 @@ import {
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
-/** @import { InputType } from 'node:zlib' */
+/** @import { InputType, BrotliOptions, ZlibOptions, ZstdOptions } from 'node:zlib' */
 /** @import { AcceptRangeUnits, Metadata, SendBody } from '../defs.js' */
 /** @import { EtagItem, IMFFixDateInput } from '../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../headers/cache-control.js' */
@@ -72,11 +67,55 @@ export function send_error(stream, status, message, retryAfter, meta) {
 
 /** @type {Map<string, EncoderFun>} */
 export const ENCODER_MAP = new Map([
-	[ 'br', data => brotliCompressSync(data) ],
-	[ 'gzip', data => gzipSync(data) ],
-	[ 'deflate', data => deflateSync(data) ],
-	[ 'zstd', data => zstdCompressSync(data) ]
+	[ 'br', data => zlib.brotliCompressSync(data) ],
+	[ 'gzip', data => zlib.gzipSync(data) ],
+	[ 'deflate', data => zlib.deflateSync(data) ],
+	[ 'zstd', data => zlib.zstdCompressSync(data) ]
 ])
+
+/** @type {BrotliOptions} */
+export const ENCODER_STREAM_BR_OPTIONS = { }
+
+/** @type {ZlibOptions} */
+export const ENCODER_STREAM_GZIP_OPTIONS = {}
+
+/** @type {ZlibOptions} */
+export const ENCODER_STREAM_DEFLATE_OPTIONS = {}
+
+/** @type {ZstdOptions} */
+export const ENCODER_STREAM_ZSTD_OPTIONS = {}
+
+/** @typedef {(stream: Readable) => Readable} EncoderStreamFn */
+
+/** @type {Map<string, EncoderStreamFn>} */
+export const ENCODER_STREAM_MAP = new Map([
+	[ 'br', stream => compose(stream, zlib.createBrotliCompress(ENCODER_STREAM_BR_OPTIONS)) ],
+	[ 'gzip', stream => compose(stream, zlib.createGzip(ENCODER_STREAM_GZIP_OPTIONS)) ],
+	[ 'deflate', stream => compose(stream, zlib.createDeflate(ENCODER_STREAM_DEFLATE_OPTIONS)) ],
+	[ 'zstd', stream => compose(stream, zlib.createZstdCompress(ENCODER_STREAM_ZSTD_OPTIONS)) ]
+])
+
+
+/**
+ * @template T
+ * @param {string|undefined|'identity'} encoding
+ * @param {Map<string, T>} listing
+ * @returns {{ encoderFn: T | undefined, encoding: string | undefined }}
+ */
+export function lookupEncoder(encoding, listing) {
+	const encoderFn = listing.get(encoding ?? 'identity')
+	if(encoderFn === undefined) {
+		return {
+			encoderFn: undefined,
+			encoding: encoding === 'identity' ? encoding : undefined
+		}
+	}
+
+	return {
+		encoderFn,
+		encoding
+	}
+}
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -95,13 +134,16 @@ export const ENCODER_MAP = new Map([
 export function send_encoded(stream, status, contentType, body, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
 	const obj = (typeof body === 'string') ? Buffer.from(body, CHARSET_UTF8) : body
 
-	const useIdentity = encoding === 'identity'
-	const encoder = encoding === undefined ? undefined : ENCODER_MAP.get(encoding)
-	const hasEncoder = encoder !== undefined
-	const actualEncoding = hasEncoder ? encoding : undefined
+	if((obj instanceof ReadableStream) || (obj instanceof Readable)) {
+		const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding,	 ENCODER_STREAM_MAP)
+		const encodedStream = (encoderFn === undefined) ? obj : encoderFn((obj instanceof ReadableStream) ? Readable.fromWeb(obj) : obj)
+		send_bytes(stream, status, contentType, encodedStream, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta )
+		return
+	}
 
+	const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding, ENCODER_MAP)
 	const encodeStart = performance.now()
-	const encodedData = (hasEncoder && !useIdentity) ? encoder(obj) : obj
+	const encodedData = (encoderFn === undefined) ? obj : encoderFn(obj)
 	const encodeEnd = performance.now()
 
 	meta.performance.push(
@@ -186,10 +228,9 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 	}
 
 	if(stream.writable && body !== undefined) {
-		if(body instanceof ReadableStream) {
-			const signal = undefined // AbortSignal.timeout(1000)
+		if(body instanceof ReadableStream || body instanceof Readable) {
 			pipeline(
-				Readable.fromWeb(body, { signal }),
+				body,
 				stream,
 				err => {
 					if(err !== null && err !== undefined) {

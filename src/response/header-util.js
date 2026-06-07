@@ -17,8 +17,8 @@ const {
 	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
 	HTTP2_HEADER_CONTENT_TYPE,
 	HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
-
-	HTTP2_HEADER_ETAG
+	HTTP2_HEADER_ETAG,
+	HTTP2_HEADER_STRICT_TRANSPORT_SECURITY
 } = http2.constants
 
 /**
@@ -32,6 +32,7 @@ export function coreHeaders(status, contentType, exposedHeaders, meta) {
 	const exposed = [ HTTP2_HEADER_ETAG, HTTP2_HEADER_SERVER, ...exposedHeaders ] // todo include lastModified
 
 	return {
+		// todo [HTTP2_HEADER_STRICT_TRANSPORT_SECURITY]: StrictTransportSecurity.encode(meta.hsts)
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
 		[HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS]: exposed.join(COMMON_LIST_VALUE_JOINER_COMMA),
 		// Access-Control-Allow-Credentials // for non-preflight
@@ -57,6 +58,7 @@ export function performanceHeaders(meta) {
  * @returns {OutgoingHttpHeaders}
  */
 export function customHeaders(meta) {
-	const m = new Map(meta.customHeaders?.filter(h => h[0].startsWith('X-')))
+	const CUSTOM_HEADER_PREFIX = 'X-'
+	const m = new Map(meta.customHeaders?.filter(h => h[0].startsWith(CUSTOM_HEADER_PREFIX)))
 	return Object.fromEntries(m)
 }

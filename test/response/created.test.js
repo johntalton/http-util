@@ -18,7 +18,7 @@ describe('Response', () => {
 			const location = new URL('http://brand-new')
 			const etag = undefined
 			const lastModified = undefined
-			Response.created(stream, location, { etag, lastModified }, DEFAULT_META)
+			Response.created(stream, location, { etag, lastModified }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -44,7 +44,7 @@ describe('Response', () => {
 			const location = '//foo/bar'
 			const etag = undefined
 			const lastModified = undefined
-			Response.created(stream, location, { etag, lastModified }, DEFAULT_META)
+			Response.created(stream, location, { etag, lastModified }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

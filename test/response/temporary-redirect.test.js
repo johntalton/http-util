@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const location = new URL('http://temp.redirect')
-			Response.temporaryRedirect(stream, location, DEFAULT_META)
+			Response.temporaryRedirect(stream, location, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -38,7 +38,7 @@ describe('Response', () => {
 		it('should handle basic values (location string)', () => {
 			const stream = new MockHttp2Stream()
 			const location = 'http://my-site/'
-			Response.temporaryRedirect(stream, location, DEFAULT_META)
+			Response.temporaryRedirect(stream, location, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const location = new URL('http://new/home.json')
-			Response.movedPermanently(stream, location, DEFAULT_META)
+			Response.movedPermanently(stream, location, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -38,7 +38,7 @@ describe('Response', () => {
 		it('should handle basic values (location string)', () => {
 			const stream = new MockHttp2Stream()
 			const location = 'new.html'
-			Response.movedPermanently(stream, location, DEFAULT_META)
+			Response.movedPermanently(stream, location, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

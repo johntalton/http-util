@@ -37,6 +37,7 @@ export function sendNotModified(stream, content, meta) {
 	const varyHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
 
 	send(stream, HTTP_STATUS_NOT_MODIFIED, {
+			// todo Content-Location
 			[HTTP2_HEADER_VARY]: varyHeaders.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),

@@ -15,7 +15,7 @@ describe('Response', () => {
 	describe('contentTooLarge', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			Response.contentTooLarge(stream, DEFAULT_META)
+			Response.contentTooLarge(stream, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

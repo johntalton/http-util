@@ -12,7 +12,7 @@ const DEFAULT_META = {
 describe('Header Util', () => {
 	describe('coreHeaders', () => {
 		it('should handle basic values', () => {
-			const result = coreHeaders(42, 'text/test', [], DEFAULT_META)
+			const result = coreHeaders(42, 'text/test', [], structuredClone(DEFAULT_META))
 			assert.deepEqual(result, {
 				':status': 42,
 				'access-control-allow-origin': undefined,
@@ -25,7 +25,7 @@ describe('Header Util', () => {
 		it('should handle basic values with additional exposed headers', () => {
 			const result = coreHeaders(42, 'text/test', [
 				'fake-header', 'another-one'
-			], DEFAULT_META)
+			], structuredClone(DEFAULT_META))
 			assert.deepEqual(result, {
 				':status': 42,
 				'access-control-allow-origin': undefined,

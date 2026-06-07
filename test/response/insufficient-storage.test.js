@@ -15,7 +15,7 @@ describe('Response', () => {
 	describe('insufficientStorage', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			Response.insufficientStorage(stream, DEFAULT_META)
+			Response.insufficientStorage(stream, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

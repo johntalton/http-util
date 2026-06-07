@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const location = new URL('ftp://see/other')
-			Response.seeOther(stream, location, DEFAULT_META)
+			Response.seeOther(stream, location, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -38,7 +38,7 @@ describe('Response', () => {
 		it('should handle basic values (location string)', () => {
 			const stream = new MockHttp2Stream()
 			const location = 'mailto:bob'
-			Response.seeOther(stream, location, DEFAULT_META)
+			Response.seeOther(stream, location, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

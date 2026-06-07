@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const challenge = undefined
-			Response.unauthorized(stream, challenge, DEFAULT_META)
+			Response.unauthorized(stream, challenge, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

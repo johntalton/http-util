@@ -15,7 +15,7 @@ describe('Response', () => {
 	describe('multipleChoices', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			Response.multipleChoices(stream, DEFAULT_META)
+			Response.multipleChoices(stream, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'This In Not Implemented'
-			Response.notImplemented(stream, message, DEFAULT_META)
+			Response.notImplemented(stream, message, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

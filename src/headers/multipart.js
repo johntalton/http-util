@@ -103,6 +103,9 @@ export class Multipart {
 
 						partName = disposition.name
 					}
+					else if(name === MULTIPART_HEADER.CONTENT_RANGE) {
+						// todo
+					}
 					else {
 						// unsupported part header - ignore
 						console.log('unsupported part header', name)
@@ -138,7 +141,7 @@ export class Multipart {
 	 * @param {Array<MultipartBytePart>} parts
 	 * @param {number|undefined} contentLength
 	 * @param {string} boundary
-	 * @returns {ReadableStream<Uint8Array>}
+	 * @returns {ReadableStream<Uint8Array<ArrayBuffer>>}
 	 */
 	static encode_Bytes(contentType, parts, contentLength, boundary) {
 		const boundaryBegin = `${BOUNDARY_MARK}${boundary}`
@@ -159,15 +162,20 @@ export class Multipart {
 					if(part.obj instanceof ReadableStream) {
 						// biome-ignore lint/performance/noAwaitInLoops: readable
 						for await (const chunk of part.obj) {
-							if(chunk instanceof ArrayBuffer || ArrayBuffer.isView(chunk)) {
+							if(chunk instanceof ArrayBuffer) {
+								controller.enqueue(new Uint8Array(chunk))
+							}
+							else if(ArrayBuffer.isView(chunk)) {
 								controller.enqueue(chunk)
 							}
 							else if(typeof chunk === 'string'){
 								controller.enqueue(encoder.encode(chunk))
 							}
-							else {
-								// console.log('chunk type', typeof chunk)
+							else if(typeof chunk === 'number') {
 								controller.enqueue(Uint8Array.from([ chunk ]))
+							}
+							else {
+								controller.error(new Error('unknown stream chunk type'))
 							}
 						}
 					}

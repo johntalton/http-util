@@ -30,7 +30,7 @@ describe('Response', () => {
 				cacheControl
 			}, {
 				supportedQueryTypes
-			}, DEFAULT_META)
+			}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

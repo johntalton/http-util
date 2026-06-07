@@ -18,7 +18,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'This Is a Test'
 			const retryAfter = 42
-			Response.unavailable(stream, message, { retryAfter }, DEFAULT_META)
+			Response.unavailable(stream, message, { retryAfter }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

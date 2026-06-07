@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const rangeDirective = {}
-			Response.rangeNotSatisfiable(stream, { rangeDirective }, DEFAULT_META)
+			Response.rangeNotSatisfiable(stream, { rangeDirective }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

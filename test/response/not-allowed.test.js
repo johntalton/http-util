@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const supportedMethods = [ 'GET', 'POST' ]
-			Response.notAllowed(stream, { supportedMethods }, DEFAULT_META)
+			Response.notAllowed(stream, { supportedMethods }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

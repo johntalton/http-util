@@ -15,7 +15,7 @@ describe('Response', () => {
 	describe('conflict', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			Response.conflict(stream, DEFAULT_META)
+			Response.conflict(stream, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

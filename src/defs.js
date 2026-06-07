@@ -1,3 +1,5 @@
+/** @import { Readable } from 'node:stream' */
+/** @import { ReadableStream } from 'node:stream/web' */
 
 export const HTTP_HEADER_ORIGIN = 'origin'
 export const HTTP_HEADER_USER_AGENT = 'user-agent'
@@ -58,7 +60,9 @@ export const COMMON_LIST_VALUE_JOINER_COMMA = ','
  * @property {boolean} [bom]
  */
 
-/** @typedef {ArrayBufferLike|ArrayBufferView|ReadableStream|string} SendBody */
+/** @typedef {NodeJS.TypedArray<ArrayBuffer>} TypedArray */
+/** @typedef {ArrayBuffer | TypedArray | string} SendBodyTypes */
+/** @typedef { SendBodyTypes | ReadableStream<SendBodyTypes> | Readable } SendBody */
 
 /**
  * @typedef {Object} SendContent

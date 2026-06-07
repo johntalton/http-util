@@ -1,7 +1,8 @@
-import { pipeline } from 'node:stream'
+import { Readable, pipeline } from 'node:stream'
+import { ReadableStream } from 'node:stream/web'
 
 /**
- * @param {ReadableStream} stream
+ * @param {Readable | ReadableStream} stream
  */
 export async function consumeStreamAsText(stream) {
 	const streamDecoder = new TextDecoderStream('utf8', {})

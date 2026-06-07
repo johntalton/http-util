@@ -28,7 +28,7 @@ describe('Response', () => {
 				quotaUnits: 'request',
 				windowSeconds: 60
 			}]
-			Response.tooManyRequests(stream, { limitInfo, policies }, DEFAULT_META)
+			Response.tooManyRequests(stream, { limitInfo, policies }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

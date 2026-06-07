@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
+import { ReadableStream } from 'node:stream/web'
 
 import { Multipart } from '@johntalton/http-util/headers'
 
@@ -170,6 +171,17 @@ describe('Multipart', () => {
 		})
 
 		it('should handle ReadableStream of ArrayBuffer object', async () => {
+			const encoder = new TextEncoder()
+			const encodedText = encoder.encode('TESTING')
+			const obj = new ReadableStream({ start(controller) { controller.enqueue(encodedText.buffer); controller.close() } })
+			const stream = Multipart.encode_Bytes('text/plain', [ { obj, range: {} } ], undefined, 'BOUNDARY')
+			assert.ok(stream instanceof ReadableStream)
+
+			const result = await consumeStreamAsText(stream)
+			assert.equal(result, '--BOUNDARY\r\ncontent-type: text/plain\r\ncontent-range: bytes */*\r\n\r\nTESTING\r\n--BOUNDARY--')
+		})
+
+		it('should handle ReadableStream of ArrayBufferView object', async () => {
 			const encoder = new TextEncoder()
 			const encodedText = encoder.encode('TESTING')
 			const obj = ReadableStream.from([ encodedText ])

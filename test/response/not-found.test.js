@@ -17,7 +17,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'This Is a Test'
-			Response.notFound(stream, message, DEFAULT_META)
+			Response.notFound(stream, message, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
