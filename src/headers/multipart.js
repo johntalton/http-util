@@ -2,7 +2,7 @@ import { ReadableStream } from 'node:stream/web'
 
 import { ContentDisposition } from './content-disposition.js'
 import { ContentRange } from './content-range.js'
-import { ContentType } from './content-type.js'
+// import { ContentType } from './content-type.js'
 
 /** @import { ContentRangeDirective } from './content-range.js' */
 /** @import { SendBody } from '../defs.js' */
@@ -92,7 +92,7 @@ export class Multipart {
 					const name = rawName?.toLowerCase()
 					// console.log('header', name, value)
 					if(name === MULTIPART_HEADER.CONTENT_TYPE) {
-						const contentType = ContentType.parse(value)
+						//const contentType = ContentType.parse(value)
 						//console.log({ contentType })
 					}
 					else if(name === MULTIPART_HEADER.CONTENT_DISPOSITION) {

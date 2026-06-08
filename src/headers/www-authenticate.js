@@ -56,10 +56,10 @@ export class Challenge {
 	 * @param {string|undefined} [scope]
 	 * @param {BearerErrorCode} [error]
 	 * @param {string} [errorDescription]
-	 * @param {string} [errorUri]
+	 * @param {string} [_errorUri]
 	 * @returns {ChallengeItem}
 	 */
-	static bearer(realm, scope, error, errorDescription, errorUri) {
+	static bearer(realm, scope, error, errorDescription, _errorUri) {
 		const parameters = new Map()
 		if(realm !== undefined) { parameters.set('realm', realm) }
 		if(scope !== undefined) { parameters.set('scope', scope) }
@@ -73,11 +73,11 @@ export class Challenge {
 	}
 
 	/**
-	 * @param {string} algorithm
-	 * @param {string} [realm]
+	 * @param {string} _algorithm
+	 * @param {string} [_realm]
 	 * @returns {ChallengeItem}
 	 */
-	static digest(algorithm, realm) {
+	static digest(_algorithm, _realm) {
 		return {
 			scheme: 'Digest'
 		}
