@@ -51,7 +51,7 @@ export const COMMON_LIST_VALUE_JOINER_COMMA = ','
  * @property {Array<TimingsInfo>} performance
  * @property {string|undefined} servername
  * @property {string|undefined} origin
- * @property {Array<[ CustomHeaderKey, string ]>|undefined} [customHeaders]
+ * @property {Array<[ CustomHeaderKey, string | Array<string> ]>|undefined} [customHeaders]
  */
 
 /**

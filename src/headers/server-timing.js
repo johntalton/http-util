@@ -20,12 +20,13 @@ export const SERVER_TIMING_SEPARATOR = {
 export class ServerTiming {
 	/**
 	 * @param {Array<TimingsInfo>|undefined} timings
+	 * @param {boolean} [asArray = false]
 	 */
-	static encode(timings) {
+	static encode(timings, asArray = false) {
 		if(timings === undefined) { return undefined }
 		if(timings.length <= 0) { return undefined }
 
-		return timings
+		const ary = timings
 			.map(({ name, duration, description }) => [
 					`${name}`,
 					description === undefined ? undefined : `${SERVER_TIMING_KEY_DESCRIPTION}${SERVER_TIMING_SEPARATOR.KVP}"${description}"`,
@@ -33,6 +34,7 @@ export class ServerTiming {
 				]
 				.filter(item => item !== undefined)
 				.join(SERVER_TIMING_SEPARATOR.PARAMETER))
-			.join(SERVER_TIMING_SEPARATOR.METRIC) // todo COMMON_LIST_HEADER_JOINER_COMMA
+
+		return asArray ? ary : ary.join(SERVER_TIMING_SEPARATOR.METRIC) // todo COMMON_LIST_HEADER_JOINER_COMMA
 	}
 }

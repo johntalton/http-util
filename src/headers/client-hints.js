@@ -69,8 +69,9 @@ export class ClientHints {
 
 	/**
 	 * @param {Array<String>} hints
+	 * @param {boolean} [asArray = false]
 	 */
-	static encode(hints) {
+	static encode(hints, asArray = false) {
 		if(hints === undefined) { return undefined }
 		if(!Array.isArray(hints)) { return undefined }
 		if(hints.length === 0) { return undefined }
@@ -80,7 +81,7 @@ export class ClientHints {
 
 		if(remaining.length === 0) { return undefined }
 
-		return remaining.join(COMMON_LIST_HEADER_JOINER_COMMA)
+		return asArray ? remaining : remaining.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }
 

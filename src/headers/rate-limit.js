@@ -62,7 +62,7 @@ export class RateLimitPolicy {
 	/**
 	 * @param {...RateLimitPolicyInfo} policies
 	 */
-	static from(...policies) {
+	static from(...policies) { // todo AsArray
 		if(policies === undefined) { return undefined }
 		if(policies.length === 0) { return undefined }
 

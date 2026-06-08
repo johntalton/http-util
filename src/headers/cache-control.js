@@ -15,9 +15,10 @@ import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
 export class CacheControl {
 	/**
 	 * @param {CacheControlOptions|undefined} options
-	 * @returns {string|undefined}
+	 * @param {boolean} [asArray = false]
+	 * @returns {Array<string>|string|undefined}
 	 */
-	static encode(options) {
+	static encode(options, asArray = false) {
 		if(options === undefined) { return undefined }
 
 		const {
@@ -53,6 +54,6 @@ export class CacheControl {
 		//
 		if(result.length === 0) { return undefined }
 
-		return result.join(COMMON_LIST_HEADER_JOINER_COMMA)
+		return asArray ? result : result.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }

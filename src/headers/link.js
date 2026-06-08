@@ -24,13 +24,16 @@ export class Link {
 
 	/**
 	 * @param {Array<LinkItem>|LinkItem|undefined} links
+	 * @param {boolean} [asArray = false]
 	 */
-	static encode(links) {
+	static encode(links, asArray = false) {
 		if(links === undefined) { return undefined }
 		const linkAry = Array.isArray(links) ? links : [ links ]
 		if(linkAry.length === 0) { return undefined }
-		return linkAry
+
+		const ary = linkAry
 			.map(link => [ ...Link.#encode(link) ].join('; '))
-			.join(COMMON_LIST_HEADER_JOINER_COMMA)
+
+		return asArray ? ary : ary.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }
