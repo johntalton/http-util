@@ -85,8 +85,9 @@ export class Mime {
 		if(second === undefined) { return false }
 
 		const matchType = first.type === second.type || first.type === MIME_ANY || second.type === MIME_ANY
-		const matchSubtype = first.subtype === second.subtype || first.subtype === MIME_ANY || second.subtype === MIME_ANY
+		if(!matchType) { return false }
 
-		return matchType && matchSubtype
+		const matchSubtype = first.subtype === second.subtype || first.subtype === MIME_ANY || second.subtype === MIME_ANY
+		return matchSubtype
 	}
 }
