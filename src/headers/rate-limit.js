@@ -44,9 +44,16 @@ export const QUOTA_UNIT = {
 
 export class RateLimit {
 	/**
+	 * @deprecated
+	 * @see {@link RateLimit.encode}
 	 * @param {RateLimitInfo} limitInfo
 	 */
-	static from(limitInfo) {
+	static from(limitInfo) { return RateLimit.encode(limitInfo) }
+
+	/**
+	 * @param {RateLimitInfo} limitInfo
+	 */
+	static encode(limitInfo) {
 		if(limitInfo === undefined) { return undefined }
 		const { name, remaining, resetSeconds, partitionKey } = limitInfo
 
@@ -60,9 +67,16 @@ export class RateLimit {
 
 export class RateLimitPolicy {
 	/**
+	 * @deprecated
+	 * @see {@link RateLimitPolicy.encode}
 	 * @param {...RateLimitPolicyInfo} policies
 	 */
-	static from(...policies) { // todo AsArray
+	static from(...policies) { return RateLimitPolicy.encode(...policies) }
+
+	/**
+	 * @param {...RateLimitPolicyInfo} policies
+	 */
+	static encode(...policies) { // todo AsArray
 		if(policies === undefined) { return undefined }
 		if(policies.length === 0) { return undefined }
 

@@ -4,24 +4,24 @@ import { describe, it } from 'node:test'
 import { RateLimit, RateLimitPolicy } from '@johntalton/http-util/headers'
 
 describe('RateLimit', () => {
-	describe('from', () => {
+	describe('encode', () => {
 		it('should handle undefined', () => {
-			const result = RateLimit.from(undefined)
+			const result = RateLimit.encode(undefined)
 			assert.equal(result, undefined)
 		})
 
 		it('should reject missing name', () => {
-			const result = RateLimit.from({ })
+			const result = RateLimit.encode({ })
 			assert.equal(result, undefined)
 		})
 
 		it('should reject missing remaining', () => {
-			const result = RateLimit.from({ name: 'TESTING' })
+			const result = RateLimit.encode({ name: 'TESTING' })
 			assert.equal(result, undefined)
 		})
 
 		it('should handle basic with missing reset', () => {
-			const result = RateLimit.from({
+			const result = RateLimit.encode({
 				name: 'TESTING',
 				remaining: 42
 			})
@@ -29,7 +29,7 @@ describe('RateLimit', () => {
 		})
 
 		it('should handle basic with', () => {
-			const result = RateLimit.from({
+			const result = RateLimit.encode({
 				name: 'TESTING',
 				remaining: 42,
 				resetSeconds: 77
@@ -42,19 +42,19 @@ describe('RateLimit', () => {
 })
 
 describe('RateLimitPolicy', () => {
-	describe('from', () => {
+	describe('encode', () => {
 		it('should handle undefined', () => {
-			const result = RateLimitPolicy.from(undefined)
+			const result = RateLimitPolicy.encode(undefined)
 			assert.equal(result, undefined)
 		})
 
 		it('should handle empty parameters', () => {
-			const result = RateLimitPolicy.from()
+			const result = RateLimitPolicy.encode()
 			assert.equal(result, undefined)
 		})
 
 		it('should handle common values', () => {
-			const result = RateLimitPolicy.from({
+			const result = RateLimitPolicy.encode({
 				name: 'FAKE',
 				quota: 42,
 				size: 77,
