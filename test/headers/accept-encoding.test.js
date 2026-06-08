@@ -36,6 +36,10 @@ describe('AcceptEncoding', () => {
 		})
 	})
 
+	describe('selectItemFrom', () => {
+		// todo move select test here after conversion
+	})
+
 	describe('select', () => {
 		it('should handle undefined', () => {
 			const result = AcceptEncoding.select(undefined, undefined)

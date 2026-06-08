@@ -5,7 +5,6 @@ export const DEFAULT_DELIMITER = ';'
 export const KVP_DELIMITER = '='
 export const KVP_EMPTY = ''
 
-
 export class KVP {
 	/**
 	 * @param {Array<string>|undefined} params
@@ -40,6 +39,7 @@ export class KVP {
 	}
 
 	/**
+	 * Parses Key Value pair parameter list with leading named item.
 	 * @param {string|undefined} str
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
 	 */
@@ -58,6 +58,7 @@ export class KVP {
 	}
 
 	/**
+	 * Parses Key Value pair parameter list (no special treatment for leading key)
 	 * @param {string|undefined} str
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
 	 */

@@ -15,6 +15,9 @@ export const UNSPECIFIED_QUALITY = 1
 
 export class Accept {
 	/**
+	 * Descending order based on quality and higher specificity.
+	 *
+	 * Returns negative is the first item (a) is of higher quality then second (b).
 	 * @param {AcceptItem} a
 	 * @param {AcceptItem} b
 	 */
@@ -23,13 +26,13 @@ export class Accept {
 			// prefer things with less ANY
 			const specificityA = (a.type === MIME_ANY ? 1 : 0) + (a.subtype === MIME_ANY ? 1 : 0)
 			const specificityB = (b.type === MIME_ANY ? 1 : 0) + (b.subtype === MIME_ANY ? 1 : 0)
-			return specificityA - specificityB
+			return Math.sign(specificityA - specificityB)
 		}
 
 		// B - A descending order
 		const qualityB = b.quality ?? UNSPECIFIED_QUALITY
 		const qualityA = a.quality ?? UNSPECIFIED_QUALITY
-		return qualityB - qualityA
+		return Math.sign(qualityB - qualityA)
 	}
 
 	/**
@@ -126,5 +129,3 @@ export class Accept {
 		return item?.mimetype
 	}
 }
-
-

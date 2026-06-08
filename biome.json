@@ -76,7 +76,7 @@
         "useNamingConvention": "off",
         "noMagicNumbers": "off",
 
-        "noSubstr": "off",
+        "noSubstr": "warn",
 
         "noUselessElse": "error",
         "noNestedTernary": "error",

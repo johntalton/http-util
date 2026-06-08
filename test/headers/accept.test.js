@@ -47,6 +47,64 @@ const ITEM_ANY = {
 
 
 describe('Accept', () => {
+	describe('compare', () => {
+		it('should return positive when second items is higher quality', () => {
+			const first = { ...ITEM_PLAIN, quality: 0.1 }
+			const second = { ...ITEM_PLAIN, quality: 0.5 }
+
+			const result = Accept.compare(first, second)
+			assert.equal(result, 1)
+		})
+
+		it('should return negative when second item ist lower quality', () => {
+			const first = { ...ITEM_PLAIN, quality: 0.5 }
+			const second = { ...ITEM_PLAIN, quality: 0.1 }
+
+			const result = Accept.compare(first, second)
+			assert.equal(result, -1)
+		})
+
+		it('should return zero when quality is equal', () => {
+			const first = { ...ITEM_PLAIN, quality: 0.5 }
+			const second = { ...ITEM_PLAIN, quality: 0.5 }
+
+			const result = Accept.compare(first, second)
+			assert.equal(result, 0)
+		})
+
+		it('should return positive when second item is unspecified quality', () => {
+			const first = { ...ITEM_PLAIN, quality: 0.5 }
+			const second = { ...ITEM_PLAIN }
+
+			const result = Accept.compare(first, second)
+			assert.equal(result, 1)
+		})
+
+		it('should return positive when second is more specific type', () => {
+			const first = { ...ITEM_APPLICATION_ANY, quality: 1 }
+			const second = { ...ITEM_PLAIN, quality: 1 }
+
+			const result = Accept.compare(first, second)
+			assert.equal(result, 1)
+		})
+
+		it('should return negative when first is more specific subtype', () => {
+			const first = {  ...ITEM_APPLICATION_ANY }
+			const second = { ...ITEM_ANY }
+
+			const result = Accept.compare(first, second)
+			assert.equal(result, -1)
+		})
+
+		it('should return zero both are any', () => {
+			const first = {  ...ITEM_ANY }
+			const second = { ...ITEM_ANY }
+
+			const result = Accept.compare(first, second)
+			assert.equal(result, 0)
+		})
+	})
+
 	describe('parse', () => {
 		it('should handle undefined', () => {
 			const result = Accept.parse(undefined)
@@ -182,7 +240,7 @@ describe('Accept', () => {
 	})
 
 	describe('selectFrom', () => {
-
+		// covered by select item
 	})
 
 	describe('select', () => {

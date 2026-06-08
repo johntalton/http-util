@@ -53,8 +53,8 @@ export class Range {
 	static parse(rangeHeader) {
 		if(rangeHeader === undefined) { return undefined }
 		if(!rangeHeader.startsWith(RANGE_UNITS_BYTES)) { return undefined }
-		if(!(rangeHeader.substring(RANGE_UNITS_BYTES.length, RANGE_UNITS_BYTES.length + 1) === RANGE_EQUAL)) { return undefined }
-		const rangeStr = rangeHeader.substring(RANGE_UNITS_BYTES.length + RANGE_EQUAL.length).trim()
+		if(!(rangeHeader.slice(RANGE_UNITS_BYTES.length, RANGE_UNITS_BYTES.length + 1) === RANGE_EQUAL)) { return undefined }
+		const rangeStr = rangeHeader.slice(RANGE_UNITS_BYTES.length + RANGE_EQUAL.length).trim()
 		if(rangeStr === '') { return undefined }
 
 		const ranges = rangeStr.split(RANGE_LIST_SEPARATOR)

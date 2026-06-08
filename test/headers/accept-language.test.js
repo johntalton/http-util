@@ -21,6 +21,18 @@ describe('AcceptLanguage', () => {
 				{ name: 'en-US', quality: 1 }, { name: 'en', quality: 0.5 }
 			])
 		})
+
+		it('should handle sorting', () => {
+			const result = AcceptLanguage.parse('fr;q=.2,en;q=0.5')
+			assert.deepEqual(result, [
+				{ name: 'en', quality: .5, parameters: new Map([ [ 'q', '0.5'] ]) },
+				{ name: 'fr', quality: 0.2, parameters: new Map([ [ 'q', '.2'] ]) }
+			])
+		})
+	})
+
+	describe('selectItemFrom', () => {
+		// todo convert select to selectItemFrom tests
 	})
 
 	describe('select', () => {

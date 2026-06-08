@@ -143,7 +143,7 @@ export class ETag {
 
 		const rawEtag = raw.trim()
 		const weak = rawEtag.startsWith(CONDITION_ETAG_WEAK_PREFIX)
-		const quotedEtag = weak ? rawEtag.substring(CONDITION_ETAG_WEAK_PREFIX.length) : rawEtag
+		const quotedEtag = weak ? rawEtag.slice(CONDITION_ETAG_WEAK_PREFIX.length) : rawEtag
 
 		if(quotedEtag === CONDITION_ETAG_ANY) { return ANY_ETAG_ITEM }
 
@@ -350,18 +350,18 @@ export class Conditional {
 
 		//
 		const spaces = [
-			matchHeader.substring(4, 5),
-			matchHeader.substring(7, 8),
-			matchHeader.substring(11, 12),
-			matchHeader.substring(16, 17),
-			matchHeader.substring(25, 26)
+			matchHeader.slice(4, 5),
+			matchHeader.slice(7, 8),
+			matchHeader.slice(11, 12),
+			matchHeader.slice(16, 17),
+			matchHeader.slice(25, 26)
 		]
-		const comma = matchHeader.substring(3, 4)
+		const comma = matchHeader.slice(3, 4)
 		const timeSeparators = [
-			matchHeader.substring(19, 20),
-			matchHeader.substring(22, 23)
+			matchHeader.slice(19, 20),
+			matchHeader.slice(22, 23)
 		]
-		const gmt = matchHeader.substring(26)
+		const gmt = matchHeader.slice(26)
 
 		//
 		if(comma !== DATE_SEPARATOR) { return undefined }
@@ -374,13 +374,13 @@ export class Conditional {
 		}
 
 		//
-		const dayName = matchHeader.substring(0, 3)
-		const day = Number.parseInt(matchHeader.substring(5, 7))
-		const month = matchHeader.substring(8, 11)
-		const year = Number.parseInt(matchHeader.substring(12, 16))
-		const hour = Number.parseInt(matchHeader.substring(17, 19))
-		const minute = Number.parseInt(matchHeader.substring(20, 22))
-		const second = Number.parseInt(matchHeader.substring(23, 25))
+		const dayName = matchHeader.slice(0, 3)
+		const day = Number.parseInt(matchHeader.slice(5, 7))
+		const month = matchHeader.slice(8, 11)
+		const year = Number.parseInt(matchHeader.slice(12, 16))
+		const hour = Number.parseInt(matchHeader.slice(17, 19))
+		const minute = Number.parseInt(matchHeader.slice(20, 22))
+		const second = Number.parseInt(matchHeader.slice(23, 25))
 
 		//
 		if(!DATE_DAYS.includes(dayName)) { return undefined }

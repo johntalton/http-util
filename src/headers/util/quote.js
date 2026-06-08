@@ -5,7 +5,7 @@ export const QUOTE = '"'
  */
 export function stripQuotes(value) {
 	if(value === undefined) { return undefined }
-	return value.substring(1, value.length - 1)
+	return value.slice(1, -1)
 }
 
 /**
