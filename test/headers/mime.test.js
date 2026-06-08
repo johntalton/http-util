@@ -3,6 +3,38 @@ import { describe, it } from 'node:test'
 
 import { Mime } from '@johntalton/http-util/util'
 
+const ITEM_JSON = {
+	name: 'application/json;charset=utf8',
+	mimetype: 'application/json',
+	type: 'application',
+	subtype: 'json',
+	parameters: new Map([[ 'charset', 'utf8']])
+}
+
+const ITEM_PLAIN = {
+	name: 'text/plain;charset=utf8',
+	mimetype: 'text/plain',
+	type: 'text',
+	subtype: 'plain',
+	parameters: new Map([[ 'charset', 'utf8']])
+}
+
+const ITEM_APPLICATION_ANY = {
+	name: 'application/*',
+	mimetype: 'application/*',
+	type: 'application',
+	subtype: '*',
+	parameters: new Map([])
+}
+
+const ITEM_ANY = {
+	name: '*',
+	mimetype: '*/*',
+	type: '*',
+	subtype: '*',
+	parameters: new Map([])
+}
+
 describe('Mime', () => {
 	describe('parse', () => {
 		it('should handle undefined', () => {
@@ -54,5 +86,58 @@ describe('Mime', () => {
 			const result = Mime.parse('\ttext/plain ')
 			assert.deepEqual(result, { mimetype: 'text/plain', type: 'text', subtype: 'plain' })
 		})
+
+		it('should handle valid mimetype (any)', () =>{
+			const result = Mime.parse('*')
+			assert.deepEqual(result, { mimetype: '*/*', type: '*', subtype: '*' })
+		})
+
+		it('should handle valid mimetype (any subtype)', () =>{
+			const result = Mime.parse('text/*')
+			assert.deepEqual(result, { mimetype: 'text/*', type: 'text', subtype: '*' })
+		})
+
+		it('should handle valid mimetype (any any)', () =>{
+			const result = Mime.parse('*/*')
+			assert.deepEqual(result, { mimetype: '*/*', type: '*', subtype: '*' })
+		})
+	})
+
+	describe('matches', () => {
+		it('should handle undefined (both)', () => {
+			const result = Mime.matches(undefined, undefined)
+			assert.equal(result, false)
+		})
+
+		it('should handle undefined (first)', () => {
+			const result = Mime.matches(undefined, ITEM_JSON)
+			assert.equal(result, false)
+		})
+
+		it('should handle undefined (second)', () => {
+			const result = Mime.matches(ITEM_JSON, undefined)
+			assert.equal(result, false)
+		})
+
+		it('should handle (identity)', () => {
+			const result = Mime.matches(ITEM_JSON, ITEM_JSON)
+			assert.equal(result, true)
+		})
+
+		it('should handle (any subtype)', () => {
+			const result = Mime.matches(ITEM_JSON, ITEM_APPLICATION_ANY)
+			assert.equal(result, true)
+		})
+
+		it('should handle (any any)', () => {
+			const result = Mime.matches(ITEM_JSON, ITEM_ANY)
+			assert.equal(result, true)
+		})
+
+		it('should handle not match', () => {
+			const result = Mime.matches(ITEM_JSON, ITEM_PLAIN)
+			assert.equal(result, false)
+		})
+
 	})
 })
