@@ -19,6 +19,8 @@ export class AcceptLanguage {
 	}
 
 	/**
+	 * @deprecated
+	 * @see {@link AcceptLanguage.selectItemFrom}
 	 * @param {string|undefined} acceptLanguageHeader
 	 * @param {Array<string>} supportedTypes
 	 */
@@ -28,8 +30,8 @@ export class AcceptLanguage {
 	}
 
 	/**
-	 * @param {Array<AcceptStyleItem>} acceptLanguages
-	 * @param {Array<string>} supportedTypes
+	 * @param {Array<AcceptStyleItem>} acceptLanguages (descending quality order)
+	 * @param {Array<string>} supportedTypes (descending preferred order)
 	 * @returns {AcceptStyleItem | undefined}
 	 */
 	static selectItemFrom(acceptLanguages, supportedTypes) {
@@ -41,6 +43,7 @@ export class AcceptLanguage {
 		if(!Array.isArray(supportedTypes)) { return undefined }
 		if(supportedTypes.length === 0) { return undefined }
 
+		// this assume acceptLangues is quality sorted descending order
 		for(const acceptLanguage of acceptLanguages) {
 			const { name } = acceptLanguage
 			if(supportedTypes.includes(name)) {
@@ -59,6 +62,8 @@ export class AcceptLanguage {
 	}
 
 	/**
+	 * @deprecated
+	 * @see {@link AcceptLanguage.selectItemFrom}
 	 * @param {Array<AcceptStyleItem>} acceptLanguages
 	 * @param {Array<string>} supportedTypes
 	 * @returns {string | undefined}

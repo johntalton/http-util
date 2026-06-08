@@ -27,8 +27,8 @@ export class Accept {
 		}
 
 		// B - A descending order
-		const qualityB = b.quality ?? 1
-		const qualityA = a.quality ?? 1
+		const qualityB = b.quality ?? UNSPECIFIED_QUALITY
+		const qualityA = a.quality ?? UNSPECIFIED_QUALITY
 		return qualityB - qualityA
 	}
 
@@ -55,6 +55,8 @@ export class Accept {
 	}
 
 	/**
+	 * @deprecated
+	 * @see {@link Accept.selectItemFrom}
 	 * @param {string|undefined} acceptHeader
 	 * @param {Array<string>} supportedTypes
 	 */
@@ -113,6 +115,8 @@ export class Accept {
 	}
 
 	/**
+	 * @deprecated
+	 * @see {@link Accept.selectItemFrom}
 	 * @param {Array<AcceptItem>} accepts
 	 * @param {Array<string>} supportedTypes
 	 * @returns {string | undefined}

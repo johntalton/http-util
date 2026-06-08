@@ -18,6 +18,8 @@ export class AcceptEncoding {
 	}
 
 	/**
+	 * @deprecated
+	 * @see {@link AcceptEncoding.selectItemFrom}
 	 * @param {string|undefined} acceptEncodingHeader
 	 * @param {Array<string>} supportedTypes
 	 */
@@ -27,8 +29,8 @@ export class AcceptEncoding {
 	}
 
 	/**
-	 * @param {Array<AcceptStyleItem>} acceptEncodings
-	 * @param {Array<string>} supportedTypes
+	 * @param {Array<AcceptStyleItem>} acceptEncodings (descending quality order)
+	 * @param {Array<string>} supportedTypes (descending preferred order)
 	 * @returns {AcceptStyleItem | undefined}
 	 */
 	static selectItemFrom(acceptEncodings, supportedTypes) {
@@ -58,6 +60,8 @@ export class AcceptEncoding {
 	}
 
 	/**
+	 * @deprecated
+	 * @see {@link AcceptEncoding.selectItemFrom}
 	 * @param {Array<AcceptStyleItem>} acceptEncodings
 	 * @param {Array<string>} supportedTypes
 	 * @returns {string | undefined}
