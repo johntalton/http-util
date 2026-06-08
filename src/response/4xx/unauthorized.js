@@ -20,6 +20,6 @@ const { HTTP_STATUS_UNAUTHORIZED } = http2.constants
  */
 export function sendUnauthorized(stream, challenge, meta) {
 	send(stream, HTTP_STATUS_UNAUTHORIZED, {
-			[HTTP2_HEADER_WWW_AUTHENTICATE]: challenge?.map(Challenge.encode), // todo stringify ?
+			[HTTP2_HEADER_WWW_AUTHENTICATE]: Challenge.encode(challenge),
 		}, [ HTTP2_HEADER_WWW_AUTHENTICATE ], undefined, undefined, meta)
 }

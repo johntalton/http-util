@@ -1,4 +1,4 @@
-import { COMMON_LIST_VALUE_JOINER_COMMA } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_VALUE_JOINER_COMMA } from "../defs.js"
 
 /**
  * @typedef {Object} ChallengeItem
@@ -37,9 +37,11 @@ export class Challenge {
 	/**
 	 * @param {string} realm
 	 * @param {string} [charset='utf-8']
-	 * @returns {ChallengeItem}
+	 * @returns {ChallengeItem|undefined}
 	 */
 	static basic(realm, charset = 'utf-8') {
+		if(realm === undefined) { return undefined }
+
 		const parameters = new Map([ [ 'realm', realm ] ])
 		if(charset !== undefined) { parameters.set('charset', charset) }
 
@@ -91,18 +93,39 @@ export class Challenge {
 	}
 
 	/**
-	 * @param {ChallengeItem} challenge
+	 * @param {Array<ChallengeItem> | ChallengeItem | undefined} challenges
+	 * @param {boolean} [asArray = false]
 	 */
-	static encode(challenge) {
+	static encode(challenges, asArray = false) {
+		if(!Array.isArray(challenges)) { return Challenge.#encode(challenges) }
+
+		const ary = challenges
+			.map(Challenge.#encode)
+			.filter(c => c !== undefined)
+
+		return asArray ? ary : ary.join(COMMON_LIST_HEADER_JOINER_COMMA)
+	}
+
+	/**
+	 * @param {ChallengeItem | undefined} challenge
+	 */
+	static #encode(challenge) {
+		if(challenge === undefined) { return undefined }
+		if(challenge.scheme === undefined) { return undefined }
+		if(challenge.scheme === '') { return undefined }
+
 		const parameters = challenge.parameters?.entries().map(([ key, value ]) => {
 			if(value === undefined) { return key }
 			if(paramNeedQuotes(key)) { return `${key}="${value}"` }
 			return `${key}=${value}`
 		})
 
-		const params = parameters === undefined ? '' : [ ...parameters ].join(COMMON_LIST_VALUE_JOINER_COMMA)
+		if(parameters === undefined) { return challenge.scheme }
+		const params = [ ...parameters ]
+		if(params.length === 0) { return challenge.scheme }
 
-		return `${challenge.scheme} ${params}`
+		const paramsStr = params.join(COMMON_LIST_VALUE_JOINER_COMMA)
+		return [ challenge.scheme, paramsStr ].join(' ')
 	}
 }
 
