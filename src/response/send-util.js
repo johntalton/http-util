@@ -47,6 +47,18 @@ const {
 /**
  * @param {ServerHttp2Stream} stream
  * @param {number} status
+ * @param {OutgoingHttpHeaders} headers
+ * @param {Array<string>} exposedHeaders
+ * @param {Metadata} meta
+ */
+export function send_no_body(stream, status, headers, exposedHeaders, meta) {
+	send(stream, status, headers, exposedHeaders, undefined, undefined, meta)
+}
+
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {number} status
  * @param {string|undefined} message
  * @param {number|undefined} retryAfter
  * @param {Metadata} meta

@@ -1,7 +1,7 @@
 import http2 from 'node:http2'
 
 import { Conditional } from '../../headers/conditional.js'
-import { send } from '../send-util.js'
+import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContent, Metadata } from '../../defs.js' */
@@ -24,8 +24,8 @@ export function sendNoContent(stream, content, meta) {
 		lastModified
 	} = content
 
-	send(stream, HTTP_STATUS_NO_CONTENT, {
+	send_no_body(stream, HTTP_STATUS_NO_CONTENT, {
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
 			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified)
-		}, [], undefined, undefined, meta)
+		}, [], meta)
 }

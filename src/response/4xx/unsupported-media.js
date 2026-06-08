@@ -6,7 +6,7 @@ import {
 	HTTP_HEADER_ACCEPT_POST,
 	HTTP_HEADER_ACCEPT_QUERY
 } from '../../defs.js'
-import { send } from '../send-util.js'
+import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendInfo, Metadata } from '../../defs.js' */
@@ -35,8 +35,8 @@ export function sendUnsupportedMediaType(stream, info, meta) {
 	const exposedHeaders = supportsQuery ? [ HTTP_HEADER_ACCEPT_QUERY, acceptHeader ] : [ acceptHeader ]
 
 
-	send(stream, HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, {
+	send_no_body(stream, HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, {
 			[acceptHeader]: acceptValue,
 			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA)
-		}, exposedHeaders, undefined, undefined, meta)
+		}, exposedHeaders, meta)
 }

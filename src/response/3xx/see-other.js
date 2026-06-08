@@ -1,6 +1,6 @@
 import http2 from 'node:http2'
 
-import { send } from '../send-util.js'
+import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata } from '../../defs.js' */
@@ -19,7 +19,7 @@ const { HTTP_STATUS_SEE_OTHER } = http2.constants
 export function sendSeeOther(stream, location, meta) {
 	const loc = (location instanceof URL) ? location.href : location
 
-	send(stream, HTTP_STATUS_SEE_OTHER, {
+	send_no_body(stream, HTTP_STATUS_SEE_OTHER, {
 		[HTTP2_HEADER_LOCATION]: loc
-	}, [HTTP2_HEADER_LOCATION], undefined, undefined, meta)
+	}, [HTTP2_HEADER_LOCATION], meta)
 }

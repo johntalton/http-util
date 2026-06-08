@@ -14,6 +14,5 @@ const { HTTP_STATUS_BAD_REQUEST } = http2.constants
  * @param {Metadata} meta
  */
 export function sendBadRequest(stream, message, meta) {
-	send(stream, HTTP_STATUS_BAD_REQUEST, {
-	}, [], CONTENT_TYPE_TEXT, message, meta)
+	send(stream, HTTP_STATUS_BAD_REQUEST, {}, [], CONTENT_TYPE_TEXT, message, meta)
 }

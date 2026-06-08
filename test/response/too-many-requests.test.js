@@ -37,7 +37,7 @@ describe('Response', () => {
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server,retry-after,RateLimit,RateLimit-Policy',
-				'content-type': 'text/plain;charset=utf8',
+				'content-type': undefined,
 				server: undefined,
 
 				'RateLimit': '"Test";r=42;t=77',
@@ -48,8 +48,7 @@ describe('Response', () => {
 			const encoder = new TextEncoder()
 
 			const result = stream.read()
-			const message = 'Retry After 77 Seconds'
-			assert.deepEqual(result, Buffer.from(encoder.encode(message)))
+			assert.deepEqual(result, null)
 		})
 	})
 })

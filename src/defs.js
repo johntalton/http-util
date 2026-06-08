@@ -79,8 +79,8 @@ export const COMMON_LIST_VALUE_JOINER_COMMA = ','
 /**
  * @typedef {Object} SendInfo
  * @property {Array<string>} supportedMethods
- * @property {Array<string>|string} supportedTypes
- * @property {Array<string>|string} acceptableMediaType
+ * @property {Array<string>|string} supportedTypes for content negotiation failures
+ * @property {Array<string>|string} acceptableMediaType for incoming post/put unsupported types
  * @property {AcceptRangeUnits|undefined} acceptRanges
  * @property {Array<string>|undefined} supportedQueryTypes
  * @property {RateLimitInfo} limitInfo
