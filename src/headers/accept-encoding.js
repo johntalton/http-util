@@ -29,22 +29,41 @@ export class AcceptEncoding {
 	/**
 	 * @param {Array<AcceptStyleItem>} acceptEncodings
 	 * @param {Array<string>} supportedTypes
+	 * @returns {AcceptStyleItem | undefined}
 	 */
-	static selectFrom(acceptEncodings, supportedTypes) {
+	static selectItemFrom(acceptEncodings, supportedTypes) {
+		if(acceptEncodings === undefined) { return undefined }
+		if(!Array.isArray(acceptEncodings)) { return undefined }
+		if(acceptEncodings.length === 0) { return undefined }
+
 		if(supportedTypes === undefined) { return undefined }
+		if(!Array.isArray(supportedTypes)) { return undefined }
+		if(supportedTypes.length === 0) { return undefined }
 
 		for(const acceptEncoding of acceptEncodings) {
 			const { name } = acceptEncoding
 			if(supportedTypes.includes(name)) {
-				return name
+				return acceptEncoding
 			 }
 		}
 
 		//
 		if(acceptEncodings.some(item => item.name === ENCODING_ANY)) {
-			return supportedTypes.at(0)
+			const [ name ] = supportedTypes
+			if(name === undefined) { return undefined }
+			return { name }
 		}
 
 		return undefined
+	}
+
+	/**
+	 * @param {Array<AcceptStyleItem>} acceptEncodings
+	 * @param {Array<string>} supportedTypes
+	 * @returns {string | undefined}
+	 */
+	static selectFrom(acceptEncodings, supportedTypes) {
+		const item = AcceptEncoding.selectItemFrom(acceptEncodings, supportedTypes)
+		return item?.name
 	}
 }

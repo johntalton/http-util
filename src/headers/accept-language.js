@@ -30,22 +30,41 @@ export class AcceptLanguage {
 	/**
 	 * @param {Array<AcceptStyleItem>} acceptLanguages
 	 * @param {Array<string>} supportedTypes
+	 * @returns {AcceptStyleItem | undefined}
 	 */
-	static selectFrom(acceptLanguages, supportedTypes) {
+	static selectItemFrom(acceptLanguages, supportedTypes) {
+		if(acceptLanguages === undefined) { return undefined }
+		if(!Array.isArray(acceptLanguages)) { return undefined }
+		if(acceptLanguages.length === 0) { return undefined }
+
 		if(supportedTypes === undefined) { return undefined }
+		if(!Array.isArray(supportedTypes)) { return undefined }
+		if(supportedTypes.length === 0) { return undefined }
 
 		for(const acceptLanguage of acceptLanguages) {
 			const { name } = acceptLanguage
 			if(supportedTypes.includes(name)) {
-				return name
+				return acceptLanguage
 			}
 		}
 
 		//
 		if(acceptLanguages.some(item => item.name === LANGUAGE_ANY)) {
-			return supportedTypes.at(0)
+			const name = supportedTypes.at(0)
+			if(name === undefined) { return undefined }
+			return { name }
 		}
 
 		return undefined
+	}
+
+	/**
+	 * @param {Array<AcceptStyleItem>} acceptLanguages
+	 * @param {Array<string>} supportedTypes
+	 * @returns {string | undefined}
+	 */
+	static selectFrom(acceptLanguages, supportedTypes) {
+		const item = AcceptLanguage.selectItemFrom(acceptLanguages, supportedTypes)
+		return item?.name
 	}
 }

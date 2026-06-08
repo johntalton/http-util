@@ -1,5 +1,5 @@
 import { parseAcceptStyleHeader } from './util/accept-util.js'
-import { MIME_ANY, Mime } from './util/mime.js'
+import { MIME_ANY, MIME_SEPARATOR, Mime } from './util/mime.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
 /** @import { MimeItem } from './util/mime.js' */
@@ -11,7 +11,27 @@ export const WELL_KNOWN = new Map([
 	[ 'application/json', [ { name: 'application/json', quality: 1 } ] ]
 ])
 
+export const UNSPECIFIED_QUALITY = 1
+
 export class Accept {
+	/**
+	 * @param {AcceptItem} a
+	 * @param {AcceptItem} b
+	 */
+	static compare(a, b) {
+		if(a.quality === b.quality) {
+			// prefer things with less ANY
+			const specificityA = (a.type === MIME_ANY ? 1 : 0) + (a.subtype === MIME_ANY ? 1 : 0)
+			const specificityB = (b.type === MIME_ANY ? 1 : 0) + (b.subtype === MIME_ANY ? 1 : 0)
+			return specificityA - specificityB
+		}
+
+		// B - A descending order
+		const qualityB = b.quality ?? 1
+		const qualityA = a.quality ?? 1
+		return qualityB - qualityA
+	}
+
 	/**
 	 * @param {string|undefined} acceptHeader
 	 * @returns {Array<AcceptItem>}
@@ -31,19 +51,7 @@ export class Accept {
 				}
 			})
 			.filter(entry => entry !== undefined)
-			.sort((entryA, entryB) => {
-				if(entryA.quality === entryB.quality) {
-					// prefer things with less ANY
-					const specificityA = (entryA.type === MIME_ANY ? 1 : 0) + (entryA.subtype === MIME_ANY ? 1 : 0)
-					const specificityB = (entryB.type === MIME_ANY ? 1 : 0) + (entryB.subtype === MIME_ANY ? 1 : 0)
-					return specificityA - specificityB
-				}
-
-				// B - A descending order
-				const qualityB = entryB.quality ?? 0
-				const qualityA = entryA.quality ?? 0
-				return qualityB - qualityA
-			})
+			.sort(Accept.compare)
 	}
 
 	/**
@@ -58,28 +66,60 @@ export class Accept {
 	/**
 	 * @param {Array<AcceptItem>} accepts
 	 * @param {Array<string>} supportedTypes
+	 * @returns {AcceptItem | undefined}
 	 */
-	static selectFrom(accepts, supportedTypes) {
-		const bests = accepts.map(accept => {
-			const { type, subtype, quality } = accept
-			const st = supportedTypes.filter(supportedType => {
-				const supportedMime = Mime.parse(supportedType)
-				if(supportedMime === undefined) { return false }
-				return ((supportedMime.type === type || type === MIME_ANY) && (supportedMime.subtype === subtype || subtype === MIME_ANY))
-			})
+	static selectItemFrom(accepts, supportedTypes) {
+		if(accepts === undefined) { return undefined }
+		if(!Array.isArray(accepts)) { return undefined }
+		if(accepts.length === 0) { return undefined }
 
+		if(supportedTypes === undefined) { return undefined }
+		if(!Array.isArray(supportedTypes)) { return undefined }
+		if(supportedTypes.length === 0) { return undefined }
+
+		const supportedMimeTypes = supportedTypes
+			.map(Mime.parse)
+			.filter(m => m !== undefined)
+
+		// todo if supportedMimeType has ANY show warning?
+
+		if(supportedMimeTypes.length === 0) { return undefined }
+
+		const matches = accepts.map(accept => {
+			const matchSupportedMimeTypes = supportedMimeTypes.filter(mt => Mime.matches(accept, mt))
+			const best = matchSupportedMimeTypes.at(0)
+			if(best === undefined) { return undefined }
+
+			// resolve mime type and subtype
+			const type = best.type === MIME_ANY ? accept.type : best.type
+			const subtype = best.subtype === MIME_ANY ? accept.subtype : best.subtype
+
+			// preserve name and parameters of source
 			return {
-				supportedTypes: st,
-				quality
+				...accept,
+				mimetype: `${type}${MIME_SEPARATOR.SUBTYPE}${subtype}`,
+				type,
+				subtype
 			}
 		})
-		.filter(best => best.supportedTypes.length > 0)
+		.filter(m => m !== undefined)
 
-		if(bests.length === 0) { return undefined }
-		const [ first ] = bests
-		if(first === undefined) { return undefined }
-		const [ firstSt ] = first.supportedTypes
-		return firstSt
+		if(matches.length === 0) { return undefined }
+
+		// sort is in-place
+		matches.sort(Accept.compare)
+
+		return matches.at(0)
+	}
+
+	/**
+	 * @param {Array<AcceptItem>} accepts
+	 * @param {Array<string>} supportedTypes
+	 * @returns {string | undefined}
+	 */
+	static selectFrom(accepts, supportedTypes) {
+		const item = Accept.selectItemFrom(accepts, supportedTypes)
+		return item?.mimetype
 	}
 }
 
