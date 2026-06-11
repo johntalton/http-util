@@ -23,6 +23,16 @@ const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
  */
 
 /**
+ * @template T
+ * @param {Array<T>} arr
+ * @returns {arr is NonEmptyArray}
+ */
+export function isNonEmptyArray(arr) {
+	if(!Array.isArray(arr)) { return false }
+  return arr.length > 0
+}
+
+/**
  * @param {ServerHttp2Stream} stream
  * @param {NonEmptyArray<PartialBytes>|PartialBytes} objs
  * @param {Omit<SendContent, 'rangeDirective'>} content

@@ -1,6 +1,6 @@
 {
   "name": "@johntalton/http-util",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -22,6 +22,7 @@
     "src/headers/util/*.js"
   ],
   "scripts": {
+    "_build": "tsc -p jsconfig.json --noEmit",
     "lint": "biome check",
     "test": "node --test test/**/*.test.js",
     "coverage": "c8 --src src --check-coverage --statements 90 --branches 90 --functions 90 --lines 90 -r lcovonly -r text node --test   test/**/*.test.js"
