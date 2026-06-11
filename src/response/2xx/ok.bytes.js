@@ -10,7 +10,7 @@ const { HTTP_STATUS_OK } = http2.constants
 /**
  * @param {ServerHttp2Stream} stream
  * @param {SendBody|undefined} obj
- * @param {Omit<SendContent, 'rangeDirective'>} content
+ * @param {Omit<SendContent, 'rangeDirective'|'encoding'>} content
  * @param {Pick<SendInfo, 'acceptRanges'>} info
  * @param {Metadata} meta
  */
@@ -18,16 +18,16 @@ export function sendBytes(stream, obj, content, info, meta) {
 	const {
 		contentType,
 		contentLength,
-		encoding,
 		etag,
 		lastModified,
 		age,
-		cacheControl,
+		cacheControl
 	} = content
 
 	const { acceptRanges } = info
-
 	const supportedQueryType = undefined
 	const range = undefined
+	const encoding = undefined
+
 	send_bytes(stream, HTTP_STATUS_OK, contentType, obj, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryType, meta)
 }

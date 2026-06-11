@@ -149,7 +149,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
 	if((obj instanceof ReadableStream) || (obj instanceof Readable)) {
 		const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding,	 ENCODER_STREAM_MAP)
 		const encodedStream = (encoderFn === undefined) ? obj : encoderFn((obj instanceof ReadableStream) ? Readable.fromWeb(obj) : obj)
-		send_bytes(stream, status, contentType, encodedStream, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta )
+		send_bytes(stream, status, contentType, encodedStream, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
 		return
 	}
 
@@ -162,7 +162,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
 
-	send_bytes(stream, status, contentType, encodedData, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta )
+	send_bytes(stream, status, contentType, encodedData, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
 }
 
 /**

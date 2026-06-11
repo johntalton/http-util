@@ -12,7 +12,8 @@ export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
 export const MIME_TYPE_MULTIPART_RANGE = 'multipart/byteranges'
 export const MIME_TYPE_OCTET_STREAM = 'application/octet-stream'
 export const MIME_TYPE_MESSAGE_HTTP = 'message/http'
-
+export const MIME_TYPE_YAML = 'application/yaml'
+export const MIME_TYPE_PROTOBUF = 'application/protobuf'
 
 export const KNOWN_CONTENT_TYPES = [
 	'application', 'audio', 'image', 'message',

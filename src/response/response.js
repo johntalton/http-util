@@ -1,12 +1,13 @@
 import { sendAccepted } from './2xx/accepted.js'
-import { sendBytes } from './2xx/bytes.js'
 import { sendCreated } from './2xx/created.js'
-import { sendJSON } from './2xx/json.js'
 import { sendNoContent } from './2xx/no-content.js'
+import { sendBytes } from './2xx/ok.bytes.js'
+import { sendEncoded } from './2xx/ok.encoded.js'
+import { sendJSON } from './2xx/ok.json.js'
+import { sendPreflight } from './2xx/ok.preflight.js'
+import { sendSSE } from './2xx/ok.sse.js'
+import { sendTrace } from './2xx/ok.trace.js'
 import { sendPartialContent } from './2xx/partial-content.js'
-import { sendPreflight } from './2xx/preflight.js'
-import { sendSSE } from './2xx/sse.js'
-import { sendTrace } from './2xx/trace.js'
 import { sendFound } from './3xx/found.js'
 import { sendMovedPermanently } from './3xx/moved-permanently.js'
 import { sendMultipleChoices } from './3xx/multiple-choices.js'
@@ -43,6 +44,7 @@ export const Response = {
 	conflict: sendConflict,
 	contentTooLarge: sendContentTooLarge,
 	created: sendCreated,
+	encoded: sendEncoded,
 	error: sendError,
 	forbidden: sendForbidden,
 	found: sendFound,

@@ -119,7 +119,7 @@ describe('Body', () => {
 			})
 		})
 
-		it('should throw on byte limit exceeded', { only: true }, async () => {
+		it('should throw on byte limit exceeded', async () => {
 			const stream = Readable.from([ Buffer.from('A STRING MORE THEN BYTE LIMIT LONG') ])
 			const options = {
 				byteLimit: 20
