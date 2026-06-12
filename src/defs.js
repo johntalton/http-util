@@ -121,7 +121,7 @@ export function normalizeToArray(item) {
 /**
  * @template T
  * @param {Array<T>} arr
- * @returns {arr is NonEmptyArray}
+ * @returns {arr is NonEmptyArray<T>}
  */
 export function isNonEmptyArray(arr) {
 	if(!Array.isArray(arr)) { return false }
