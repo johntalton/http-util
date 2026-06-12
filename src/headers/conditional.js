@@ -86,14 +86,6 @@ export const DATE_ZONE = 'GMT'
 export const MINIMUM_YEAR = 1900
 export const MAXIMUM_DAY = 31
 
-/**
- * @deprecated
- * @see {@link ETag.isValid}
- * @param {string} etag
- */
-export function isValidEtag(etag) {
-	return ETag.isValid(etag)
-}
 
 export class ETag {
 	/**

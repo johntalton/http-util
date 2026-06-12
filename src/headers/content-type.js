@@ -59,16 +59,6 @@ export const WELL_KNOWN_CONTENT_TYPES = new Map([
 	[ 'application/json;charset=utf8', WELL_KNOWN_JSON ]
 ])
 
-/**
- * @deprecated
- * @see {@link ContentType.parse}
- * @param {string|undefined} contentTypeHeader
- * @returns {ContentTypeItem|undefined}
- */
-export function parseContentType(contentTypeHeader) {
-	return ContentType.parse(contentTypeHeader)
-}
-
 export class ContentType {
 	/**
 	 * @param {string|undefined} header

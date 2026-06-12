@@ -9,18 +9,6 @@ import { send_encoded } from '../send-util.js'
 const { HTTP_STATUS_OK } = http2.constants
 
 /**
- * @deprecated
- * @param {ServerHttp2Stream} stream
- * @param {Object} obj
- * @param {Omit<SendContent, 'contentType' | 'contentLength' | 'rangeDirective'>} content
- * @param {Pick<SendInfo, 'supportedQueryTypes'>} info
- * @param {Metadata} meta
- */
-export function sendJSON_Encoded(stream, obj, content, info, meta) {
-	sendJSON(stream, obj, content, info, meta)
-}
-
-/**
  * @param {ServerHttp2Stream} stream
  * @param {Object} obj
  * @param {Omit<SendContent, 'contentType' | 'contentLength' | 'rangeDirective'>} content

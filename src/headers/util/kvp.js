@@ -7,13 +7,13 @@ export const KVP_EMPTY = ''
 
 export class KVP {
 	/**
-	 * @param {Array<string>|undefined} params
+	 * @param {Array<string>} params
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
 	 */
 	static #parse(params, acceptableKeys = undefined) {
 		const parameters = new Map()
 
-		if(params === undefined) { return parameters }
+		// if(params === undefined) { return parameters }
 
 		for(const kvp of params) {
 			const [ rawKey, rawValue ] = kvp
@@ -43,14 +43,16 @@ export class KVP {
 	 * @param {string|undefined} str
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
 	 */
-	static parse(str, acceptableKeys = undefined, delimiter = DEFAULT_DELIMITER) {
+	static parse(str, acceptableKeys = undefined) {
 		if(str === undefined) { return undefined }
 		if(str === KVP_EMPTY) { return undefined }
 
 		const [ name, ...params ] = str
 			.trim()
-			.split(delimiter)
+			.split(DEFAULT_DELIMITER)
 			.map(p => p.trim())
+
+		if(name === '') { return undefined}
 
 		const parameters = KVP.#parse(params, acceptableKeys)
 
@@ -62,13 +64,13 @@ export class KVP {
 	 * @param {string|undefined} str
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
 	 */
-	static parseParameters(str, acceptableKeys = undefined, delimiter = DEFAULT_DELIMITER) {
+	static parseParameters(str, acceptableKeys = undefined) {
 		if(str === undefined) { return undefined }
 		if(str === KVP_EMPTY) { return undefined }
 
 		const params = str
 			.trim()
-			.split(delimiter)
+			.split(DEFAULT_DELIMITER)
 			.map(p => p.trim())
 
 		const parameters = KVP.#parse(params, acceptableKeys)

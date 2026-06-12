@@ -1,4 +1,4 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, isNonEmptyArray } from "../defs.js"
 
 // https://www.ietf.org/archive/id/draft-ietf-httpapi-ratelimit-headers-10.html
 
@@ -77,14 +77,21 @@ export class RateLimitPolicy {
 	 * @param {...RateLimitPolicyInfo} policies
 	 */
 	static encode(...policies) { // todo AsArray
-		if(policies === undefined) { return undefined }
-		if(policies.length === 0) { return undefined }
+		if(!isNonEmptyArray(policies)) { return undefined }
 
-		const remainingPolicies = policies.filter(pol => pol !== undefined)
+		const remainingPolicies = policies
+			.filter(pol => {
+				if(pol === undefined) { return false }
+				if(pol.name === undefined) { return false }
+				if(pol.name === '') { return false }
+				if(!Number.isFinite(pol.quota)) { return false }
+
+				return true
+			})
+
 		if(remainingPolicies.length === 0) { return undefined }
 
 		return remainingPolicies
-			.filter(policy => policy.name !== undefined && policy.quota !== undefined)
 			.map(policy => {
 				const {
 					name,
@@ -94,10 +101,10 @@ export class RateLimitPolicy {
 					partitionKey
 				} = policy
 
-				const q = quota ? `${POLICY_PARAMETER.QUOTA}=${quota}` : undefined
-				const qu = quotaUnits ? `${POLICY_PARAMETER.QUOTA_UNITS}="${quotaUnits}"` : undefined
-				const ws = windowSeconds ? `${POLICY_PARAMETER.WINDOW_SECONDS}=${windowSeconds}` : undefined
-				const pk = partitionKey ? `${POLICY_PARAMETER.PARTITION_KEY}=${partitionKey}` : undefined
+				const q = `${POLICY_PARAMETER.QUOTA}=${quota}`
+				const qu = (quotaUnits !== undefined) ? `${POLICY_PARAMETER.QUOTA_UNITS}="${quotaUnits}"` : undefined
+				const ws = Number.isFinite(windowSeconds) ? `${POLICY_PARAMETER.WINDOW_SECONDS}=${windowSeconds}` : undefined
+				const pk = (partitionKey !== undefined) ? `${POLICY_PARAMETER.PARTITION_KEY}=${partitionKey}` : undefined
 				return [ `"${name}"`, q, qu, ws, pk ]
 					.filter(item => item !== undefined)
 					.join(';')

@@ -22,7 +22,9 @@ export class MockHttp2Session extends EventEmitter {
 
 	destroyed = false
 
-	close() {}
+	close() {
+		this.closed = true
+	}
 	destroy(err) {}
 	goaway(code) {}
 	ping() { return false }
@@ -41,6 +43,10 @@ export class MockHttp2Stream extends PassThrough {
 	sentHeaders = {}
 	headersSent = false
 	#session = new MockHttp2Session()
+
+	id = undefined
+
+	closed = false
 
 	get pushAllowed() { return false }
 	additionalHeaders() { }
@@ -64,8 +70,9 @@ export class MockHttp2Stream extends PassThrough {
 
 	get session() { return this.#session }
 	get state() { return {} }
-	close() {
-		console.log('CLOSE requested')
+	close(code) {
+		this.closed = true
+		console.log('CLOSE requested', code)
 	}
 
 	priority() { }

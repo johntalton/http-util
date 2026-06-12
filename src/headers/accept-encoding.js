@@ -1,3 +1,4 @@
+import { isNonEmptyArray } from '../defs.js'
 import { parseAcceptStyleHeader } from './util/accept-util.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
@@ -6,7 +7,8 @@ export const ENCODING_ANY = '*'
 
 export const WELL_KNOWN_ENCODINGS = new Map([
 	[ 'gzip, deflate, br, zstd', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' }, { name: 'zstd' } ] ],
-	[ 'gzip, deflate, br', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' } ] ]
+	[ 'gzip, deflate, br', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' } ] ],
+	[ 'gzip, deflate', [ { name: 'gzip' }, { name: 'deflate' } ] ]
 ])
 
 export class AcceptEncoding {
@@ -34,15 +36,11 @@ export class AcceptEncoding {
 	 * @returns {AcceptStyleItem | undefined}
 	 */
 	static selectItemFrom(acceptEncodings, supportedTypes) {
-		if(acceptEncodings === undefined) { return undefined }
-		if(!Array.isArray(acceptEncodings)) { return undefined }
-		if(acceptEncodings.length === 0) { return undefined }
-
-		if(supportedTypes === undefined) { return undefined }
-		if(!Array.isArray(supportedTypes)) { return undefined }
-		if(supportedTypes.length === 0) { return undefined }
+		if(!isNonEmptyArray(acceptEncodings)) { return undefined }
+		if(!isNonEmptyArray(supportedTypes)) { return undefined }
 
 		for(const acceptEncoding of acceptEncodings) {
+			if(acceptEncoding === undefined) { continue }
 			const { name } = acceptEncoding
 			if(supportedTypes.includes(name)) {
 				return acceptEncoding
@@ -50,10 +48,10 @@ export class AcceptEncoding {
 		}
 
 		//
-		if(acceptEncodings.some(item => item.name === ENCODING_ANY)) {
+		if(acceptEncodings.some(item => item?.name === ENCODING_ANY)) {
 			const [ name ] = supportedTypes
 			if(name === undefined) { return undefined }
-			return { name }
+			return { name } // todo include any quality and parameters
 		}
 
 		return undefined

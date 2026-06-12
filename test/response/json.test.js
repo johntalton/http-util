@@ -59,5 +59,36 @@ describe('Response', () => {
 			const result = stream.read()
 			assert.deepEqual(result, Buffer.from('{"test":true,"param":42}'))
 		})
+
+		it('should handle exit early on closed stream', () => {
+			const stream = new MockHttp2Stream()
+
+			stream.close()
+
+			const encoding = undefined
+			const etag = undefined
+			const lastModified = undefined
+			const age = undefined
+			const cacheControl = {}
+			const supportedQueryTypes = undefined
+			const obj = { test: true, param: 42 }
+			Response.json(stream, obj, {
+				encoding,
+				etag,
+				lastModified,
+				age,
+				cacheControl
+			}, {
+				supportedQueryTypes
+			}, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, false)
+			assert.deepEqual(stream.sentHeaders, {})
+
+			const encoder = new TextEncoder()
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
 	})
 })

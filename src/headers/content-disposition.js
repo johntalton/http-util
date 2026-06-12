@@ -11,16 +11,6 @@ import { KVP } from './util/kvp.js'
 export const DISPOSITION_PARAM_NAME = 'name'
 export const DISPOSITION_PARAM_FILENAME = 'filename'
 
-/**
- * @deprecated
- * @see {@link ContentDisposition.parse}
- * @param {string|undefined} contentDispositionHeader
- * @returns {Disposition|undefined}
- */
-export function parseContentDisposition(contentDispositionHeader) {
-	return ContentDisposition.parse(contentDispositionHeader)
-}
-
 export class ContentDisposition {
 	/**
 	 * @param {string|undefined} header

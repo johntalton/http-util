@@ -37,7 +37,111 @@ describe('AcceptEncoding', () => {
 	})
 
 	describe('selectItemFrom', () => {
-		// todo move select test here after conversion
+		it('should handle undefined', () => {
+			const result = AcceptEncoding.selectItemFrom(undefined, undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle non-array', () => {
+			const result = AcceptEncoding.selectItemFrom('TEST', [])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty array', () => {
+			const result = AcceptEncoding.selectItemFrom([], [])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle array of undefined', () => {
+			const result = AcceptEncoding.selectItemFrom([ undefined ], [ 'fake' ])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle array of name undefined', () => {
+			const result = AcceptEncoding.selectItemFrom([ {
+				name: undefined
+			}], [ '*' ])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle array of name undefined', () => {
+			const result = AcceptEncoding.selectItemFrom([ {
+				name: '*'
+			}], [ undefined ])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle undefined supported', () => {
+			const result = AcceptEncoding.selectItemFrom([ {
+				name: 'FAKE'
+			} ], undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty supported', () => {
+			const result = AcceptEncoding.selectItemFrom([ { name: 'gzip' }, { name: 'zstd'} ], [])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle selecting first', () => {
+			const result = AcceptEncoding.selectItemFrom([
+				{
+					name: 'gzip'
+				},
+				{
+					name: 'zstd'
+				}
+			],
+			[ 'gzip', 'zstd' ])
+			assert.deepEqual(result, { name: 'gzip' })
+		})
+
+		it('should handle selecting with quality', () => {
+			const result = AcceptEncoding.selectItemFrom([
+				{
+					name: 'br',
+					quality: 1.0
+				},
+				{
+					name: 'gzip',
+					quality: .8
+				},
+				{
+					name: '*',
+					quality: .1
+				}
+			],
+			[ 'gzip', 'fake' ])
+			assert.deepEqual(result, { name: 'gzip', quality: 0.8 })
+		})
+
+		it('should handle selecting any as fallback', () => {
+			const result = AcceptEncoding.selectItemFrom([
+				{
+					name: 'br',
+					quality: 1.0
+				},
+				{
+					name: 'gzip',
+					quality: .8
+				},
+				{
+					name: '*',
+					quality: .1
+				}
+			], [ 'fake' ])
+			assert.deepEqual(result, { name: 'fake' })
+		})
+
+		it('should handle selecting any', () => {
+			const result = AcceptEncoding.selectItemFrom([
+				{
+					name: '*',
+					quality: 0.1
+				}
+			], [ 'gzip', 'deflate' ])
+			assert.deepEqual(result, { name: 'gzip' })
+		})
 	})
 
 	describe('select', () => {

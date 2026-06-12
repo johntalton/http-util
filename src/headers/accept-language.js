@@ -1,3 +1,4 @@
+import { isNonEmptyArray } from '../defs.js'
 import { parseAcceptStyleHeader } from './util/accept-util.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
@@ -35,13 +36,8 @@ export class AcceptLanguage {
 	 * @returns {AcceptStyleItem | undefined}
 	 */
 	static selectItemFrom(acceptLanguages, supportedTypes) {
-		if(acceptLanguages === undefined) { return undefined }
-		if(!Array.isArray(acceptLanguages)) { return undefined }
-		if(acceptLanguages.length === 0) { return undefined }
-
-		if(supportedTypes === undefined) { return undefined }
-		if(!Array.isArray(supportedTypes)) { return undefined }
-		if(supportedTypes.length === 0) { return undefined }
+		if(!isNonEmptyArray(acceptLanguages)) { return undefined }
+		if(!isNonEmptyArray(supportedTypes)) { return undefined }
 
 		// this assume acceptLangues is quality sorted descending order
 		for(const acceptLanguage of acceptLanguages) {

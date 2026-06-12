@@ -1,3 +1,4 @@
+import { isNonEmptyArray } from '../defs.js'
 import { parseAcceptStyleHeader } from './util/accept-util.js'
 import { MIME_ANY, MIME_SEPARATOR, Mime } from './util/mime.js'
 
@@ -74,13 +75,8 @@ export class Accept {
 	 * @returns {AcceptItem | undefined}
 	 */
 	static selectItemFrom(accepts, supportedTypes) {
-		if(accepts === undefined) { return undefined }
-		if(!Array.isArray(accepts)) { return undefined }
-		if(accepts.length === 0) { return undefined }
-
-		if(supportedTypes === undefined) { return undefined }
-		if(!Array.isArray(supportedTypes)) { return undefined }
-		if(supportedTypes.length === 0) { return undefined }
+		if(!isNonEmptyArray(accepts)) { return undefined }
+		if(!isNonEmptyArray(supportedTypes)) { return undefined }
 
 		const supportedMimeTypes = supportedTypes
 			.map(Mime.parse)
