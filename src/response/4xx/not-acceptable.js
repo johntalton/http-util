@@ -10,20 +10,20 @@ const { HTTP_STATUS_NOT_ACCEPTABLE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {Pick<SendInfo, 'supportedTypes'>} info
+ * @param {Pick<SendInfo, 'acceptableTypes'>} info
  * @param {Metadata} meta
  */
 export function sendNotAcceptable(stream, info, meta) {
-	const { supportedTypes } = info
+	const { acceptableTypes } = info
 
-	const supportedTypesList = Array.isArray(supportedTypes) ? supportedTypes : [ supportedTypes ]
-	const has = supportedTypesList.length > 0
+	const acceptableTypesList = Array.isArray(acceptableTypes) ? acceptableTypes : [ acceptableTypes ]
+	const has = acceptableTypesList.length > 0
 
 	send(stream,
 		HTTP_STATUS_NOT_ACCEPTABLE,
 		{},
 		[],
 		has ? CONTENT_TYPE_JSON : undefined,
-		has ? JSON.stringify({ supportedTypes: supportedTypesList }) : undefined,
+		has ? JSON.stringify({ types: acceptableTypesList }) : undefined,
 		meta)
 }

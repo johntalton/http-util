@@ -77,10 +77,26 @@ export const COMMON_LIST_VALUE_JOINER_COMMA = ','
  */
 
 /**
+ * @typedef {Object} SendSupportedTypesNormalizedRecord
+ * @property {Array<string>|undefined} put
+ * @property {Array<string>|undefined} post
+ * @property {Array<string>|undefined} patch
+ */
+
+/**
+ * @typedef {Object} SendSupportedTypeRecord
+ * @property {Array<string>|string|undefined} [put]
+ * @property {Array<string>|string|undefined} [post]
+ * @property {Array<string>|string|undefined} [patch]
+ */
+
+/** @typedef {SendSupportedTypeRecord|Array<string>|string} SendSupportedTypes */
+
+/**
  * @typedef {Object} SendInfo
  * @property {Array<string>} supportedMethods
- * @property {Array<string>|string} supportedTypes for content negotiation failures
- * @property {Array<string>|string} acceptableMediaType for incoming post/put unsupported types
+ * @property {SendSupportedTypes} supportedTypes
+ * @property {Array<string>|string} acceptableTypes for content negotiation failures
  * @property {AcceptRangeUnits|undefined} acceptRanges
  * @property {Array<string>|undefined} supportedQueryTypes
  * @property {RateLimitInfo} limitInfo

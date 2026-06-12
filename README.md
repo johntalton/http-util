@@ -220,7 +220,7 @@ Parameters:
 
 Parameters:
 - stream
-- supportedTypes - array of supported types (mime/lang/encodings etc)
+- acceptedTypes - mime types list this route can generate
 - meta
 
 ### Response.notAllowed
@@ -353,7 +353,8 @@ Parameters:
 
 Parameters:
 - stream
-- acceptableMediaTypes
+- supportedPostType
+- supportedPatchType
 - supportedQueryTypes
 - meta
 

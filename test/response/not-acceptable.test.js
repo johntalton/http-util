@@ -14,11 +14,11 @@ const DEFAULT_META = {
 
 describe('Response', () => {
 	describe('notAcceptable', () => {
-		it('should handle basic values (supported type array empty)', () => {
+		it('should handle basic values (acceptable type array empty)', () => {
 			const stream = new MockHttp2Stream()
 			/** @type {string[]} */
-			const supportedTypes = []
-			Response.notAcceptable(stream, { supportedTypes }, structuredClone(DEFAULT_META))
+			const acceptableTypes = []
+			Response.notAcceptable(stream, { acceptableTypes }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -37,10 +37,10 @@ describe('Response', () => {
 			assert.deepEqual(result, null)
 		})
 
-		it('should handle basic values (supported type non-empty)', () => {
+		it('should handle basic values (acceptable type non-empty)', () => {
 			const stream = new MockHttp2Stream()
-			const supportedTypes = [ 'text/plain', 'application/json' ]
-			Response.notAcceptable(stream, { supportedTypes }, structuredClone(DEFAULT_META))
+			const acceptableTypes = [ 'text/plain', 'application/json' ]
+			Response.notAcceptable(stream, { acceptableTypes }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -56,13 +56,13 @@ describe('Response', () => {
 			const encoder = new TextEncoder()
 
 			const result = stream.read()
-			assert.deepEqual(result, Buffer.from(encoder.encode(JSON.stringify({ supportedTypes }))))
+			assert.deepEqual(result, Buffer.from(encoder.encode(JSON.stringify({ types: acceptableTypes }))))
 		})
 
-		it('should handle basic values (supported type singular)', () => {
+		it('should handle basic values (acceptable type singular)', () => {
 			const stream = new MockHttp2Stream()
-			const supportedTypes = 'application/json'
-			Response.notAcceptable(stream, { supportedTypes }, structuredClone(DEFAULT_META))
+			const acceptableTypes = 'application/json'
+			Response.notAcceptable(stream, { acceptableTypes }, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -78,7 +78,7 @@ describe('Response', () => {
 			const encoder = new TextEncoder()
 
 			const result = stream.read()
-			assert.deepEqual(result, Buffer.from(encoder.encode(JSON.stringify({ supportedTypes: [ supportedTypes ] }))))
+			assert.deepEqual(result, Buffer.from(encoder.encode(JSON.stringify({ types: [ acceptableTypes ] }))))
 		})
 	})
 
