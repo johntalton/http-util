@@ -15,7 +15,8 @@ describe('Response', () => {
 	describe('accepted', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			Response.accepted(stream, structuredClone(DEFAULT_META))
+			const location = undefined
+			Response.accepted(stream, location, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -23,9 +24,11 @@ describe('Response', () => {
 				'Server-Timing': undefined,
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
-				'access-control-expose-headers': 'etag,server',
+				'access-control-expose-headers': 'etag,server,location',
 				'content-type': undefined,
-				server: undefined
+				server: undefined,
+
+				location: undefined
 			})
 
 			const result = stream.read()
