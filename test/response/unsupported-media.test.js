@@ -129,7 +129,36 @@ describe('Response', () => {
 			assert.deepEqual(result, null)
 		})
 
-			it('should handle basic values (structured supportedTypes undefined)', () => {
+		it('should handle basic values (PUT method)', () => {
+			const stream = new MockHttp2Stream()
+			const supportedTypes = ['text/plain']
+			const supportedQueryTypes = undefined
+			const method = 'PUT'
+			Response.unsupportedMediaType(stream, method, {
+				supportedTypes,
+				supportedQueryTypes
+			}, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 415,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server',
+				'content-type': undefined,
+
+				'accept-patch': undefined,
+				'accept-post': undefined,
+				'accept-query': undefined,
+				server: undefined
+			})
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
+
+		it('should handle basic values (structured supportedTypes undefined)', () => {
 			const stream = new MockHttp2Stream()
 			const supportedTypes = undefined
 			const supportedQueryTypes = undefined
@@ -212,6 +241,38 @@ describe('Response', () => {
 
 				'accept-patch': 'application/xml,application/json',
 				'accept-post': undefined,
+				'accept-query': undefined,
+				server: undefined
+			})
+
+			const result = stream.read()
+			assert.deepEqual(result, null)
+		})
+
+		it('should handle basic values (method undefined with structured supportedTypes post and patch array)', () => {
+			const stream = new MockHttp2Stream()
+			const supportedTypes = {
+				patch: [ 'application/xml', 'application/json' ],
+				post: 'text/plain'
+			}
+			const supportedQueryTypes = undefined
+			const method = undefined
+			Response.unsupportedMediaType(stream, method, {
+				supportedTypes,
+				supportedQueryTypes
+			}, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 415,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server,accept-post,accept-patch',
+				'content-type': undefined,
+
+				'accept-patch': 'application/xml,application/json',
+				'accept-post': 'text/plain',
 				'accept-query': undefined,
 				server: undefined
 			})

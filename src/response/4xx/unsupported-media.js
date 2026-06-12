@@ -6,67 +6,13 @@ import {
 	HTTP_HEADER_ACCEPT_POST,
 	HTTP_HEADER_ACCEPT_QUERY
 } from '../../defs.js'
+import { coerceSupportedTypes } from '../header-util.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendInfo, Metadata, SendSupportedTypes, SendSupportedTypesNormalizedRecord } from '../../defs.js' */
-
-const { HTTP2_METHOD_PUT, HTTP2_METHOD_POST, HTTP2_METHOD_PATCH } = http2.constants
+/** @import { SendInfo, Metadata } from '../../defs.js' */
 
 const { HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE } = http2.constants
-
-/**
- * @template T
- * @param {Array<T>|T|undefined} item
- * @returns {Array<T>|undefined}
- */
-function normalizeToArray(item) {
-	if(item === undefined) { return undefined }
-	if(Array.isArray(item)) { return item }
-	return [ item ]
-}
-
-/**
- * @param {string|undefined} method
- * @param {Array<string>|undefined} supportedTypesArray
- * @returns {SendSupportedTypesNormalizedRecord}
- */
-function coerceSupportedTypes_FromArray(method, supportedTypesArray) {
-	const put = (method === HTTP2_METHOD_PUT) ? supportedTypesArray : undefined
-	const post = (method === HTTP2_METHOD_POST) ? supportedTypesArray : undefined
-	const patch = (method === HTTP2_METHOD_PATCH) ? supportedTypesArray : undefined
-
-	return { put, post, patch }
-}
-
-/**
- * @param {string|undefined} method
- * @param {SendSupportedTypes|undefined} supportedTypes
- * @returns {SendSupportedTypesNormalizedRecord}
- */
-export function coerceSupportedTypes(method, supportedTypes) {
-	if(supportedTypes === undefined) {
-		return {
-			put: undefined,
-			post: undefined,
-			patch: undefined
-		}
-	}
-
-	if(Array.isArray(supportedTypes)) {
-		return coerceSupportedTypes_FromArray(method, supportedTypes)
-	}
-
-	if(typeof supportedTypes === 'string') {
-		return coerceSupportedTypes_FromArray(method, [ supportedTypes ])
-	}
-
-	return {
-		put: normalizeToArray(supportedTypes.put),
-		post: normalizeToArray(supportedTypes.post),
-		patch: normalizeToArray(supportedTypes.patch)
-	}
-}
 
 /**
  * @param {ServerHttp2Stream} stream

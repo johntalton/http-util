@@ -1,4 +1,4 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, normalizeToArray } from "../defs.js"
 
 /**
  * @typedef {Object} LinkItem
@@ -27,8 +27,8 @@ export class Link {
 	 * @param {boolean} [asArray = false]
 	 */
 	static encode(links, asArray = false) {
-		if(links === undefined) { return undefined }
-		const linkAry = Array.isArray(links) ? links : [ links ]
+		const linkAry = normalizeToArray(links)
+		if(linkAry === undefined) { return undefined }
 		if(linkAry.length === 0) { return undefined }
 
 		const ary = linkAry

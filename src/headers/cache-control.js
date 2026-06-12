@@ -1,4 +1,4 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, normalizeToArray } from "../defs.js"
 
 /** @typedef {'no-cache'|'no-store'|'no-transform'|'must-revalidate'|'immutable'|'must-understand'} Directives */
 
@@ -35,8 +35,9 @@ export class CacheControl {
 		if(pub !== undefined && pub && !priv) { result.push('public') }
 		if(priv !== undefined && priv && !pub) { result.push('private') }
 
-		if(directives !== undefined) {
-			result.push(...(Array.isArray(directives) ? directives : [ directives ]))
+		const directivesList = normalizeToArray(directives)
+		if(directivesList !== undefined) {
+			result.push(...directivesList)
 		}
 
 		if(maxAge !== undefined && Number.isInteger(maxAge) && maxAge >= 0) {

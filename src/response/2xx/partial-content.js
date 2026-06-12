@@ -6,31 +6,16 @@ import { Multipart } from '../../headers/multipart.js'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendContent, Metadata, SendBody } from '../../defs.js' */
+/** @import { SendContent, Metadata, SendBody, NonEmptyArray } from '../../defs.js' */
 /** @import { ContentRangeDirective } from '../../headers/content-range.js' */
 
 const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
-
-/**
- * @template T
- * @typedef {[ T, ...T[] ]} NonEmptyArray
- */
 
 /**
  * @typedef {Object} PartialBytes
  * @property {SendBody} obj
  * @property {ContentRangeDirective} range
  */
-
-/**
- * @template T
- * @param {Array<T>} arr
- * @returns {arr is NonEmptyArray}
- */
-export function isNonEmptyArray(arr) {
-	if(!Array.isArray(arr)) { return false }
-  return arr.length > 0
-}
 
 /**
  * @param {ServerHttp2Stream} stream

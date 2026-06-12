@@ -1,6 +1,6 @@
 import http2 from 'node:http2'
 
-import { COMMON_LIST_VALUE_JOINER_COMMA } from '../defs.js'
+import { COMMON_LIST_VALUE_JOINER_COMMA, normalizeToArray, } from '../defs.js'
 
 import {
 	HTTP_HEADER_SERVER_TIMING,
@@ -9,7 +9,9 @@ import {
 } from '../headers/server-timing.js'
 
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
-/** @import { Metadata } from '../defs.js' */
+/** @import { Metadata, SendSupportedTypes, SendSupportedTypesNormalizedRecord } from '../defs.js' */
+
+const { HTTP2_METHOD_PUT, HTTP2_METHOD_POST, HTTP2_METHOD_PATCH } = http2.constants
 
 const {
 	HTTP2_HEADER_STATUS,
@@ -61,4 +63,46 @@ export function customHeaders(meta) {
 	const CUSTOM_HEADER_PREFIX = 'X-'
 	const m = new Map(meta.customHeaders?.filter(h => h[0].startsWith(CUSTOM_HEADER_PREFIX)))
 	return Object.fromEntries(m)
+}
+
+/**
+ * @param {string|undefined} method
+ * @param {Array<string>|undefined} supportedTypesArray
+ * @returns {SendSupportedTypesNormalizedRecord}
+ */
+export function coerceSupportedTypes_FromArray(method, supportedTypesArray) {
+	const put = (method === HTTP2_METHOD_PUT) ? supportedTypesArray : undefined
+	const post = (method === HTTP2_METHOD_POST) ? supportedTypesArray : undefined
+	const patch = (method === HTTP2_METHOD_PATCH) ? supportedTypesArray : undefined
+
+	return { put, post, patch }
+}
+
+/**
+ * @param {string|undefined} method
+ * @param {SendSupportedTypes|undefined} supportedTypes
+ * @returns {SendSupportedTypesNormalizedRecord}
+ */
+export function coerceSupportedTypes(method, supportedTypes) {
+	if(supportedTypes === undefined) {
+		return {
+			put: undefined,
+			post: undefined,
+			patch: undefined
+		}
+	}
+
+	if(Array.isArray(supportedTypes)) {
+		return coerceSupportedTypes_FromArray(method, supportedTypes)
+	}
+
+	if(typeof supportedTypes === 'string') {
+		return coerceSupportedTypes_FromArray(method, [ supportedTypes ])
+	}
+
+	return {
+		put: normalizeToArray(supportedTypes.put),
+		post: normalizeToArray(supportedTypes.post),
+		patch: normalizeToArray(supportedTypes.patch)
+	}
 }

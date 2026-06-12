@@ -1,50 +1,20 @@
 /** @import { Readable } from 'node:stream' */
 /** @import { ReadableStream } from 'node:stream/web' */
 
-export const HTTP_HEADER_ORIGIN = 'origin'
-export const HTTP_HEADER_USER_AGENT = 'user-agent'
-export const HTTP_HEADER_FORWARDED = 'forwarded'
-export const HTTP_HEADER_SEC_CH_UA = 'sec-ch-ua'
-export const HTTP_HEADER_SEC_CH_PLATFORM = 'sec-ch-ua-platform'
-export const HTTP_HEADER_SEC_CH_MOBILE = 'sec-ch-ua-mobile'
-export const HTTP_HEADER_SEC_FETCH_SITE = 'sec-fetch-site'
-export const HTTP_HEADER_SEC_FETCH_MODE = 'sec-fetch-mode'
-export const HTTP_HEADER_SEC_FETCH_DEST = 'sec-fetch-dest'
-export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
-export const HTTP_HEADER_ACCEPT_PATCH = 'accept-patch'
-export const HTTP_HEADER_CLEAR_SITE_DATE = 'clear-site-data'
-export const HTTP_HEADER_PREFERENCE_APPLIED = 'preference-applied'
-
-export const HTTP_METHOD_QUERY = 'QUERY'
-export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
-
-export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]
-
-export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
-export const PREFLIGHT_AGE_SECONDS = '500'
-
-/** @type {'bytes'} */
-export const RANGE_UNITS_BYTES = 'bytes'
-/** @type {'none'} */
-export const RANGE_UNITS_NONE = 'none'
-
-/** @description joiner used for concatenating multiple of the same headers into one */
-export const COMMON_LIST_HEADER_JOINER_COMMA = ', '
-
-/** @description joiner used for concatenating multiple values of single header */
-export const COMMON_LIST_VALUE_JOINER_COMMA = ','
-
 /** @import { TimingsInfo } from './headers/server-timing.js' */
 /** @import { EtagItem, IMFFixDateInput } from './headers/conditional.js' */
 /** @import { CacheControlOptions } from './headers/cache-control.js' */
 /** @import { ContentRangeDirective } from './headers/content-range.js' */
 /** @import { RateLimitPolicyInfo, RateLimitInfo } from './headers/rate-limit.js' */
 
+/**
+ * @template T
+ * @typedef {[ T, ...T[] ]} NonEmptyArray
+ */
+
 /** @typedef {RANGE_UNITS_BYTES | RANGE_UNITS_NONE} AcceptRangeUnits */
 
-/**
- * @typedef {`X-${string}`} CustomHeaderKey
- */
+/** @typedef {`X-${string}`} CustomHeaderKey */
 
 /**
  * @typedef {Object} Metadata
@@ -104,4 +74,56 @@ export const COMMON_LIST_VALUE_JOINER_COMMA = ','
  * @property {number|undefined} retryAfter
  */
 
+export const HTTP_HEADER_ORIGIN = 'origin'
+export const HTTP_HEADER_USER_AGENT = 'user-agent'
+export const HTTP_HEADER_FORWARDED = 'forwarded'
+export const HTTP_HEADER_SEC_CH_UA = 'sec-ch-ua'
+export const HTTP_HEADER_SEC_CH_PLATFORM = 'sec-ch-ua-platform'
+export const HTTP_HEADER_SEC_CH_MOBILE = 'sec-ch-ua-mobile'
+export const HTTP_HEADER_SEC_FETCH_SITE = 'sec-fetch-site'
+export const HTTP_HEADER_SEC_FETCH_MODE = 'sec-fetch-mode'
+export const HTTP_HEADER_SEC_FETCH_DEST = 'sec-fetch-dest'
+export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
+export const HTTP_HEADER_ACCEPT_PATCH = 'accept-patch'
+export const HTTP_HEADER_CLEAR_SITE_DATE = 'clear-site-data'
+export const HTTP_HEADER_PREFERENCE_APPLIED = 'preference-applied'
 
+export const HTTP_METHOD_QUERY = 'QUERY'
+export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
+
+export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]
+
+export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
+export const PREFLIGHT_AGE_SECONDS = '500'
+
+/** @type {'bytes'} */
+export const RANGE_UNITS_BYTES = 'bytes'
+/** @type {'none'} */
+export const RANGE_UNITS_NONE = 'none'
+
+/** @description joiner used for concatenating multiple of the same headers into one */
+export const COMMON_LIST_HEADER_JOINER_COMMA = ', '
+
+/** @description joiner used for concatenating multiple values of single header */
+export const COMMON_LIST_VALUE_JOINER_COMMA = ','
+
+/**
+ * @template T
+ * @param {Array<T>|T|undefined} item
+ * @returns {Array<T>|undefined}
+ */
+export function normalizeToArray(item) {
+	if(item === undefined) { return undefined }
+	if(Array.isArray(item)) { return item }
+	return [ item ]
+}
+
+/**
+ * @template T
+ * @param {Array<T>} arr
+ * @returns {arr is NonEmptyArray}
+ */
+export function isNonEmptyArray(arr) {
+	if(!Array.isArray(arr)) { return false }
+  return arr.length > 0
+}
