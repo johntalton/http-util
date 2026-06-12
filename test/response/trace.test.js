@@ -32,7 +32,7 @@ describe('Response', () => {
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server',
-				'content-type': 'message/http;charset=utf8',
+				'content-type': 'message/http',
 				server: undefined
 			})
 

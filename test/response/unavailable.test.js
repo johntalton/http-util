@@ -27,7 +27,7 @@ describe('Response', () => {
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server,retry-after',
-				'content-type': 'application/json;charset=utf8',
+				'content-type': 'application/json',
 				'retry-after': '42',
 				server: undefined
 			})

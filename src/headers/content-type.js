@@ -17,7 +17,7 @@ export const MIME_TYPE_PROTOBUF = 'application/protobuf'
 
 export const KNOWN_CONTENT_TYPES = [
 	'application', 'audio', 'image', 'message',
-	'multipart', 'text', 'video'
+	'multipart', 'text', 'video', 'font', 'example', 'model'
 ]
 
 export const TYPE_X_TOKEN_PREFIX = 'X-'
@@ -40,14 +40,16 @@ export const CONTENT_TYPE_SEPARATOR = {
 export const CHARSET_UTF8 = 'utf8'
 export const CHARSET = 'charset'
 export const PARAMETER_CHARSET_UTF8 = `${CHARSET}${CONTENT_TYPE_SEPARATOR.KVP}${CHARSET_UTF8}`
-export const CONTENT_TYPE_JSON = `${MIME_TYPE_JSON}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
+
+export const CONTENT_TYPE_JSON = `${MIME_TYPE_JSON}` // match qpack (46)
 export const CONTENT_TYPE_TEXT = `${MIME_TYPE_TEXT}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
-export const CONTENT_TYPE_MESSAGE_HTTP = `${MIME_TYPE_MESSAGE_HTTP}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
+export const CONTENT_TYPE_MESSAGE_HTTP = `${MIME_TYPE_MESSAGE_HTTP}`
+export const CONTENT_TYPE_YAML = `${MIME_TYPE_YAML}`
 
 /** @type {ContentTypeItem} */
 export const WELL_KNOWN_JSON = {
 	mimetype: MIME_TYPE_JSON,
-	name: MIME_TYPE_JSON,
+	name: CONTENT_TYPE_JSON,
 	type: 'application',
 	subtype: 'json',
 	charset: 'utf8',
