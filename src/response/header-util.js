@@ -66,24 +66,26 @@ export function customHeaders(meta) {
 }
 
 /**
- * @param {string|undefined} method
+ * @param {Array<string>|string|undefined} methods
  * @param {Array<string>|undefined} supportedTypesArray
  * @returns {SendSupportedTypesNormalizedRecord}
  */
-export function coerceSupportedTypes_FromArray(method, supportedTypesArray) {
-	const put = (method === HTTP2_METHOD_PUT) ? supportedTypesArray : undefined
-	const post = (method === HTTP2_METHOD_POST) ? supportedTypesArray : undefined
-	const patch = (method === HTTP2_METHOD_PATCH) ? supportedTypesArray : undefined
+export function coerceSupportedTypes_FromArray(methods, supportedTypesArray) {
+	const methodsList = normalizeToArray(methods)
+
+	const put = (methodsList?.includes(HTTP2_METHOD_PUT)) ? supportedTypesArray : undefined
+	const post = (methodsList?.includes(HTTP2_METHOD_POST)) ? supportedTypesArray : undefined
+	const patch = (methodsList?.includes(HTTP2_METHOD_PATCH)) ? supportedTypesArray : undefined
 
 	return { put, post, patch }
 }
 
 /**
- * @param {string|undefined} method
+ * @param {Array<string>|string|undefined} methods
  * @param {SendSupportedTypes|undefined} supportedTypes
  * @returns {SendSupportedTypesNormalizedRecord}
  */
-export function coerceSupportedTypes(method, supportedTypes) {
+export function coerceSupportedTypes(methods, supportedTypes) {
 	if(supportedTypes === undefined) {
 		return {
 			put: undefined,
@@ -93,13 +95,15 @@ export function coerceSupportedTypes(method, supportedTypes) {
 	}
 
 	if(Array.isArray(supportedTypes)) {
-		return coerceSupportedTypes_FromArray(method, supportedTypes)
+		return coerceSupportedTypes_FromArray(methods, supportedTypes)
 	}
 
 	if(typeof supportedTypes === 'string') {
-		return coerceSupportedTypes_FromArray(method, [ supportedTypes ])
+		return coerceSupportedTypes_FromArray(methods, [ supportedTypes ])
 	}
 
+	// todo should this list be filtered by method or allowed to override
+	// const methodsList = normalizeToArray(methods)
 	return {
 		put: normalizeToArray(supportedTypes.put),
 		post: normalizeToArray(supportedTypes.post),
