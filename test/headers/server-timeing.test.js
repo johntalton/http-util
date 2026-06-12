@@ -33,6 +33,14 @@ describe('ServerTiming', () => {
 			assert.equal(result, 'A;dur=42,B;dur=77')
 		})
 
+		it('should handle multiple item (as array)', () => {
+			const result = ServerTiming.encode([
+				{ name: 'A', duration: 42 },
+				{ name: 'B', duration: 77 },
+			], true)
+			assert.deepEqual(result, [ 'A;dur=42', 'B;dur=77' ])
+		})
+
 		it('should handle item with description', () => {
 			const result = ServerTiming.encode([
 				{ name: 'TEST', duration: 42, description: 'A TEST' }])

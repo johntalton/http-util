@@ -24,6 +24,15 @@ describe('CacheControl', () => {
 			assert.equal(result, 'public, no-cache, no-transform')
 		})
 
+		it('should include directives (as array)', () => {
+			const result = CacheControl.encode({
+				pub: true,
+				priv: false,
+				directives: [ 'no-cache', 'no-transform' ]
+			}, true)
+			assert.deepEqual(result, [ 'public', 'no-cache', 'no-transform' ])
+		})
+
 		it('should include directives (single)', () => {
 			const result = CacheControl.encode({
 				directives: 'no-store'

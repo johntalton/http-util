@@ -81,6 +81,14 @@ describe('Link', () => {
 			])
 			assert.equal(result, '<foo.html>; rel="foo", <bar.html>; rel="bar"')
 		})
+
+		it('should handle array of many (as array)', () => {
+			const result = Link.encode([
+				{ url: 'foo.html', relation: 'foo' },
+				{ url: 'bar.html', relation: 'bar' }
+			], true)
+			assert.deepEqual(result, ['<foo.html>; rel="foo"', '<bar.html>; rel="bar"' ])
+		})
 	})
 })
 

@@ -1,4 +1,4 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, isNonEmptyArray } from "../defs.js"
 
 export const CLIENT_HINT_USER_AGENT = 'Sec-CH-UA'
 export const CLIENT_HINT_ARCHITECTURE = 'Sec-CH-UA-Arch'
@@ -73,8 +73,7 @@ export class ClientHints {
 	 */
 	static encode(hints, asArray = false) {
 		if(hints === undefined) { return undefined }
-		if(!Array.isArray(hints)) { return undefined }
-		if(hints.length === 0) { return undefined }
+		if(!isNonEmptyArray(hints)) { return undefined }
 
 		const remaining = hints
 			.filter(hint => KNOWN_CLIENT_HINTS.includes(hint))

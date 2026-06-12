@@ -121,5 +121,37 @@ describe('Challenge', () => {
 			assert.equal(result, 'FAKE single')
 		})
 
+		it('should handle array of one items ', () => {
+			const result = Challenge.encode([{
+				scheme: 'FAKE',
+				parameters: new Map([ [ 'foo', 'bar' ], [ 'biz', 'bang' ] ])
+			}])
+			assert.equal(result, 'FAKE foo=bar,biz=bang')
+		})
+
+		it('should handle array of multiple items', () => {
+			const result = Challenge.encode([{
+				scheme: 'FAKE',
+				parameters: new Map([ [ 'foo', 'bar' ], [ 'biz', 'bang' ] ])
+			}, {
+				scheme: 'ANOTHER',
+				parameters: new Map([ [ 'quix', 'quack' ] ])
+			}])
+			assert.equal(result, 'FAKE foo=bar,biz=bang, ANOTHER quix=quack')
+		})
+
+		it('should handle array of multiple items (as array)', () => {
+			const result = Challenge.encode([{
+				scheme: 'FAKE',
+				parameters: new Map([ [ 'foo', 'bar' ], [ 'biz', 'bang' ] ])
+			}, {
+				scheme: 'ANOTHER',
+				parameters: new Map([ [ 'quix', 'quack' ] ])
+			}], true)
+			assert.deepEqual(result, [ 'FAKE foo=bar,biz=bang', 'ANOTHER quix=quack' ])
+		})
+
+
+
 	})
 })

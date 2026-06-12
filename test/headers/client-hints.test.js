@@ -29,5 +29,10 @@ describe('ClientHints', () => {
 			const result = ClientHints.encode([ 'Sec-CH-UA', 'Sec-CH-UA-Mobile' ])
 			assert.equal(result, 'Sec-CH-UA, Sec-CH-UA-Mobile')
 		})
+
+		it('should handle common values (as array)', () => {
+			const result = ClientHints.encode([ 'Sec-CH-UA', 'Sec-CH-UA-Mobile' ], true)
+			assert.deepEqual(result, [ 'Sec-CH-UA', 'Sec-CH-UA-Mobile' ])
+		})
 	})
 })
