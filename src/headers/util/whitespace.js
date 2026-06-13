@@ -1,4 +1,4 @@
-export const WHITESPACE_REGEX = /\s/
+export const WHITESPACE_REGEX = /\s/u
 
 /**
  * @param {string} c

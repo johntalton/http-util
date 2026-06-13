@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/nursery/noExcessiveClassesPerFile: includes helper classes */
-/** biome-ignore-all lint/nursery/noExcessiveLinesPerFile: includes temporal and date support */
+/** biome-ignore-all lint/style/noExcessiveClassesPerFile: includes helper classes */
+/** biome-ignore-all lint/style/noExcessiveLinesPerFile: includes temporal and date support */
 import { isQuoted, stripQuotes } from './util/quote.js'
 
 /**
@@ -281,17 +281,21 @@ export class Conditional {
 
 	/**
 	 * @param {Array<EtagItem>|undefined} etagItemList
+	 * @returns {boolean}
 	 */
 	static hasAny(etagItemList) {
-		return etagItemList?.find(item => item.any) !== undefined
+		if(etagItemList === undefined) { return false }
+		return etagItemList?.some(item => item.any)
 	}
 
 	/**
 	 * @param {Array<EtagItem>|undefined} etagItemList
 	 * @param {string|undefined} etag
+	 * @returns {boolean}
 	 */
 	static hasEtag(etagItemList, etag) {
-		return etagItemList?.find(item => item.etag === etag) !== undefined
+		if(etagItemList === undefined) { return false }
+		return etagItemList?.some(item => item.etag === etag)
 	}
 
 	/**
@@ -367,12 +371,12 @@ export class Conditional {
 
 		//
 		const dayName = matchHeader.slice(0, 3)
-		const day = Number.parseInt(matchHeader.slice(5, 7))
+		const day = Number.parseInt(matchHeader.slice(5, 7), 10)
 		const month = matchHeader.slice(8, 11)
-		const year = Number.parseInt(matchHeader.slice(12, 16))
-		const hour = Number.parseInt(matchHeader.slice(17, 19))
-		const minute = Number.parseInt(matchHeader.slice(20, 22))
-		const second = Number.parseInt(matchHeader.slice(23, 25))
+		const year = Number.parseInt(matchHeader.slice(12, 16), 10)
+		const hour = Number.parseInt(matchHeader.slice(17, 19), 10)
+		const minute = Number.parseInt(matchHeader.slice(20, 22), 10)
+		const second = Number.parseInt(matchHeader.slice(23, 25), 10)
 
 		//
 		if(!DATE_DAYS.includes(dayName)) { return undefined }

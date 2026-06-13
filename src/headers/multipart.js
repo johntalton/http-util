@@ -67,6 +67,7 @@ export class Multipart {
 		const boundaryBegin = `${BOUNDARY_MARK}${boundary}`
 		const boundaryEnd = `${BOUNDARY_MARK}${boundary}${BOUNDARY_MARK}`
 
+		// biome-ignore lint/complexity/noUselessUndefinedInitialization: strange otherwise
 		let partName = undefined
 		let state = MULTIPART_STATE.BEGIN
 

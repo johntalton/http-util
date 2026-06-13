@@ -313,6 +313,7 @@ export async function _bodyFormData_URL(reader, contentType) {
 /**
  * @param {ReadableStream} reader
  * @param {ContentTypeItem|undefined} contentType
+ * @returns {Promise<FormData>}
  */
 export async function bodyFormData(reader, contentType) {
 	if(contentType === undefined) { throw new Error('undefined content type for form data') }
