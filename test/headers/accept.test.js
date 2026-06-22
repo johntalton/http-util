@@ -5,11 +5,11 @@ import { Accept } from '@johntalton/http-util/headers'
 
 
 const ITEM_JSON = {
-	name: 'application/json;charset=utf8',
+	name: 'application/json;charset=utf-8',
 	mimetype: 'application/json',
 	type: 'application',
 	subtype: 'json',
-	parameters: new Map([[ 'charset', 'utf8' ]])
+	parameters: new Map([[ 'charset', 'utf-8' ]])
 }
 
 const ITEM_JSON_WITHOUT_CHARSET = {
@@ -21,11 +21,11 @@ const ITEM_JSON_WITHOUT_CHARSET = {
 }
 
 const ITEM_PLAIN = {
-	name: 'text/plain;charset=utf8',
+	name: 'text/plain;charset=utf-8',
 	mimetype: 'text/plain',
 	type: 'text',
 	subtype: 'plain',
-	parameters: new Map([[ 'charset', 'utf8' ]])
+	parameters: new Map([[ 'charset', 'utf-8' ]])
 }
 
 const ITEM_APPLICATION_ANY = {

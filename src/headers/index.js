@@ -1,5 +1,8 @@
 /** biome-ignore-all lint/performance/noBarrelFile: entry point */
 /** biome-ignore-all lint/performance/noReExportAll: entry point */
+export * from './util/mime-types.js'
+//
+
 export * from './accept.js'
 export * from './accept-encoding.js'
 export * from './accept-language.js'

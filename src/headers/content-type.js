@@ -1,26 +1,16 @@
 import { KVP } from './util/kvp.js'
 import { MIME_ANY, Mime } from './util/mime.js'
+import {
+	MIME_TYPE_HTML,
+	MIME_TYPE_JS,
+	MIME_TYPE_JSON,
+	MIME_TYPE_MESSAGE_HTTP,
+	MIME_TYPE_TEXT,
+	MIME_TYPE_XML,
+	MIME_TYPE_YAML
+} from './util/mime-types.js'
 
 /** @import { MimeItem } from './util/mime.js' */
-
-export const MIME_TYPE_JSON = 'application/json'
-export const MIME_TYPE_TEXT = 'text/plain'
-export const MIME_TYPE_EVENT_STREAM = 'text/event-stream'
-export const MIME_TYPE_XML = 'application/xml'
-export const MIME_TYPE_URL_FORM_DATA = 'application/x-www-form-urlencoded'
-export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
-export const MIME_TYPE_MULTIPART_RANGE = 'multipart/byteranges'
-export const MIME_TYPE_OCTET_STREAM = 'application/octet-stream'
-export const MIME_TYPE_MESSAGE_HTTP = 'message/http'
-export const MIME_TYPE_YAML = 'application/yaml'
-export const MIME_TYPE_PROTOBUF = 'application/protobuf'
-
-export const KNOWN_CONTENT_TYPES = [
-	'application', 'audio', 'image', 'message',
-	'multipart', 'text', 'video', 'font', 'example', 'model'
-]
-
-export const TYPE_X_TOKEN_PREFIX = 'X-'
 
 /**
  * @typedef {Object} ContentTypeExtension
@@ -37,7 +27,7 @@ export const CONTENT_TYPE_SEPARATOR = {
 	KVP: '='
 }
 
-export const CHARSET_UTF8 = 'utf8'
+export const CHARSET_UTF8 = 'utf-8' // utf8
 export const CHARSET = 'charset'
 export const PARAMETER_CHARSET_UTF8 = `${CHARSET}${CONTENT_TYPE_SEPARATOR.KVP}${CHARSET_UTF8}`
 
@@ -45,6 +35,10 @@ export const CONTENT_TYPE_JSON = `${MIME_TYPE_JSON}` // match qpack (46)
 export const CONTENT_TYPE_TEXT = `${MIME_TYPE_TEXT}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
 export const CONTENT_TYPE_MESSAGE_HTTP = `${MIME_TYPE_MESSAGE_HTTP}`
 export const CONTENT_TYPE_YAML = `${MIME_TYPE_YAML}`
+export const CONTENT_TYPE_XML = `${MIME_TYPE_XML}`
+
+export const CONTENT_TYPE_HTML = `${MIME_TYPE_HTML}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
+export const CONTENT_TYPE_JS = `${MIME_TYPE_JS}${CONTENT_TYPE_SEPARATOR.PARAMETER}${PARAMETER_CHARSET_UTF8}`
 
 /** @type {ContentTypeItem} */
 export const WELL_KNOWN_JSON = {
@@ -52,7 +46,7 @@ export const WELL_KNOWN_JSON = {
 	name: CONTENT_TYPE_JSON,
 	type: 'application',
 	subtype: 'json',
-	charset: 'utf8',
+	charset: CHARSET_UTF8,
 	parameters: new Map()
 }
 

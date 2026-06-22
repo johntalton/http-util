@@ -2,6 +2,7 @@ import { ReadableStream } from 'node:stream/web'
 
 import { ContentDisposition } from './content-disposition.js'
 import { ContentRange } from './content-range.js'
+import { CHARSET_UTF8 } from './content-type.js'
 // import { ContentType } from './content-type.js'
 
 /** @import { ContentRangeDirective } from './content-range.js' */
@@ -39,19 +40,19 @@ export class Multipart {
 	/**
 	 * @param {string} text
 	 * @param {string} boundary
-	 * @param {string} [charset='utf8']
+	 * @param {string} [charset=CHARSET_UTF8]
 	 */
-	static parse(text, boundary, charset = 'utf8') {
+	static parse(text, boundary, charset = CHARSET_UTF8) {
 		return Multipart.parse_FormData(text, boundary, charset)
 	}
 
 	/**
 	 * @param {string} text
 	 * @param {string} boundary
-	 * @param {string} [_charset='utf8']
+	 * @param {string} [_charset=CHARSET_UTF8]
 	 * @returns {FormData}
 	 */
-	static parse_FormData(text, boundary, _charset = 'utf8') {
+	static parse_FormData(text, boundary, _charset = CHARSET_UTF8) {
 		const formData = new FormData()
 
 		if(text === undefined) { return formData }

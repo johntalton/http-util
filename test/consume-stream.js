@@ -5,7 +5,7 @@ import { ReadableStream } from 'node:stream/web'
  * @param {Readable | ReadableStream} stream
  */
 export async function consumeStreamAsText(stream) {
-	const streamDecoder = new TextDecoderStream('utf8', {})
+	const streamDecoder = new TextDecoderStream('utf-8', {})
 	pipeline(
 		stream,
 		streamDecoder.writable,

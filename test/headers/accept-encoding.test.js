@@ -142,6 +142,16 @@ describe('AcceptEncoding', () => {
 			], [ 'gzip', 'deflate' ])
 			assert.deepEqual(result, { name: 'gzip' })
 		})
+
+		it('should handle client preferences over server', () => {
+			const result = AcceptEncoding.selectItemFrom([
+				{ name: 'gzip' },
+				{ name: 'deflate' },
+				{ name: 'br' },
+				{ name: 'zstd' }
+			], [ 'br', 'gzip' ])
+			assert.deepEqual(result, { name: 'gzip' })
+		})
 	})
 
 	describe('select', () => {

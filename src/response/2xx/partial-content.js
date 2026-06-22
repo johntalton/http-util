@@ -1,8 +1,8 @@
 import http2 from 'node:http2'
 
 import { RANGE_UNITS_BYTES } from '../../defs.js'
-import { MIME_TYPE_MULTIPART_RANGE, MIME_TYPE_OCTET_STREAM } from '../../headers/content-type.js'
 import { Multipart } from '../../headers/multipart.js'
+import { MIME_TYPE_MULTIPART_RANGE, MIME_TYPE_OCTET_STREAM } from '../../headers/util/mime-types.js'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */

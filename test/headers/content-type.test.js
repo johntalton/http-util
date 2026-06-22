@@ -42,7 +42,7 @@ describe('ContentType', () => {
 				mimetype: 'application/json',
 				type: 'application',
 				subtype: 'json',
-				charset: 'utf8',
+				charset: 'utf-8',
 				parameters: new Map()
 			})
 		})
@@ -60,15 +60,15 @@ describe('ContentType', () => {
 		})
 
 		it('should handle type with parameters', () => {
-			const result = ContentType.parse('text/plain;charset=utf8')
+			const result = ContentType.parse('text/plain;charset=utf-8')
 			assert.deepEqual(result, {
 				name: 'text/plain',
 				mimetype: 'text/plain',
 				type: 'text',
 				subtype: 'plain',
-				charset: 'utf8',
+				charset: 'utf-8',
 				parameters: new Map([
-					[ 'charset', 'utf8' ]
+					[ 'charset', 'utf-8' ]
 				])
 			})
 		})
