@@ -133,7 +133,7 @@ export function lookupEncoder(encoding, listing) {
  * @param {ServerHttp2Stream} stream
  * @param {number} status
  * @param {string|undefined} contentType
- * @param {SendBody} body
+ * @param {SendBody|undefined} body
  * @param {string|undefined} encoding
  * @param {EtagItem|undefined} etag
  * @param {IMFFixDateInput|string|undefined} lastModified
@@ -144,6 +144,12 @@ export function lookupEncoder(encoding, listing) {
  * @param {Metadata} meta
  */
 export function send_encoded(stream, status, contentType, body, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+	if(body === undefined) {
+		meta.performance.push({ name: 'encode', duration: 0 })
+		send_bytes(stream, status, contentType, body, undefined, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
+		return
+	}
+
 	const obj = (typeof body === 'string') ? Buffer.from(body, CHARSET_UTF8) : body
 
 	if((obj instanceof ReadableStream) || (obj instanceof Readable)) {

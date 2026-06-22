@@ -15,13 +15,18 @@ const DEFAULT_META = {
 
 describe('Response', () => {
 	describe('encoded', () => {
-		it('should handle undefined', () => {
+		it('should handle undefined body undefined encoding', () => {
 			const stream = new MockHttp2Stream()
 			const obj = undefined
 			Response.encoded(stream, obj, {
-				encoding: undefined
+				contentType: undefined,
+				encoding: undefined,
+				age: undefined,
+				etag: undefined,
+				lastModified: undefined,
+				cacheControl: {}
 			}, {
-
+				supportedQueryTypes: undefined
 			}, structuredClone(DEFAULT_META))
 
 
@@ -47,6 +52,92 @@ describe('Response', () => {
 				vary: 'accept,accept-encoding'
 			})
 
+			const result = stream.read()
+			assert.equal(result, null)
+
+		})
+
+		it('should handle undefined body with identity encoding', () => {
+			const stream = new MockHttp2Stream()
+			const obj = undefined
+			Response.encoded(stream, obj, {
+				contentType: undefined,
+				encoding: 'identity',
+				age: undefined,
+				etag: undefined,
+				lastModified: undefined,
+				cacheControl: {}
+			}, {
+				supportedQueryTypes: undefined
+			}, structuredClone(DEFAULT_META))
+
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 200,
+				'Server-Timing': 'encode;dur=0',
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server',
+				'content-type': undefined,
+				server: undefined,
+
+				'accept-query': undefined,
+				'accept-ranges': undefined,
+				'cache-control': undefined,
+				'content-encoding': 'identity',
+				'content-length': undefined,
+				'content-range': undefined,
+				'last-modified': undefined,
+				age: undefined,
+				etag: undefined,
+				vary: 'accept,accept-encoding'
+			})
+
+			const result = stream.read()
+			assert.equal(result, null)
+
+		})
+
+		it('should handle undefined body with gzip encoding', () => {
+			const stream = new MockHttp2Stream()
+			const obj = undefined
+			Response.encoded(stream, obj, {
+				contentType: undefined,
+				encoding: 'gzip',
+				age: undefined,
+				etag: undefined,
+				lastModified: undefined,
+				cacheControl: {}
+			}, {
+				supportedQueryTypes: undefined
+			}, structuredClone(DEFAULT_META))
+
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 200,
+				'Server-Timing': 'encode;dur=0',
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server',
+				'content-type': undefined,
+				server: undefined,
+
+				'accept-query': undefined,
+				'accept-ranges': undefined,
+				'cache-control': undefined,
+				'content-encoding': 'gzip',
+				'content-length': undefined,
+				'content-range': undefined,
+				'last-modified': undefined,
+				age: undefined,
+				etag: undefined,
+				vary: 'accept,accept-encoding'
+			})
+
+			const result = stream.read()
+			assert.equal(result, null)
 
 		})
 

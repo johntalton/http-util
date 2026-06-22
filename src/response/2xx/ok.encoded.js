@@ -9,7 +9,7 @@ const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {SendBody} obj
+ * @param {SendBody|undefined} obj
  * @param {Omit<SendContent, 'rangeDirective' | 'contentLength'>} content
  * @param {Pick<SendInfo, 'supportedQueryTypes'>} info
  * @param {Metadata} meta
