@@ -1,5 +1,10 @@
 # http-util
 
+[![npm Version](http://img.shields.io/npm/v/@johntalton/http-util.svg)](https://www.npmjs.com/package/@johntalton/http-util)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/johntalton/http-util)
+[![CI](https://github.com/johntalton/http-util/actions/workflows/CI.yml/badge.svg)](https://github.com/johntalton/http-util/actions/workflows/CI.yml)
+
+
 Set of utilities to aid in building from-scratch [node:http2](https://nodejs.org/docs/latest/api/http2.html) stream compatible services.
 
 - [Header parsers](#header-parsers)
