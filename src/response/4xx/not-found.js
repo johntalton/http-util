@@ -14,5 +14,7 @@ const { HTTP_STATUS_NOT_FOUND } = http2.constants
  * @param {Metadata} meta
  */
 export function sendNotFound(stream, message, meta) {
+	// todo Assert.isString(message) if not undefined
+	// todo if message is undefined used send_no_body
 	send(stream, HTTP_STATUS_NOT_FOUND, {}, [], CONTENT_TYPE_TEXT, message, meta)
 }

@@ -1,3 +1,4 @@
+import { Assert } from './util/assert.js'
 import { KVP } from './util/kvp.js'
 import { MIME_ANY, Mime } from './util/mime.js'
 import {
@@ -62,7 +63,8 @@ export class ContentType {
 	 */
 	static parse(header) {
 		if(header === undefined) { return undefined }
-		if(header === null) { return undefined }
+		// if(header === null) { return undefined }
+		Assert.isString(header)
 
 		const wellKnown = WELL_KNOWN_CONTENT_TYPES.get(header)
 		if(wellKnown !== undefined) { return wellKnown }

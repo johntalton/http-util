@@ -59,17 +59,6 @@ export class Accept {
 	}
 
 	/**
-	 * @deprecated
-	 * @see {@link Accept.selectItemFrom}
-	 * @param {string|undefined} acceptHeader
-	 * @param {Array<string>} supportedTypes
-	 */
-	static select(acceptHeader, supportedTypes) {
-		const accepts = Accept.parse(acceptHeader)
-		return Accept.selectFrom(accepts, supportedTypes)
-	}
-
-	/**
 	 * @param {Array<AcceptItem>} accepts
 	 * @param {Array<string>} supportedTypes
 	 * @returns {AcceptItem | undefined}
@@ -111,17 +100,5 @@ export class Accept {
 		matches.sort(Accept.compare)
 
 		return matches.at(0)
-	}
-
-	/**
-	 * @deprecated
-	 * @see {@link Accept.selectItemFrom}
-	 * @param {Array<AcceptItem>} accepts
-	 * @param {Array<string>} supportedTypes
-	 * @returns {string | undefined}
-	 */
-	static selectFrom(accepts, supportedTypes) {
-		const item = Accept.selectItemFrom(accepts, supportedTypes)
-		return item?.mimetype
 	}
 }

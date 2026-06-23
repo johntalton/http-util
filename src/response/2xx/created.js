@@ -16,7 +16,7 @@ const { HTTP_STATUS_CREATED } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {URL|string} location
+ * @param {URL|string|undefined} location
  * @param {Pick<SendContent, 'etag' | 'lastModified'>} content
  * @param {Metadata} meta
  */
@@ -27,6 +27,7 @@ export function sendCreated(stream, location, content, meta) {
 	} = content
 
 	const loc = (location instanceof URL) ? location.href : location
+	// todo Assert.isString(loc) if not undefined
 
 	send_no_body(stream, HTTP_STATUS_CREATED, {
 			[HTTP2_HEADER_LOCATION]: loc,

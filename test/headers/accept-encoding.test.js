@@ -154,41 +154,41 @@ describe('AcceptEncoding', () => {
 		})
 	})
 
-	describe('select', () => {
-		it('should handle undefined', () => {
-			const result = AcceptEncoding.select(undefined, undefined)
-			assert.equal(result, undefined)
-		})
+	// describe('select', () => {
+	// 	it('should handle undefined', () => {
+	// 		const result = AcceptEncoding.select(undefined, undefined)
+	// 		assert.equal(result, undefined)
+	// 	})
 
-		it('should handle undefined supported', () => {
-			const result = AcceptEncoding.select('', undefined)
-			assert.equal(result, undefined)
-		})
+	// 	it('should handle undefined supported', () => {
+	// 		const result = AcceptEncoding.select('', undefined)
+	// 		assert.equal(result, undefined)
+	// 	})
 
-		it('should handle empty supported', () => {
-			const result = AcceptEncoding.select('gzip, zstd', [])
-			assert.equal(result, undefined)
-		})
+	// 	it('should handle empty supported', () => {
+	// 		const result = AcceptEncoding.select('gzip, zstd', [])
+	// 		assert.equal(result, undefined)
+	// 	})
 
-		it('should handle selecting first', () => {
-			const result = AcceptEncoding.select('gzip, zstd', [ 'gzip', 'zstd' ])
-			assert.equal(result, 'gzip')
-		})
+	// 	it('should handle selecting first', () => {
+	// 		const result = AcceptEncoding.select('gzip, zstd', [ 'gzip', 'zstd' ])
+	// 		assert.equal(result, 'gzip')
+	// 	})
 
-		it('should handle selecting with quality', () => {
-			const result = AcceptEncoding.select('br;q=1.0, gzip;q=0.8, *;q=0.1', [ 'gzip', 'fake' ])
-			assert.equal(result, 'gzip')
-		})
+	// 	it('should handle selecting with quality', () => {
+	// 		const result = AcceptEncoding.select('br;q=1.0, gzip;q=0.8, *;q=0.1', [ 'gzip', 'fake' ])
+	// 		assert.equal(result, 'gzip')
+	// 	})
 
-		it('should handle selecting any as fallback', () => {
-			const result = AcceptEncoding.select('br;q=1.0, gzip;q=0.8, *;q=0.1', [ 'fake' ])
-			assert.equal(result, 'fake')
-		})
+	// 	it('should handle selecting any as fallback', () => {
+	// 		const result = AcceptEncoding.select('br;q=1.0, gzip;q=0.8, *;q=0.1', [ 'fake' ])
+	// 		assert.equal(result, 'fake')
+	// 	})
 
-		it('should handle selecting any', () => {
-			const result = AcceptEncoding.select('*;q=0.1', [ 'gzip', 'deflate' ])
-			assert.equal(result, 'gzip')
-		})
+	// 	it('should handle selecting any', () => {
+	// 		const result = AcceptEncoding.select('*;q=0.1', [ 'gzip', 'deflate' ])
+	// 		assert.equal(result, 'gzip')
+	// 	})
 
-	})
+	// })
 })

@@ -112,8 +112,8 @@ describe('Multipart', () => {
 	})
 
 	describe('encode_Bytes', () => {
-		it('should handle undefined', () => {
-			const stream = Multipart.encode_Bytes(undefined, undefined, undefined, undefined)
+		it('should handle undefined parts', () => {
+			const stream = Multipart.encode_Bytes('content/type', undefined, undefined, 'boundary')
 			assert.ok(stream instanceof ReadableStream)
 		})
 

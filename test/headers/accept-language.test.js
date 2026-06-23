@@ -32,43 +32,49 @@ describe('AcceptLanguage', () => {
 	})
 
 	describe('selectItemFrom', () => {
-		// todo convert select to selectItemFrom tests
-	})
-
-	describe('select', () => {
 		it('should handle undefined', () => {
-			const result = AcceptLanguage.select(undefined, undefined)
+			const result = AcceptLanguage.selectItemFrom(undefined, undefined)
 			assert.equal(result, undefined)
 		})
 
 		it('should handle undefined supported', () => {
-			const result = AcceptLanguage.select('', undefined)
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('foo'), undefined)
 			assert.equal(result, undefined)
 		})
 
 		it('should select none from empty list', () => {
-			const result = AcceptLanguage.select('foo;q=0.2, bar-BZ', [])
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('foo;q=0.2, bar-BZ'), [])
 			assert.equal(result, undefined)
 		})
 
+		it('should select none miss-matched list', () => {
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('foo, bar'), [ 'biz', 'bang' ])
+			assert.equal(result, undefined)
+		})
+
+		it('should not return object if first item is undefined', () => {
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('bar, *'), [ undefined, 'foo' ])
+			assert.deepEqual(result, undefined)
+		})
+
 		it('should select from list', () => {
-			const result = AcceptLanguage.select('foo;q=0.2, bar', [ 'foo' ])
-			assert.equal(result, 'foo')
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('foo;q=0.2, bar'), [ 'foo' ])
+			assert.deepEqual(result, { name: 'foo', quality: .2, parameters: new Map([ [ 'q', '0.2' ] ]) })
 		})
 
 		it('should select hightest quality from list (default)', () => {
-			const result = AcceptLanguage.select('foo;q=0.2, bar', [ 'foo', 'bar' ])
-			assert.equal(result, 'bar')
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('foo;q=0.2, bar'), [ 'foo', 'bar' ])
+			assert.deepEqual(result, { name: 'bar', quality: 1, parameters: new Map() })
 		})
 
 		it('should select hightest quality from list', () => {
-			const result = AcceptLanguage.select('foo;q=0.2, bar;q=.8', [ 'foo', 'bar' ])
-			assert.equal(result, 'bar')
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('foo;q=0.2, bar;q=.8'), [ 'foo', 'bar' ])
+			assert.deepEqual(result, { name: 'bar', quality: .8, parameters: new Map([ [ 'q', '.8' ] ]) })
 		})
 
 		it('should select first when any', () => {
-			const result = AcceptLanguage.select('*', [ 'foo', 'bar' ])
-			assert.equal(result, 'foo')
+			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('*'), [ 'foo', 'bar' ])
+			assert.deepEqual(result, { name: 'foo' })
 		})
 	})
 })

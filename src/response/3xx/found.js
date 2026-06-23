@@ -18,6 +18,7 @@ const { HTTP_STATUS_FOUND } = http2.constants
  */
 export function sendFound(stream, location, meta) {
 	const loc = (location instanceof URL) ? location.href : location
+	// todo Assert.isString(loc)
 
 	send_no_body(stream, HTTP_STATUS_FOUND, {
 		[HTTP2_HEADER_LOCATION]: loc

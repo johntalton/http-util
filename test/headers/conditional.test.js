@@ -393,9 +393,11 @@ describe('Conditional', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle null', () => {
-			const result = Conditional.parseFixDate(null)
-			assert.equal(result, undefined)
+		it('should throw on null', () => {
+			assert.throws(() => Conditional.parseFixDate(null), {
+				name: 'TypeError',
+				message: 'parameter must be a string'
+			})
 		})
 
 		it('should reject improper length', () => {

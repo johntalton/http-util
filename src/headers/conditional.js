@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/style/noExcessiveClassesPerFile: includes helper classes */
 /** biome-ignore-all lint/style/noExcessiveLinesPerFile: includes temporal and date support */
+import { Assert } from './util/assert.js'
 import { isQuoted, stripQuotes } from './util/quote.js'
 
 /**
@@ -89,10 +90,12 @@ export const MAXIMUM_DAY = 31
 
 export class ETag {
 	/**
-	 * @param {string} etag
+	 * @param {string|undefined} etag
+	 * @returns {etag is string}
 	 */
 	static isValid(etag) {
 		if(etag === undefined) { return false }
+		// Assert.isString(etag)
 
 		// %x21 / %x23-7E and %x80-FF
 		for(const c of etag) {
@@ -104,7 +107,7 @@ export class ETag {
 	}
 
 	/**
-	 * @param {string} etag
+	 * @param {string|undefined} etag
 	 * @returns {WeakEtagItem}
 	 */
 	static weak(etag) {
@@ -113,7 +116,7 @@ export class ETag {
 	}
 
 	/**
-	 * @param {string} etag
+	 * @param {string|undefined} etag
 	 * @returns {NotWeakEtagItem}
 	 */
 	static strong(etag) {
@@ -132,6 +135,7 @@ export class ETag {
 	 */
 	static parse(raw) {
 		if(raw === undefined) { return undefined }
+		Assert.isString(raw)
 
 		const rawEtag = raw.trim()
 		const weak = rawEtag.startsWith(CONDITION_ETAG_WEAK_PREFIX)
@@ -273,6 +277,7 @@ export class Conditional {
 	 */
 	static parseEtagList(matchHeader) {
 		if(matchHeader === undefined) { return [] }
+		Assert.isString(matchHeader)
 
 		return matchHeader.split(CONDITION_ETAG_SEPARATOR)
 			.map(ETag.parse)
@@ -295,7 +300,11 @@ export class Conditional {
 	 */
 	static hasEtag(etagItemList, etag) {
 		if(etagItemList === undefined) { return false }
-		return etagItemList?.some(item => item.etag === etag)
+		if(etag === undefined) { return false }
+
+		Assert.isString(etag)
+
+		return etagItemList.some(item => item.etag === etag)
 	}
 
 	/**
@@ -305,7 +314,8 @@ export class Conditional {
 	static encodeFixDate(reference) {
 		if(reference === undefined) { return undefined }
 
-		if(typeof reference === 'string') { return reference }
+		if(typeof reference === 'string') { return reference } // todo String
+		// if(reference instanceof String) { return reference }
 		if(reference instanceof Date) { return reference.toUTCString() }
 		if(isTemporalInstant(reference)) {
 
@@ -330,12 +340,12 @@ export class Conditional {
 	}
 
 	/**
-	 * @param {String|string|undefined} matchHeader
+	 * @param {string|undefined} matchHeader
 	 * @returns {IMFFixDate|undefined}
 	 */
 	static parseFixDate(matchHeader) {
-		if(matchHeader === undefined || matchHeader === null) { return undefined }
-		// if(!(typeof matchHeader === 'string') && (!(matchHeader instanceof String))) { return undefined }
+		if(matchHeader === undefined) { return undefined }
+		Assert.isString(matchHeader)
 
 		// https://www.rfc-editor.org/rfc/rfc5322.html#section-3.3
 		// https://httpwg.org/specs/rfc9110.html#preferred.date.format

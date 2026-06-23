@@ -44,13 +44,6 @@ export const QUOTA_UNIT = {
 
 export class RateLimit {
 	/**
-	 * @deprecated
-	 * @see {@link RateLimit.encode}
-	 * @param {RateLimitInfo} limitInfo
-	 */
-	static from(limitInfo) { return RateLimit.encode(limitInfo) }
-
-	/**
 	 * @param {RateLimitInfo} limitInfo
 	 */
 	static encode(limitInfo) {
@@ -66,13 +59,6 @@ export class RateLimit {
 }
 
 export class RateLimitPolicy {
-	/**
-	 * @deprecated
-	 * @see {@link RateLimitPolicy.encode}
-	 * @param {...RateLimitPolicyInfo} policies
-	 */
-	static from(...policies) { return RateLimitPolicy.encode(...policies) }
-
 	/**
 	 * @param {...RateLimitPolicyInfo} policies
 	 */

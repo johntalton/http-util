@@ -55,15 +55,15 @@ export class Challenge {
 	 * @param {string|undefined} [realm]
 	 * @param {string|undefined} [scope]
 	 * @param {BearerErrorCode} [error]
-	 * @param {string} [errorDescription]
+	 * @param {string|undefined} [errorDescription]
 	 * @param {string} [_errorUri]
 	 * @returns {ChallengeItem}
 	 */
 	static bearer(realm, scope, error, errorDescription, _errorUri) {
 		const parameters = new Map()
-		if(realm !== undefined) { parameters.set('realm', realm) }
-		if(scope !== undefined) { parameters.set('scope', scope) }
-		if(error !== undefined) { parameters.set('error', error) }
+		if(realm !== undefined) { parameters.set('realm', realm) } // todo Assert.isString()
+		if(scope !== undefined) { parameters.set('scope', scope) } // todo Assert.isString()
+		if(error !== undefined) { parameters.set('error', error) } // todo Assert.isString()
 		if(errorDescription !== undefined) { parameters.set('error_description', errorDescription) }
 
 		return {
@@ -72,25 +72,25 @@ export class Challenge {
 		}
 	}
 
-	/**
-	 * @param {string} _algorithm
-	 * @param {string} [_realm]
-	 * @returns {ChallengeItem}
-	 */
-	static digest(_algorithm, _realm) {
-		return {
-			scheme: 'Digest'
-		}
-	}
+	// /**
+	//  * @param {string} _algorithm
+	//  * @param {string} [_realm]
+	//  * @returns {ChallengeItem}
+	//  */
+	// static digest(_algorithm, _realm) {
+	// 	return {
+	// 		scheme: 'Digest'
+	// 	}
+	// }
 
-	/**
-	 * @returns {ChallengeItem}
-	 */
-	static hoba() {
-		return {
-			scheme: 'HOBA'
-		}
-	}
+	// /**
+	//  * @returns {ChallengeItem}
+	//  */
+	// static hoba() {
+	// 	return {
+	// 		scheme: 'HOBA'
+	// 	}
+	// }
 
 	/**
 	 * @param {Array<ChallengeItem> | ChallengeItem | undefined} challenges

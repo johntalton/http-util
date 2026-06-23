@@ -20,17 +20,6 @@ export class AcceptEncoding {
 	}
 
 	/**
-	 * @deprecated
-	 * @see {@link AcceptEncoding.selectItemFrom}
-	 * @param {string|undefined} acceptEncodingHeader
-	 * @param {Array<string>} supportedTypes
-	 */
-	static select(acceptEncodingHeader, supportedTypes) {
-		const accepts = AcceptEncoding.parse(acceptEncodingHeader)
-		return AcceptEncoding.selectFrom(accepts, supportedTypes)
-	}
-
-	/**
 	 * @param {Array<AcceptStyleItem>} acceptEncodings (descending quality order)
 	 * @param {Array<string>} supportedTypes (descending preferred order)
 	 * @returns {AcceptStyleItem | undefined}
@@ -55,17 +44,5 @@ export class AcceptEncoding {
 		}
 
 		return undefined
-	}
-
-	/**
-	 * @deprecated
-	 * @see {@link AcceptEncoding.selectItemFrom}
-	 * @param {Array<AcceptStyleItem>} acceptEncodings
-	 * @param {Array<string>} supportedTypes
-	 * @returns {string | undefined}
-	 */
-	static selectFrom(acceptEncodings, supportedTypes) {
-		const item = AcceptEncoding.selectItemFrom(acceptEncodings, supportedTypes)
-		return item?.name
 	}
 }

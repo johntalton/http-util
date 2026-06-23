@@ -10,9 +10,11 @@ const { HTTP_STATUS_BAD_REQUEST } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string} message
+ * @param {string|undefined} message
  * @param {Metadata} meta
  */
 export function sendBadRequest(stream, message, meta) {
+	// todo Assert.isString(message) if not undefined
+	// todo if message is undefined used send_no_body
 	send(stream, HTTP_STATUS_BAD_REQUEST, {}, [], CONTENT_TYPE_TEXT, message, meta)
 }

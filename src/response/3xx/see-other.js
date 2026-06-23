@@ -18,6 +18,7 @@ const { HTTP_STATUS_SEE_OTHER } = http2.constants
  */
 export function sendSeeOther(stream, location, meta) {
 	const loc = (location instanceof URL) ? location.href : location
+	// todo Assert.isString(loc)
 
 	send_no_body(stream, HTTP_STATUS_SEE_OTHER, {
 		[HTTP2_HEADER_LOCATION]: loc

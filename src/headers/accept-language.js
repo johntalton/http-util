@@ -20,17 +20,6 @@ export class AcceptLanguage {
 	}
 
 	/**
-	 * @deprecated
-	 * @see {@link AcceptLanguage.selectItemFrom}
-	 * @param {string|undefined} acceptLanguageHeader
-	 * @param {Array<string>} supportedTypes
-	 */
-	static select(acceptLanguageHeader, supportedTypes) {
-		const accepts = AcceptLanguage.parse(acceptLanguageHeader)
-		return AcceptLanguage.selectFrom(accepts, supportedTypes)
-	}
-
-	/**
 	 * @param {Array<AcceptStyleItem>} acceptLanguages (descending quality order)
 	 * @param {Array<string>} supportedTypes (descending preferred order)
 	 * @returns {AcceptStyleItem | undefined}
@@ -49,23 +38,11 @@ export class AcceptLanguage {
 
 		//
 		if(acceptLanguages.some(item => item.name === LANGUAGE_ANY)) {
-			const name = supportedTypes.at(0)
+			const name = supportedTypes.at(0) // todo filter before lookup
 			if(name === undefined) { return undefined }
 			return { name }
 		}
 
 		return undefined
-	}
-
-	/**
-	 * @deprecated
-	 * @see {@link AcceptLanguage.selectItemFrom}
-	 * @param {Array<AcceptStyleItem>} acceptLanguages
-	 * @param {Array<string>} supportedTypes
-	 * @returns {string | undefined}
-	 */
-	static selectFrom(acceptLanguages, supportedTypes) {
-		const item = AcceptLanguage.selectItemFrom(acceptLanguages, supportedTypes)
-		return item?.name
 	}
 }

@@ -18,7 +18,41 @@ const DEFAULT_META = {
 // const asRS = buffer => new ReadableStream({ type: 'bytes', start(controller) { controller.enqueue(buffer); controller.close() } })
 
 describe('send_util', () => {
-	describe('send', () => {})
+	describe('send', () => {
+		it('should return without sending if stream is undefined', () => {
+			const stream = undefined
+			assert.doesNotThrow(() => {
+				send(stream, 200, {}, [], undefined, undefined, structuredClone(DEFAULT_META))
+			})
+		})
+
+		it('should return without sending if stream is closed', () => {
+			const stream = new MockHttp2Stream()
+			stream.close('induced')
+
+			const obj = 'NEVER SENT'
+			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
+			assert.deepEqual(stream.sentHeaders, {})
+			assert.equal(stream.closed, true)
+
+			const result = stream.read()
+			assert.equal(result, null)
+		})
+
+		it('should swallow on pipeline error', () => {
+			const stream = new MockHttp2Stream()
+			const obj = new ReadableStream({
+				pull() { throw new Error('induced') }
+			})
+
+			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
+
+			// assert.equal(stream.aborted, true)
+			assert.equal(stream.closed, true)
+
+		})
+
+	})
 
 	describe('send_bytes', () => {})
 

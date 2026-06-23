@@ -1,4 +1,5 @@
 import { RANGE_UNITS_BYTES } from '../defs.js'
+import { Assert } from './util/assert.js'
 
 /** @import { AcceptRangeUnits } from '../defs.js' */
 
@@ -52,6 +53,8 @@ export class Range {
 	 */
 	static parse(rangeHeader) {
 		if(rangeHeader === undefined) { return undefined }
+		Assert.isString(rangeHeader)
+
 		if(!rangeHeader.startsWith(RANGE_UNITS_BYTES)) { return undefined }
 		if(!(rangeHeader.slice(RANGE_UNITS_BYTES.length, RANGE_UNITS_BYTES.length + 1) === RANGE_EQUAL)) { return undefined }
 		const rangeStr = rangeHeader.slice(RANGE_UNITS_BYTES.length + RANGE_EQUAL.length).trim()
@@ -61,7 +64,7 @@ export class Range {
 			.map(range => range.trim())
 			.map(range => {
 				const [ startStr, endStr ] = range.split(RANGE_SEPARATOR)
-				if(startStr === undefined) { return undefined }
+				if(startStr === undefined) { return undefined } // impossible as split always returns string
 				if(endStr === undefined) { return undefined }
 				if(startStr === RANGE_EMPTY && endStr === RANGE_EMPTY) { return undefined }
 

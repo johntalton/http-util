@@ -3,6 +3,8 @@ import { describe, it } from 'node:test'
 
 import { coreHeaders, customHeaders, performanceHeaders } from '@johntalton/http-util/response'
 
+/** @import { Metadata } from '@johntalton/http-util/response' */
+
 const DEFAULT_META = {
 	performance: [],
 	servername: undefined,
@@ -53,8 +55,56 @@ describe('Header Util', () => {
 	})
 
 	describe('customHeaders', () => {
-		it('should', () => {
+		it('should allow undefined', () => {
+			const meta = {
+				...DEFAULT_META,
+				customHeaders: undefined
+			}
+			const result = customHeaders(meta)
+			assert.deepEqual(result, { })
+		})
 
+		it('should allow empty array', () => {
+			const meta = {
+				...DEFAULT_META,
+				customHeaders: []
+			}
+			const result = customHeaders(meta)
+			assert.deepEqual(result, { })
+		})
+
+		it('should filter non X- headers', () => {
+			/** @type {Metadata} */
+			const meta = {
+				...DEFAULT_META,
+				// @ts-ignore
+				customHeaders: [ [ 'FOO', 'BAR' ]  ]
+			}
+			const result = customHeaders(meta)
+			assert.deepEqual(result, { })
+		})
+
+		it('should filter non x- headers', () => {
+			/** @type {Metadata} */
+			const meta = {
+				...DEFAULT_META,
+				// @ts-ignore
+				customHeaders: [ [ 'x-FOO', 'BAR' ]  ]
+			}
+			const result = customHeaders(meta)
+			assert.deepEqual(result, { })
+		})
+
+		it('should output valid headers', () => {
+			/** @type {Metadata} */
+			const meta = {
+				...DEFAULT_META,
+				customHeaders: [ [ 'X-FOO', 'BAR' ]  ]
+			}
+			const result = customHeaders(meta)
+			assert.deepEqual(result, {
+				'X-FOO': 'BAR'
+			})
 		})
 
 	})

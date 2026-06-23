@@ -3,6 +3,7 @@ import { ReadableStream } from 'node:stream/web'
 import { ContentDisposition } from './content-disposition.js'
 import { ContentRange } from './content-range.js'
 import { CHARSET_UTF8 } from './content-type.js'
+import { Assert } from './util/assert.js'
 // import { ContentType } from './content-type.js'
 
 /** @import { ContentRangeDirective } from './content-range.js' */
@@ -57,6 +58,9 @@ export class Multipart {
 
 		if(text === undefined) { return formData }
 		if(boundary === undefined) { return formData }
+
+		Assert.isString(text, 'text')
+		Assert.isString(boundary, 'boundary')
 
 		if(text === '') {
 			// empty body
@@ -146,6 +150,9 @@ export class Multipart {
 	 * @returns {ReadableStream<Uint8Array<ArrayBuffer>>}
 	 */
 	static encode_Bytes(contentType, parts, contentLength, boundary) {
+		Assert.isString(contentType, 'contentType')
+		Assert.isString(boundary, 'boundary')
+
 		const boundaryBegin = `${BOUNDARY_MARK}${boundary}`
 		const boundaryEnd = `${BOUNDARY_MARK}${boundary}${BOUNDARY_MARK}`
 

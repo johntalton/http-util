@@ -1,6 +1,7 @@
 // https://datatracker.ietf.org/doc/html/rfc7240
 // https://www.rfc-editor.org/rfc/rfc7240#section-3
 
+import { Assert } from './util/assert.js'
 import { KVP } from './util/kvp.js'
 import { isQuoted, stripQuotes } from './util/quote.js'
 
@@ -51,6 +52,7 @@ export class Preferences {
 	 */
 	static parse(header) {
 		if(header === undefined) { return undefined }
+		Assert.isString(header)
 
 		const preferences = new Map(header.split(PREFERENCE_SEPARATOR.PREFERENCE)
 			.map(pref => {

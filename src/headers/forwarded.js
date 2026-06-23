@@ -1,3 +1,4 @@
+import { Assert } from './util/assert.js'
 import { KVP } from './util/kvp.js'
 
 export const FORWARDED_KEY_BY = 'by'
@@ -24,7 +25,8 @@ export class Forwarded {
 	 * @returns {Array<Map<string, string>>}
 	 */
 	static parse(header, acceptedKeys = KNOWN_FORWARDED_KEYS) {
-		if(typeof header !== 'string') { return [] }
+		if(header === undefined) { return [] }
+		Assert.isString(header)
 
 		return header
 			.trim()

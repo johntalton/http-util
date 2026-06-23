@@ -42,6 +42,26 @@ describe('Mime', () => {
 			assert.equal(result, undefined)
 		})
 
+		it('should handle null', () => {
+			assert.throws(() => Mime.parse(null), {
+				name: 'TypeError',
+				message: 'parameter must be a string'
+			})
+		})
+
+		it('should throw invalid type', () => {
+			assert.throws(() => Mime.parse(42), {
+				name: 'TypeError',
+				message: 'parameter must be a string'
+			})
+		})
+
+		it('should handle String object', () => {
+			// @ts-ignore
+			const result = Mime.parse(new String('TEST'))
+			assert.deepEqual(result, { mimetype: 'test/*', type: 'test', subtype: '*' })
+		})
+
 		it('should handle empty string', () => {
 			const result = Mime.parse('')
 			assert.equal(result, undefined)

@@ -82,6 +82,24 @@ describe('Range', () => {
 			assert.equal(result, undefined)
 		})
 
+		it('should handle content length as NaN', () => {
+			const result = Range.normalize({
+				units: 'bytes',
+				ranges: [ { start: 37, end: 42 } ]
+			}, NaN)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle content length as Zero', () => {
+			const result = Range.normalize({
+				units: 'bytes',
+				ranges: [ { start: 37, end: 42 } ]
+			}, 0)
+			assert.equal(result, undefined)
+		})
+
+
+
 		it('should handle fixed range', () => {
 			const result = Range.normalize({
 				units: 'bytes',

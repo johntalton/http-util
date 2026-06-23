@@ -10,6 +10,13 @@ describe('Forwarded', () => {
 			assert.deepEqual(result, [])
 		})
 
+		it('should throw on null', () => {
+			assert.throws(() => Forwarded.parse(null), {
+				name: 'TypeError',
+				message: 'parameter must be a string'
+			})
+		})
+
 		it('should handle empty string', () => {
 			const result = Forwarded.parse('')
 			assert.deepEqual(result, [])

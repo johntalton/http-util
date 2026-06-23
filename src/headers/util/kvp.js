@@ -20,7 +20,7 @@ export class KVP {
 				.split(KVP_DELIMITER)
 				.map(p => p.trim())
 
-			if(rawKey === undefined) { continue }
+			if(rawKey === undefined) { continue } // impossible as split always returns string
 			if(rawKey === KVP_EMPTY) { continue }
 			const key = rawKey.toLowerCase()
 			if(hasSpecialChar(key)) { continue }
@@ -52,7 +52,7 @@ export class KVP {
 			.split(DEFAULT_DELIMITER)
 			.map(p => p.trim())
 
-		if(name === '') { return undefined}
+		if(name === '') { return undefined }
 
 		const parameters = KVP.#parse(params, acceptableKeys)
 

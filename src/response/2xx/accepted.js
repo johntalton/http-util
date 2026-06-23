@@ -18,6 +18,7 @@ const { HTTP_STATUS_ACCEPTED } = http2.constants
  */
 export function sendAccepted(stream, location, meta) {
 	const loc = (location instanceof URL) ? location.href : location
+	// todo Assert.isString(loc) if not undefined
 
 	send_no_body(stream, HTTP_STATUS_ACCEPTED, {
 		[HTTP2_HEADER_LOCATION]: loc

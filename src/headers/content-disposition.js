@@ -1,3 +1,4 @@
+import { Assert } from './util/assert.js'
 import { KVP } from './util/kvp.js'
 
 /**
@@ -18,6 +19,7 @@ export class ContentDisposition {
 	 */
 	static parse(header) {
 		if(header === undefined) { return undefined }
+		Assert.isString(header)
 
 		const { name: disposition, parameters } = KVP.parse(header) ?? { parameters: new Map() }
 		if(disposition === undefined) { return undefined }

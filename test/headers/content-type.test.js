@@ -10,13 +10,20 @@ describe('ContentType', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle null', () => {
-			const result = ContentType.parse(null)
-			assert.equal(result, undefined)
+		it('should throw on null', () => {
+			assert.throws(() => ContentType.parse(null), {
+				name: 'TypeError',
+				message: 'parameter must be a string'
+			})
 		})
 
 		it('should reject invalid mime (empty string)', () => {
 			const result = ContentType.parse('')
+			assert.equal(result, undefined)
+		})
+
+		it('should reject invalid mime (unparsable)', () => {
+			const result = ContentType.parse('BAD//')
 			assert.equal(result, undefined)
 		})
 

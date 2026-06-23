@@ -18,6 +18,7 @@ const { HTTP_STATUS_TEMPORARY_REDIRECT } = http2.constants
  */
 export function sendTemporaryRedirect(stream, location, meta) {
 	const loc = (location instanceof URL) ? location.href : location
+	// todo Assert.isString(loc)
 
 	send_no_body(stream, HTTP_STATUS_TEMPORARY_REDIRECT, {
 		[HTTP2_HEADER_LOCATION]: loc

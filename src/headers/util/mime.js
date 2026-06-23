@@ -1,3 +1,4 @@
+import { Assert } from "./assert.js"
 
 /**
  * @typedef {Object} MimeItem
@@ -31,6 +32,7 @@ export const SPECIAL_CHARS = [
  */
 export function hasSpecialChar(value) {
 	if(value === undefined) { return false }
+	// todo Assert.isString() is this overkill here?
 	for(const special of SPECIAL_CHARS) {
 		if(value.includes(special)) { return true }
 	}
@@ -44,8 +46,8 @@ export class Mime {
 	 * @returns {MimeItem|undefined}
 	 */
 	static parse(name) {
-		// console.log('mime::parse', name)
 		if(name === undefined) { return undefined }
+		Assert.isString(name)
 		if(name === '') { return undefined }
 
 		const parts = name
@@ -58,12 +60,10 @@ export class Mime {
 
 		const [ type, candidateSubtype ] = parts
 
-		if(type === undefined) { return undefined }
+		if(type === undefined) { return undefined } // can not happen as split always returns one
 		if(type === '') { return undefined }
 		if(hasSpecialChar(type)) { return undefined }
 
-		// if(candidateSubtype === undefined) { return undefined }
-		// if(candidateSubtype === '') { return undefined }
 		if(hasSpecialChar(candidateSubtype)) { return undefined }
 
 		const subtype = (candidateSubtype === '') ? MIME_ANY : (candidateSubtype ?? MIME_ANY)

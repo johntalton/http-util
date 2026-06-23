@@ -1,3 +1,4 @@
+import { Assert } from './assert.js'
 import { KVP } from './kvp.js'
 
 export const QUALITY = 'q'
@@ -21,6 +22,7 @@ export const DEFAULT_QUALITY_STRING = '1'
  */
 export function parseAcceptStyleHeader(header, wellKnown) {
 	if(header === undefined) { return [] }
+	Assert.isString(header)
 
 	const wk = wellKnown?.get(header)
 	if(wk !== undefined) { return wk }
@@ -31,7 +33,7 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 			.map(mediaRange => {
 				const { name, parameters } = KVP.parse(mediaRange) ?? { parameters: new Map() }
 				if(name === undefined) { return undefined }
-				if(name === '') { return undefined }
+				if(name === '') { return undefined } // impossible as kvp.parse returns undefined if name empty
 
 				const quality = Number.parseFloat(parameters.get(QUALITY) ?? DEFAULT_QUALITY_STRING)
 

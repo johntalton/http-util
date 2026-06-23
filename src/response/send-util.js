@@ -64,6 +64,8 @@ export function send_no_body(stream, status, headers, exposedHeaders, meta) {
  * @param {Metadata} meta
  */
 export function send_error(stream, status, message, retryAfter, meta) {
+	// Assert.isString(message, 'message') if not undefined
+
 	const obj = JSON.stringify({
 		message: message ?? 'Error'
 	})
@@ -115,6 +117,7 @@ export const ENCODER_STREAM_MAP = new Map([
  * @returns {{ encoderFn: T | undefined, encoding: string | undefined }}
  */
 export function lookupEncoder(encoding, listing) {
+	// todo Assert.isString(encoding) if not undefined
 	const encoderFn = listing.get(encoding ?? 'identity')
 	if(encoderFn === undefined) {
 		return {
@@ -144,6 +147,7 @@ export function lookupEncoder(encoding, listing) {
  * @param {Metadata} meta
  */
 export function send_encoded(stream, status, contentType, body, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+	// Assert.isString(encoding) if not undefined
 	if(body === undefined) {
 		meta.performance.push({ name: 'encode', duration: 0 })
 		send_bytes(stream, status, contentType, body, undefined, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
@@ -188,6 +192,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
  * @param {Metadata} meta
  */
 export function send_bytes(stream, status, contentType, obj, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+	// todo Assert.isString(encoding) if not undefined
 	const contentLen = Number.isInteger(contentLength) ? `${contentLength}` : undefined
 	const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
 
@@ -224,14 +229,22 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
  * @param {Metadata} meta
  */
 export function send(stream, status, headers, exposedHeaders, contentType, body, meta) {
+	// todo Assert.isString(contentType) if not undefined
 	// if(status >= 400) { console.warn(status, body) }
 	if(status === HTTP_STATUS_UNAUTHORIZED) { console.warn(status, body) }
 	if(status === HTTP_STATUS_NOT_FOUND) { console.warn(status, body) }
 	if(status >= HTTP_STATUS_INTERNAL_SERVER_ERROR) { console.warn(status, body) }
 	// console.log('SEND', status, body?.byteLength)
 
-	if(stream === undefined) { console.log('send - end stream undef'); return }
-	if(stream.closed) { console.log('send - end closed'); return }
+	if(stream === undefined) {
+		console.log('send - end stream undef')
+		return
+	}
+
+	if(stream.closed) {
+		console.log('send - end closed')
+		return
+	}
 
 	if(!stream.headersSent) {
 		const custom = customHeaders(meta)
@@ -247,12 +260,14 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 
 	if(stream.writable && body !== undefined) {
 		if(body instanceof ReadableStream || body instanceof Readable) {
+			// todo this asyncs into the void, is that good?
 			pipeline(
 				body,
 				stream,
 				err => {
 					if(err !== null && err !== undefined) {
 						console.warn('pipeline error', err)
+						// throw new Error('pipeline error')
 					}
 				})
 

@@ -31,7 +31,12 @@ const {
  * @returns {OutgoingHttpHeaders}
  */
 export function coreHeaders(status, contentType, exposedHeaders, meta) {
+	// todo Assert.isArray or undefined exposedHeaders
 	const exposed = [ HTTP2_HEADER_ETAG, HTTP2_HEADER_SERVER, ...exposedHeaders ] // todo include lastModified
+
+	// todo Assert.isString(contentType) if not undefined
+	// todo Assert.isString(meta.servername) if not undefined
+	// todo Assert.isString(meta.origin) if not undefined
 
 	return {
 		// todo [HTTP2_HEADER_STRICT_TRANSPORT_SECURITY]: StrictTransportSecurity.encode(meta.hsts)
@@ -71,6 +76,7 @@ export function customHeaders(meta) {
  * @returns {SendSupportedTypesNormalizedRecord}
  */
 export function coerceSupportedTypes_FromArray(methods, supportedTypesArray) {
+	// Assert.isString(methods) if not array or undefined
 	const methodsList = normalizeToArray(methods)
 
 	const put = (methodsList?.includes(HTTP2_METHOD_PUT)) ? supportedTypesArray : undefined
