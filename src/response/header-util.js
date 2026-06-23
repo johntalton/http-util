@@ -101,6 +101,13 @@ export function coerceSupportedTypes(methods, supportedTypes) {
 	}
 
 	if(Array.isArray(supportedTypes)) {
+		if(supportedTypes.length === 0) {
+			return {
+				put: undefined,
+				post: undefined,
+				patch: undefined
+			}
+		}
 		return coerceSupportedTypes_FromArray(methods, supportedTypes)
 	}
 

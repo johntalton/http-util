@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
-import { coreHeaders, customHeaders, performanceHeaders } from '@johntalton/http-util/response'
+import {
+	coreHeaders,
+	customHeaders,
+	performanceHeaders,
+	coerceSupportedTypes
+} from '@johntalton/http-util/response'
 
 /** @import { Metadata } from '@johntalton/http-util/response' */
 
@@ -107,5 +112,100 @@ describe('Header Util', () => {
 			})
 		})
 
+	})
+
+	describe('coerceSupportedTypes', { only: true }, () => {
+		it('should handle undefined supportedTypes', () => {
+			const result = coerceSupportedTypes('VERB', undefined)
+			assert.deepEqual(result, {
+				put: undefined,
+				post: undefined,
+				patch: undefined
+			})
+		})
+
+		it('should handle undefined methods', () => {
+			const result = coerceSupportedTypes(undefined, 'TYPE')
+			assert.deepEqual(result, {
+				put: undefined,
+				post: undefined,
+				patch: undefined
+			})
+		})
+
+		it('should handle methods empty array', () => {
+			const result = coerceSupportedTypes([], 'TYPE')
+			assert.deepEqual(result, {
+				put: undefined,
+				post: undefined,
+				patch: undefined
+			})
+		})
+
+		it('should handle methods array', () => {
+			const result = coerceSupportedTypes(['PUT'], 'TYPE')
+			assert.deepEqual(result, {
+				put: [ 'TYPE' ],
+				post: undefined,
+				patch: undefined
+			})
+		})
+
+		it('should handle supportedTypes empty array', () => {
+			const result = coerceSupportedTypes('PUT', [])
+			assert.deepEqual(result, {
+				put: undefined,
+				post: undefined,
+				patch: undefined
+			})
+		})
+
+		it('should handle supportedTypes array', () => {
+			const result = coerceSupportedTypes('PUT', [ 'TYPE' ])
+			assert.deepEqual(result, {
+				put: [ 'TYPE' ],
+				post: undefined,
+				patch: undefined
+			})
+		})
+
+		it('should handle methods array of many (no patch)', () => {
+			const result = coerceSupportedTypes(['PUT', 'POST', 'QUERY'], 'TYPE')
+			assert.deepEqual(result, {
+				put: [ 'TYPE' ],
+				post: [ 'TYPE' ],
+				patch: undefined
+			})
+		})
+
+		it('should handle methods array of many (with patch)', () => {
+			const result = coerceSupportedTypes(['PUT', 'POST', 'PATCH'], 'TYPE')
+			assert.deepEqual(result, {
+				put: [ 'TYPE' ],
+				post: [ 'TYPE' ],
+				patch: [ 'TYPE' ]
+			})
+		})
+
+		it('should handle supportedTypes array of many', () => {
+			const result = coerceSupportedTypes('PUT', ['TYPE/A', 'TYPE/B'])
+			assert.deepEqual(result, {
+				put: [ 'TYPE/A', 'TYPE/B' ],
+				post: undefined,
+				patch: undefined
+			})
+		})
+
+		it('should handle supportedTypes Object', () => {
+			const result = coerceSupportedTypes(['PUT', 'POST'], {
+				put: 'TYPE/A',
+				patch: 'TYPE/B'
+			})
+			assert.deepEqual(result, {
+				put: [ 'TYPE/A' ],
+				post: undefined,
+				patch: [ 'TYPE/B' ]
+			})
+		})
 	})
 })

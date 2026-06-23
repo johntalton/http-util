@@ -64,11 +64,11 @@
 
 /**
  * @typedef {Object} SendInfo
- * @property {Array<string>} supportedMethods
- * @property {SendSupportedTypes} supportedTypes
+ * @property {Array<string>} supportedMethods list of methods supported by this route
+ * @property {SendSupportedTypes} supportedTypes description of mime-types supported for post/put/patch methods
  * @property {Array<string>|string} acceptableTypes for content negotiation failures
  * @property {AcceptRangeUnits|undefined} acceptRanges
- * @property {Array<string>|undefined} supportedQueryTypes
+ * @property {Array<string>|undefined} supportedQueryTypes mime-types supported for query method
  * @property {RateLimitInfo} limitInfo
  * @property {Array<RateLimitPolicyInfo>} policies
  * @property {number|undefined} retryAfter
