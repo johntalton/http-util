@@ -4,59 +4,33 @@ import zlib from 'node:zlib'
 import { ReadableStream } from 'node:stream/web'
 import { Readable, compose } from 'node:stream'
 
-import { send, send_bytes, send_error, send_encoded } from '@johntalton/http-util/response'
+import { send, send_bytes, send_no_body, send_error, send_encoded } from '@johntalton/http-util/response'
 
 import { consumeStreamAsText } from '../consume-stream.js'
 import { MockHttp2Stream } from '../mock-http2-stream.js'
 
 const DEFAULT_META = {
 	performance: [],
-	servername: undefined,
+	servername: 'TEST-SERVER-v1',
 	origin: undefined
 }
 
 // const asRS = buffer => new ReadableStream({ type: 'bytes', start(controller) { controller.enqueue(buffer); controller.close() } })
 
 describe('send_util', () => {
-	describe('send', () => {
-		it('should return without sending if stream is undefined', () => {
-			const stream = undefined
-			assert.doesNotThrow(() => {
-				send(stream, 200, {}, [], undefined, undefined, structuredClone(DEFAULT_META))
-			})
-		})
-
-		it('should return without sending if stream is closed', () => {
+	describe('send_no_body', () => {
+		it('should send with no body', () => {
 			const stream = new MockHttp2Stream()
-			stream.close('induced')
+			const message = undefined
+			send_no_body(stream, 200, {}, [], structuredClone(DEFAULT_META))
 
-			const obj = 'NEVER SENT'
-			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
-			assert.deepEqual(stream.sentHeaders, {})
-			assert.equal(stream.closed, true)
+			assert.equal(stream.sentHeaders[':status'], 200)
+			assert.equal(stream.sentHeaders['server'], 'TEST-SERVER-v1')
 
 			const result = stream.read()
 			assert.equal(result, null)
 		})
-
-		it('should swallow on pipeline error', () => {
-			const stream = new MockHttp2Stream()
-			const obj = new ReadableStream({
-				pull() { throw new Error('induced') }
-			})
-
-			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
-
-			// todo what can we assert to make sure that happend
-			//  does the source stream get closed? or aborted?
-			// assert.equal(stream.aborted, true)
-			// assert.equal(stream.closed, true)
-
-		})
-
 	})
-
-	describe('send_bytes', () => {})
 
 	describe('send_error', () => {
 		it('should send with default message', () => {
@@ -99,6 +73,18 @@ describe('send_util', () => {
 	})
 
 	describe('send_encoded', () => {
+		it('should send empty body with encoding', async () => {
+			const stream = new MockHttp2Stream()
+			const body = undefined
+			const encoding = 'br'
+			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['content-encoding'], 'br')
+
+			const result = stream.read()
+			assert.equal(result, null)
+		})
 
 		it('should send (string encoded undefined)', async () => {
 			const stream = new MockHttp2Stream()
@@ -282,5 +268,86 @@ describe('send_util', () => {
 
 			assert.deepEqual(result, 'Readable brotli string')
 		})
+	})
+
+	describe('send_bytes', () => {
+		it('should ignore invalid contentLength', () => {
+			const stream = new MockHttp2Stream()
+			const body = 'TEST'
+			const contentLength = NaN
+			send_bytes(stream, 200, 'application/json', body, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['content-length'], undefined)
+		})
+
+		it('should ignore valid contentLength', () => {
+			const stream = new MockHttp2Stream()
+			const body = 'TEST'
+			const contentLength = body.length
+			send_bytes(stream, 200, 'application/json', body, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['content-length'], '4')
+		})
+
+		it('should ignore valid supportQueryTypes', () => {
+			const stream = new MockHttp2Stream()
+			const body = 'TEST'
+			const supportedQueryTypes = [ 'text/plain', 'application/json' ]
+			send_bytes(stream, 200, 'application/json', body, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, supportedQueryTypes, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['content-length'], undefined)
+			assert.equal(stream.sentHeaders['accept-query'], 'text/plain,application/json')
+		})
+
+		it('should ignore valid age', () => {
+			const stream = new MockHttp2Stream()
+			const body = 'TEST'
+			const age = 42
+			send_bytes(stream, 200, 'application/json', body, undefined, undefined, undefined, undefined, undefined, age, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['age'], '42')
+		})
+	})
+
+	describe('send', () => {
+		it('should return without sending if stream is undefined', () => {
+			const stream = undefined
+			assert.doesNotThrow(() => {
+				send(stream, 200, {}, [], undefined, undefined, structuredClone(DEFAULT_META))
+			})
+		})
+
+		it('should return without sending if stream is closed', () => {
+			const stream = new MockHttp2Stream()
+			stream.close('induced')
+
+			const obj = 'NEVER SENT'
+			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
+			assert.deepEqual(stream.sentHeaders, {})
+			assert.equal(stream.closed, true)
+
+			const result = stream.read()
+			assert.equal(result, null)
+		})
+
+		it('should swallow on pipeline error', () => {
+			const stream = new MockHttp2Stream()
+			const obj = new ReadableStream({
+				pull() { throw new Error('induced') }
+			})
+
+			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
+
+			// todo what can we assert to make sure that happend
+			//  does the source stream get closed? or aborted?
+			// assert.equal(stream.aborted, true)
+			// assert.equal(stream.closed, true)
+
+		})
+
 	})
 })

@@ -114,7 +114,7 @@ describe('Header Util', () => {
 
 	})
 
-	describe('coerceSupportedTypes', { only: true }, () => {
+	describe('coerceSupportedTypes', () => {
 		it('should handle undefined supportedTypes', () => {
 			const result = coerceSupportedTypes('VERB', undefined)
 			assert.deepEqual(result, {
