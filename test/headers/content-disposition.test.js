@@ -61,5 +61,51 @@ describe('ContentDisposition', () => {
 			})
 		})
 
+		it('should handle continuation format', () => {
+			const result = ContentDisposition.parse(' attachment; filename="fallback.txt"; filename*=UTF-8\'\'%E2%82%AC%20rates.txt')
+			assert.deepEqual(result, {
+				disposition: 'attachment',
+				filename: 'fallback.txt',
+				name: undefined,
+				parameters: new Map([
+					[ 'filename', 'fallback.txt' ],
+					[ 'filename*', 'UTF-8\'\'%E2%82%AC%20rates.txt' ]
+				])
+			})
+		})
+	})
+
+	describe('encode', () => {
+		it('should handle undefined', () => {
+			const result = ContentDisposition.encode(undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty object', () => {
+			// @ts-ignore
+			const result = ContentDisposition.encode({})
+			assert.equal(result, undefined)
+		})
+
+		it('should handle basic directive', () => {
+			const result = ContentDisposition.encode({ disposition: 'inline' })
+			assert.equal(result, 'inline')
+		})
+
+		it('should handle with filename', () => {
+			const result = ContentDisposition.encode({ disposition: 'inline', filename: 'FAKE.xml' })
+			assert.equal(result, 'inline; filename="FAKE.xml"')
+		})
+
+		it('should handle with name and parameters', () => {
+			const result = ContentDisposition.encode({
+				disposition: 'form-data',
+				name: 'FAKE',
+				parameters: new Map([
+					[ 'FOO', '3' ]
+				])
+			})
+			assert.equal(result, 'form-data; name="FAKE"; FOO=3')
+		})
 	})
 })

@@ -81,10 +81,11 @@ export class KVP {
 
 	/**
 	 * @param {string} key
-	 * @param {string|number} value
+	 * @param {string|number|undefined} value
 	 * @param {boolean} [quote = false ]
 	 */
 	static encode(key, value, quote = false) {
+		if(value === undefined) { return key }
 		const qValue = quote ? quoteValue(value) : value
 		return `${key}=${qValue}`
 	}

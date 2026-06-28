@@ -1,7 +1,7 @@
 import { ReadableStream } from 'node:stream/web'
 
 import { EMPTY } from '../defs.js'
-import { ContentDisposition } from './content-disposition.js'
+import { ContentDisposition, DISPOSITION_FORM_DATA } from './content-disposition.js'
 import { ContentRange } from './content-range.js'
 import { CHARSET_UTF8 } from './content-type.js'
 import { Assert } from './util/assert.js'
@@ -15,8 +15,6 @@ import { Assert } from './util/assert.js'
  * @property {SendBody} obj
  * @property {ContentRangeDirective} range
  */
-
-export const DISPOSITION_FORM_DATA = 'form-data'
 
 export const BOUNDARY_MARK = '--'
 export const MULTIPART_SEPARATOR = '\r\n'
