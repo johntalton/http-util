@@ -13,15 +13,18 @@ import { KVP } from './util/kvp.js'
  * @property {Directives|Array<Directives>|undefined} [directives]
  */
 
+export const CACHE_CONTROL_DIRECTIVE_PUBLIC = 'public'
+export const CACHE_CONTROL_DIRECTIVE_PRIVATE = 'private'
+export const CACHE_CONTROL_DIRECTIVE_MAX_AGE = 'max-age'
+export const CACHE_CONTROL_DIRECTIVE_STALE_WHILE_REVALIDATE = 'stale-while-revalidate'
+export const CACHE_CONTROL_DIRECTIVE_STALE_IF_ERROR = 'stale-if-error'
+
+
 export class CacheControl {
 	/**
-	 * @param {CacheControlOptions|undefined} options
-	 * @param {boolean} [asArray = false]
-	 * @returns {Array<string>|string|undefined}
+	 * @param {CacheControlOptions} options
 	 */
-	static encode(options, asArray = false) {
-		if(options === undefined) { return undefined }
-
+	static *#encode(options) {
 		const {
 			pub,
 			priv,
@@ -31,29 +34,34 @@ export class CacheControl {
 			staleIfError
 		} = options
 
-		const result = []
-
-		if(pub !== undefined && pub && !priv) { result.push('public') }
-		if(priv !== undefined && priv && !pub) { result.push('private') }
+		if(pub !== undefined && pub && !priv) { yield CACHE_CONTROL_DIRECTIVE_PUBLIC }
+		if(priv !== undefined && priv && !pub) { yield CACHE_CONTROL_DIRECTIVE_PRIVATE }
 
 		const directivesList = normalizeToArray(directives)
-		if(directivesList !== undefined) {
-			result.push(...directivesList)
-		}
+		if(directivesList !== undefined) { yield* directivesList }
 
 		if(maxAge !== undefined && Number.isInteger(maxAge) && maxAge >= 0) {
-			result.push(KVP.encode('max-age', maxAge))
+			yield KVP.encode(CACHE_CONTROL_DIRECTIVE_MAX_AGE, maxAge)
 		}
 
 		if(staleWhileRevalidate !== undefined && Number.isInteger(staleWhileRevalidate) && staleWhileRevalidate >= 0) {
-			result.push(KVP.encode('stale-while-revalidate', staleWhileRevalidate))
+			yield KVP.encode(CACHE_CONTROL_DIRECTIVE_STALE_WHILE_REVALIDATE, staleWhileRevalidate)
 		}
 
 		if(staleIfError !== undefined && Number.isInteger(staleIfError) && staleIfError >= 0) {
-			result.push(KVP.encode('stale-if-error', staleIfError))
+			yield KVP.encode(CACHE_CONTROL_DIRECTIVE_STALE_IF_ERROR, staleIfError)
 		}
+	}
 
-		//
+	/**
+	 * @param {CacheControlOptions|undefined} options
+	 * @param {boolean} [asArray = false]
+	 * @returns {Array<string>|string|undefined}
+	 */
+	static encode(options, asArray = false) {
+		if(options === undefined) { return undefined }
+
+		const result = Array.from(CacheControl.#encode(options))
 		if(result.length === 0) { return undefined }
 
 		return asArray ? result : result.join(COMMON_LIST_HEADER_JOINER_COMMA)
