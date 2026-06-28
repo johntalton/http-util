@@ -7,6 +7,8 @@ import {
 	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
 	ServerTiming
 } from '../headers/server-timing.js'
+import { ContentTypeOptions, HTTP_HEADER_CONTENT_TYPE_OPTIONS } from '../headers/x-content-type-options.js'
+import { HTTP_HEADER_XSS_PROTECTION, XSSProtection } from '../headers/x-xss-protection.js'
 
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { Metadata, SendSupportedTypes, SendSupportedTypesNormalizedRecord } from '../defs.js' */
@@ -22,6 +24,20 @@ const {
 	HTTP2_HEADER_ETAG,
 	// HTTP2_HEADER_STRICT_TRANSPORT_SECURITY
 } = http2.constants
+
+/**
+ * @description Headers that disable older technologies or methodologies that are outdated
+ * @param {boolean} includeHeaders
+ * @returns {OutgoingHttpHeaders}
+ */
+export function legacyHeaders(includeHeaders) {
+	if(includeHeaders !== true) { return {} }
+
+	return {
+		[HTTP_HEADER_CONTENT_TYPE_OPTIONS]: ContentTypeOptions.encode(true),
+		[HTTP_HEADER_XSS_PROTECTION]: XSSProtection.encode(false)
+	}
+}
 
 /**
  * @param {number} status

@@ -54,6 +54,7 @@ export class KVP {
 			.map(p => p.trim())
 
 		if(name === EMPTY) { return undefined }
+		// todo most callers expect name to be lowercase, is that always?
 
 		const parameters = KVP.#parse(params, acceptableKeys)
 

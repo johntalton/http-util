@@ -11,6 +11,7 @@ import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
 import {
 	coreHeaders,
 	customHeaders,
+	legacyHeaders,
 	performanceHeaders
 } from './header-util.js'
 
@@ -109,7 +110,6 @@ export const ENCODER_STREAM_MAP = new Map([
 	[ 'zstd', stream => compose(stream, zlib.createZstdCompress(ENCODER_STREAM_ZSTD_OPTIONS)) ]
 ])
 
-
 /**
  * @template T
  * @param {string|undefined|'identity'} encoding
@@ -204,6 +204,8 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 
 	const varyHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
 	if(range !== undefined) { varyHeaders.push(HTTP2_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
+	// todo add to Vary "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site"
+	// todo add to Very "Origin"
 
 	send(stream, status, {
 			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
@@ -251,6 +253,7 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 		const exposed = [ ...exposedHeaders, ...Object.keys(custom) ]
 
 		stream.respond({
+			...legacyHeaders(false),
 			...coreHeaders(status, contentType, exposed, meta),
 			...performanceHeaders(meta),
 			...headers,
