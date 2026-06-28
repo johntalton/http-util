@@ -1,9 +1,9 @@
-import { isNonEmptyArray } from '../defs.js'
+import { COMMON_WILDCARD_ANY_ASTERISK, isNonEmptyArray } from '../defs.js'
 import { parseAcceptStyleHeader } from './util/accept-util.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
 
-export const ENCODING_ANY = '*'
+export const ENCODING_ANY = COMMON_WILDCARD_ANY_ASTERISK
 
 export const WELL_KNOWN_ENCODINGS = new Map([
 	[ 'gzip, deflate, br, zstd', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' }, { name: 'zstd' } ] ],

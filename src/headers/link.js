@@ -1,4 +1,5 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA, normalizeToArray } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_PARAMETER_JOINER_SEMICOLON, normalizeToArray } from '../defs.js'
+import { KVP } from './util/kvp.js'
 
 /**
  * @typedef {Object} LinkItem
@@ -15,10 +16,10 @@ export class Link {
 		const encodedUri = (link.url instanceof URL) ? link.url : encodeURI(link.url)
 
 		yield `<${encodedUri}>`
-		if(link.relation !== undefined) { yield `rel="${link.relation}"` }
+		if(link.relation !== undefined) { yield KVP.encode('rel', link.relation, true) }
 		if(link.parameters === undefined) { return }
 		for(const [ key, value ] of link.parameters) {
-			yield `${key}="${value}"`
+			yield KVP.encode(key, value, true)
 		}
 	}
 
@@ -32,7 +33,7 @@ export class Link {
 		if(linkAry.length === 0) { return undefined }
 
 		const ary = linkAry
-			.map(link => [ ...Link.#encode(link) ].join('; '))
+			.map(link => [ ...Link.#encode(link) ].join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON))
 
 		return asArray ? ary : ary.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}

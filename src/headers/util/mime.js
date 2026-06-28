@@ -1,4 +1,5 @@
-import { Assert } from "./assert.js"
+import { COMMON_WILDCARD_ANY_ASTERISK, EMPTY } from '../../defs.js'
+import { Assert } from './assert.js'
 
 /**
  * @typedef {Object} MimeItem
@@ -9,7 +10,7 @@ import { Assert } from "./assert.js"
 
 export const MIME_SEPARATOR = { SUBTYPE: '/' }
 
-export const MIME_ANY = '*'
+export const MIME_ANY = COMMON_WILDCARD_ANY_ASTERISK
 
 //
 export const SPECIAL_CHARS = [
@@ -48,7 +49,7 @@ export class Mime {
 	static parse(name) {
 		if(name === undefined) { return undefined }
 		Assert.isString(name)
-		if(name === '') { return undefined }
+		if(name === EMPTY) { return undefined }
 
 		const parts = name
 			.trim() // leading space of type and trailing of subtype
@@ -60,19 +61,29 @@ export class Mime {
 
 		const [ type, candidateSubtype ] = parts
 
+		/* c8 ignore next */
 		if(type === undefined) { return undefined } // can not happen as split always returns one
-		if(type === '') { return undefined }
+		if(type === EMPTY) { return undefined }
 		if(hasSpecialChar(type)) { return undefined }
 
 		if(hasSpecialChar(candidateSubtype)) { return undefined }
 
-		const subtype = (candidateSubtype === '') ? MIME_ANY : (candidateSubtype ?? MIME_ANY)
+		const subtype = (candidateSubtype === EMPTY) ? MIME_ANY : (candidateSubtype ?? MIME_ANY)
 
 		return {
-			mimetype: `${type}${MIME_SEPARATOR.SUBTYPE}${subtype}`,
+			mimetype: Mime.encode({ type, subtype }),
 			type,
 			subtype
 		}
+	}
+
+	/**
+	 * @param {Pick<MimeItem, 'type'|'subtype'>} item
+	 * @returns {string}
+	 */
+	static encode(item) {
+		const { type, subtype } = item
+		return `${type}${MIME_SEPARATOR.SUBTYPE}${subtype}`
 	}
 
 	/**

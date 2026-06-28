@@ -1,6 +1,7 @@
 // https://datatracker.ietf.org/doc/html/rfc7240
 // https://www.rfc-editor.org/rfc/rfc7240#section-3
 
+import { COMMON_LIST_VALUE_JOINER_COMMA, EMPTY } from '../defs.js'
 import { Assert } from './util/assert.js'
 import { KVP } from './util/kvp.js'
 import { isQuoted, stripQuotes } from './util/quote.js'
@@ -61,7 +62,7 @@ export class Preferences {
 
 				if(key === undefined) { return {} }
 				const valueOrEmpty = isQuoted(rawValue) ? stripQuotes(rawValue) : rawValue
-				const value = (valueOrEmpty !== '') ? valueOrEmpty : undefined
+				const value = (valueOrEmpty !== EMPTY) ? valueOrEmpty : undefined
 
 				return { key, value, parameters }
 			})
@@ -76,7 +77,7 @@ export class Preferences {
 		const asynchronous = preferences.get(DIRECTIVE_RESPOND_ASYNC) !== undefined
 		const representation = preferences.get(DIRECTIVE_REPRESENTATION)?.value
 		const handling = preferences.get(DIRECTIVE_HANDLING)?.value
-		const wait = Number.parseInt(preferences.get(DIRECTIVE_WAIT)?.value ?? '', 10)
+		const wait = Number.parseInt(preferences.get(DIRECTIVE_WAIT)?.value ?? EMPTY, 10)
 		const timezone = preferences.get(DIRECTIVE_TIMEZONE)?.value
 
 		return {
@@ -99,10 +100,11 @@ export class AppliedPreferences {
 		return [ ...preferences.entries()
 			.map(([ key, value ]) => {
 				// todo check if value should be quoted
-				if(value !== undefined) { return `${key}${PREFERENCE_SEPARATOR.KVP}${value}` }
+				// todo use joiner over separator
+				if(value !== undefined) { return KVP.encode(key, value) }
 				return key
 			}) ]
-			.join(PREFERENCE_SEPARATOR.PREFERENCE)
+			.join(COMMON_LIST_VALUE_JOINER_COMMA)
 	}
 
 	/**

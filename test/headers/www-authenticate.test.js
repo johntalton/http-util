@@ -6,6 +6,7 @@ import { Challenge } from '@johntalton/http-util/headers'
 describe('Challenge', () => {
 	describe('basic', () => {
 		it('should handle undefined', () => {
+			// @ts-ignore
 			const result = Challenge.basic(undefined)
 			assert.equal(result, undefined)
 		})
@@ -51,6 +52,14 @@ describe('Challenge', () => {
 				parameters: new Map([ [ 'realm', 'REALM' ], [ 'scope', 'SCOPE' ] ])
 			})
 		})
+
+		it('should handle with error and errorDescription', () => {
+			const result = Challenge.bearer('REALM', undefined, 'invalid_token', 'THIS IS A TEST')
+			assert.deepEqual(result, {
+				scheme: 'Bearer',
+				parameters: new Map([ [ 'realm', 'REALM' ], [ 'error', 'invalid_token' ], [ 'error_description', 'THIS IS A TEST' ] ])
+			})
+		})
 	})
 
 	describe('digest', () => {
@@ -70,6 +79,7 @@ describe('Challenge', () => {
 		})
 
 		it('should handle empty scheme', () => {
+			// @ts-ignore
 			const result = Challenge.encode({})
 			assert.equal(result, undefined)
 		})

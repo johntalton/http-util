@@ -74,6 +74,9 @@
  * @property {number|undefined} retryAfter
  */
 
+/** @type {''} */
+export const EMPTY = ''
+
 export const HTTP_HEADER_ORIGIN = 'origin'
 export const HTTP_HEADER_USER_AGENT = 'user-agent'
 export const HTTP_HEADER_FORWARDED = 'forwarded'
@@ -83,6 +86,7 @@ export const HTTP_HEADER_SEC_CH_MOBILE = 'sec-ch-ua-mobile'
 export const HTTP_HEADER_SEC_FETCH_SITE = 'sec-fetch-site'
 export const HTTP_HEADER_SEC_FETCH_MODE = 'sec-fetch-mode'
 export const HTTP_HEADER_SEC_FETCH_DEST = 'sec-fetch-dest'
+export const HTTP_HEADER_SEC_FETCH_USER = 'sec-fetch-user'
 export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
 export const HTTP_HEADER_ACCEPT_PATCH = 'accept-patch'
 export const HTTP_HEADER_CLEAR_SITE_DATE = 'clear-site-data'
@@ -96,6 +100,9 @@ export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]
 export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
 export const PREFLIGHT_AGE_SECONDS = '500'
 
+
+export const CUSTOM_HEADER_PREFIX = 'X-'
+
 /** @type {'bytes'} */
 export const RANGE_UNITS_BYTES = 'bytes'
 /** @type {'none'} */
@@ -106,6 +113,11 @@ export const COMMON_LIST_HEADER_JOINER_COMMA = ', '
 
 /** @description joiner used for concatenating multiple values of single header */
 export const COMMON_LIST_VALUE_JOINER_COMMA = ','
+
+/** @description joiner used for concatenating multiple parameter values of single value header */
+export const COMMON_LIST_PARAMETER_JOINER_SEMICOLON = '; '
+
+export const COMMON_WILDCARD_ANY_ASTERISK = '*'
 
 /**
  * @template T

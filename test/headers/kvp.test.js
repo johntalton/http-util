@@ -75,6 +75,8 @@ describe('KVP', () => {
 				parameters: new Map([ [ 'foo', '2' ] ])
 			})
 		})
+
+
 	})
 
 	describe('parseParameters', () => {
@@ -86,6 +88,31 @@ describe('KVP', () => {
 		it('should handle empty string', () => {
 			const result = KVP.parseParameters('')
 			assert.equal(result, undefined)
+		})
+
+		it('should handle valid', () => {
+			const result = KVP.parseParameters('foo=2;bar=3')
+			assert.deepEqual(result, { parameters: new Map([
+				[ 'foo', '2' ],
+				[ 'bar', '3' ]
+			]) })
+		})
+
+		it('should handle gibberish', () => {
+			const result = KVP.parseParameters('======;;;')
+			assert.deepEqual(result, { parameters: new Map() })
+		})
+
+		it('should handle more-gibberish', () => {
+			const result = KVP.parseParameters(',=,=,=;;;==,,,for')
+			assert.deepEqual(result, { parameters: new Map() })
+		})
+
+		it('should handle dangling value', () => {
+			const result = KVP.parseParameters('a=2, b=3, by=, =10')
+			assert.deepEqual(result, { parameters: new Map([
+				[ 'a', '2, b' ]
+			]) })
 		})
 	})
 })

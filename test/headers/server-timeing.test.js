@@ -30,7 +30,7 @@ describe('ServerTiming', () => {
 				{ name: 'A', duration: 42 },
 				{ name: 'B', duration: 77 },
 			])
-			assert.equal(result, 'A;dur=42,B;dur=77')
+			assert.equal(result, 'A;dur=42, B;dur=77')
 		})
 
 		it('should handle multiple item (as array)', () => {

@@ -11,7 +11,16 @@ describe('Forwarded', () => {
 		})
 
 		it('should throw on null', () => {
+			// @ts-ignore
 			assert.throws(() => Forwarded.parse(null), {
+				name: 'TypeError',
+				message: 'parameter must be a string'
+			})
+		})
+
+		it('should throw on invalid type', () => {
+			// @ts-ignore
+			assert.throws(() => Forwarded.parse(42), {
 				name: 'TypeError',
 				message: 'parameter must be a string'
 			})
@@ -19,6 +28,11 @@ describe('Forwarded', () => {
 
 		it('should handle empty string', () => {
 			const result = Forwarded.parse('')
+			assert.deepEqual(result, [])
+		})
+
+		it('should handle whitespace string', () => {
+			const result = Forwarded.parse('\t')
 			assert.deepEqual(result, [])
 		})
 
@@ -40,6 +54,14 @@ describe('Forwarded', () => {
 			])
 		})
 
+		it('should handle mixed case header', () => {
+			const result = Forwarded.parse('For=192.0.2.43, FOR=198.51.100.17;')
+			assert.deepEqual(result, [
+				new Map(Object.entries({ for: '192.0.2.43' })),
+				new Map(Object.entries({ for: '198.51.100.17' }))
+			])
+		})
+
 		it('should handle ipv6 values', () => {
 			const result = Forwarded.parse('for=192.0.2.43, for="[2001:db8:cafe::17]",for=unknown')
 			assert.deepEqual(result, [
@@ -57,9 +79,9 @@ describe('Forwarded', () => {
 		})
 
 		it('should handle custom keys', () => {
-			const result = Forwarded.parse('for=192.0.2.43;\tcustom=testing', [ 'for', 'custom' ])
+			const result = Forwarded.parse('for=192.0.2.43;\🔑=testing', [ 'for', '🔑' ])
 			assert.deepEqual(result, [
-				new Map(Object.entries({ for: '192.0.2.43', custom: 'testing' }))
+				new Map(Object.entries({ for: '192.0.2.43', '🔑': 'testing' }))
 			])
 		})
 
@@ -67,6 +89,7 @@ describe('Forwarded', () => {
 
 	describe('selectRightMost', () => {
 		it('should handle undefined', () => {
+			// @ts-ignore
 			const result = Forwarded.selectRightMost(undefined)
 			assert.deepEqual(result, undefined)
 		})

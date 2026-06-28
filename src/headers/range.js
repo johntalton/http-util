@@ -1,4 +1,4 @@
-import { RANGE_UNITS_BYTES } from '../defs.js'
+import { EMPTY, RANGE_UNITS_BYTES } from '../defs.js'
 import { Assert } from './util/assert.js'
 
 /** @import { AcceptRangeUnits } from '../defs.js' */
@@ -6,9 +6,6 @@ import { Assert } from './util/assert.js'
 export const RANGE_EQUAL = '='
 export const RANGE_SEPARATOR = '-'
 export const RANGE_LIST_SEPARATOR = ','
-
-/** @type {''} */
-export const RANGE_EMPTY = ''
 
 /**
  * @typedef {Object} RangeValueFixed
@@ -19,12 +16,12 @@ export const RANGE_EMPTY = ''
 /**
  * @typedef {Object} RangeValueOpenEnded
  * @property {number} start
- * @property {''} end
+ * @property {EMPTY} end
  */
 
 /**
  * @typedef {Object} RangeValueFromEnd
- * @property {''} start
+ * @property {EMPTY} start
  * @property {number} end
  */
 
@@ -58,28 +55,29 @@ export class Range {
 		if(!rangeHeader.startsWith(RANGE_UNITS_BYTES)) { return undefined }
 		if(!(rangeHeader.slice(RANGE_UNITS_BYTES.length, RANGE_UNITS_BYTES.length + 1) === RANGE_EQUAL)) { return undefined }
 		const rangeStr = rangeHeader.slice(RANGE_UNITS_BYTES.length + RANGE_EQUAL.length).trim()
-		if(rangeStr === '') { return undefined }
+		if(rangeStr === EMPTY) { return undefined }
 
 		const ranges = rangeStr.split(RANGE_LIST_SEPARATOR)
 			.map(range => range.trim())
 			.map(range => {
 				const [ startStr, endStr ] = range.split(RANGE_SEPARATOR)
+				/* c8 ignore next */
 				if(startStr === undefined) { return undefined } // impossible as split always returns string
 				if(endStr === undefined) { return undefined }
-				if(startStr === RANGE_EMPTY && endStr === RANGE_EMPTY) { return undefined }
+				if(startStr === EMPTY && endStr === EMPTY) { return undefined }
 
 				const start = Number.parseInt(startStr, 10)
 				const end = Number.parseInt(endStr, 10)
 
-				if(startStr === RANGE_EMPTY) {
+				if(startStr === EMPTY) {
 					if(!Number.isInteger(end)) { return undefined }
 					if(end === 0) { return undefined }
-					return { start: RANGE_EMPTY, end }
+					return { start: EMPTY, end }
 				}
 
-				if(endStr === RANGE_EMPTY) {
+				if(endStr === EMPTY) {
 					if(!Number.isInteger(start)) { return undefined }
-					return { start, end: RANGE_EMPTY }
+					return { start, end: EMPTY }
 				}
 
 				if(!(Number.isInteger(start) && Number.isInteger(end))) { return undefined }
@@ -107,8 +105,8 @@ export class Range {
 
 		/** @type {Array<NormalizedRangeValue>} */
 		const normalizedRanges = directive.ranges.map(({ start, end }) => {
-			if(end === RANGE_EMPTY) { return { start, end: contentLength - 1 } }
-			if(start === RANGE_EMPTY) { return { start: contentLength - end, end: contentLength - 1 } }
+			if(end === EMPTY) { return { start, end: contentLength - 1 } }
+			if(start === EMPTY) { return { start: contentLength - end, end: contentLength - 1 } }
 			return { start, end }
 		})
 

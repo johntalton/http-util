@@ -1,3 +1,6 @@
+export const SEC_FETCH_USER_TRUE = '?1'
+export const SEC_FETCH_USER_FALSE = '?0'
+
 export const SEC_FETCH_MODE_NAVIGATE = 'navigate'
 export const SEC_FETCH_MODE_NO_CORS = 'no-cors'
 export const SEC_FETCH_MODE_CORS = 'cors'
@@ -164,5 +167,14 @@ export class SecFetch {
 	static parseDestination(header) {
 		if(!SecFetch.#isDest(header)) { return undefined }
 		return header
+	}
+
+	/**
+	 * @param {string|undefined} header
+	 * @returns {boolean}
+	 */
+	static parseUser(header) {
+		if(header === undefined) { return false }
+		return header === SEC_FETCH_USER_TRUE
 	}
 }

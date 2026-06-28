@@ -1,6 +1,6 @@
 import { isNonEmptyArray } from '../defs.js'
 import { parseAcceptStyleHeader } from './util/accept-util.js'
-import { MIME_ANY, MIME_SEPARATOR, Mime } from './util/mime.js'
+import { MIME_ANY, Mime } from './util/mime.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
 /** @import { MimeItem } from './util/mime.js' */
@@ -87,7 +87,7 @@ export class Accept {
 			// preserve name and parameters of source
 			return {
 				...accept,
-				mimetype: `${type}${MIME_SEPARATOR.SUBTYPE}${subtype}`,
+				mimetype: Mime.encode({ type, subtype }),
 				type,
 				subtype
 			}

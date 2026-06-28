@@ -1,9 +1,9 @@
+import { EMPTY } from '../../defs.js'
 import { hasSpecialChar } from './mime.js'
-import { isQuoted, stripQuotes } from './quote.js'
+import { isQuoted, quoteValue, stripQuotes } from './quote.js'
 
 export const DEFAULT_DELIMITER = ';'
 export const KVP_DELIMITER = '='
-export const KVP_EMPTY = ''
 
 export class KVP {
 	/**
@@ -20,15 +20,16 @@ export class KVP {
 				.split(KVP_DELIMITER)
 				.map(p => p.trim())
 
+			/* c8 ignore next */
 			if(rawKey === undefined) { continue } // impossible as split always returns string
-			if(rawKey === KVP_EMPTY) { continue }
+			if(rawKey === EMPTY) { continue }
 			const key = rawKey.toLowerCase()
 			if(hasSpecialChar(key)) { continue }
 
 			if(acceptableKeys !== undefined && !acceptableKeys.includes(key)) { continue }
 
 			const unquotedValue = isQuoted(rawValue) ? stripQuotes(rawValue) : rawValue
-			const value = unquotedValue === KVP_EMPTY ? undefined : unquotedValue
+			const value = unquotedValue === EMPTY ? undefined : unquotedValue
 
 			if(!parameters.has(key)) {
 				parameters.set(key, value)
@@ -45,14 +46,14 @@ export class KVP {
 	 */
 	static parse(str, acceptableKeys = undefined) {
 		if(str === undefined) { return undefined }
-		if(str === KVP_EMPTY) { return undefined }
+		if(str === EMPTY) { return undefined }
 
 		const [ name, ...params ] = str
 			.trim()
 			.split(DEFAULT_DELIMITER)
 			.map(p => p.trim())
 
-		if(name === '') { return undefined }
+		if(name === EMPTY) { return undefined }
 
 		const parameters = KVP.#parse(params, acceptableKeys)
 
@@ -66,7 +67,7 @@ export class KVP {
 	 */
 	static parseParameters(str, acceptableKeys = undefined) {
 		if(str === undefined) { return undefined }
-		if(str === KVP_EMPTY) { return undefined }
+		if(str === EMPTY) { return undefined }
 
 		const params = str
 			.trim()
@@ -76,6 +77,16 @@ export class KVP {
 		const parameters = KVP.#parse(params, acceptableKeys)
 
 		return { parameters }
+	}
+
+	/**
+	 * @param {string} key
+	 * @param {string|number} value
+	 * @param {boolean} [quote = false ]
+	 */
+	static encode(key, value, quote = false) {
+		const qValue = quote ? quoteValue(value) : value
+		return `${key}=${qValue}`
 	}
 }
 

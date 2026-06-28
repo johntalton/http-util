@@ -1,3 +1,5 @@
+import { COMMON_LIST_HEADER_JOINER_COMMA } from '../defs.js'
+
 export const SERVER_TIMING_KEY_DURATION = 'dur' // common in milliseconds
 export const SERVER_TIMING_KEY_DESCRIPTION = 'desc'
 
@@ -35,6 +37,6 @@ export class ServerTiming {
 				.filter(item => item !== undefined)
 				.join(SERVER_TIMING_SEPARATOR.PARAMETER))
 
-		return asArray ? ary : ary.join(SERVER_TIMING_SEPARATOR.METRIC) // todo COMMON_LIST_HEADER_JOINER_COMMA
+		return asArray ? ary : ary.join(COMMON_LIST_HEADER_JOINER_COMMA) // todo is this header or value joiner (can server return duplicate timing headers, or is this just multiple values)
 	}
 }

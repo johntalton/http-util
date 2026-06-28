@@ -1,6 +1,6 @@
-import { RANGE_UNITS_BYTES } from '../defs.js'
+import { COMMON_WILDCARD_ANY_ASTERISK, RANGE_UNITS_BYTES } from '../defs.js'
 
-export const CONTENT_RANGE_UNKNOWN = '*'
+export const CONTENT_RANGE_UNKNOWN = COMMON_WILDCARD_ANY_ASTERISK
 export const CONTENT_RANGE_SEPARATOR = '-'
 export const CONTENT_RANGE_SIZE_SEPARATOR = '/'
 

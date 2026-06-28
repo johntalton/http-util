@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream'
 
+import { EMPTY } from './defs.js'
 import {
 	CHARSET_UTF8
 } from './headers/content-type.js'
@@ -218,7 +219,7 @@ export async function bodyBlob(reader, mimetype) {
 	}
 
 	// console.log('Blob')
-	return new Blob(parts, { type: mimetype ?? '' })
+	return new Blob(parts, { type: mimetype ?? EMPTY })
 }
 
 /**
@@ -279,7 +280,7 @@ export async function bodyText(reader, charset) {
 export async function bodyJSON(reader, charset) {
 	// console.log('bodyJSON')
 	const text = await bodyText(reader, charset)
-	return (text === '') ? {} : JSON.parse(text)
+	return (text === EMPTY) ? {} : JSON.parse(text)
 }
 
 /**

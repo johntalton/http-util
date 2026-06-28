@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/style/noExcessiveClassesPerFile: includes helper classes */
 /** biome-ignore-all lint/style/noExcessiveLinesPerFile: includes temporal and date support */
+import { COMMON_WILDCARD_ANY_ASTERISK, EMPTY } from '../defs.js'
 import { Assert } from './util/assert.js'
 import { isQuoted, stripQuotes } from './util/quote.js'
 
@@ -70,7 +71,7 @@ export function isTemporalInstant(reference) {
 }
 
 export const CONDITION_ETAG_SEPARATOR = ','
-export const CONDITION_ETAG_ANY = '*'
+export const CONDITION_ETAG_ANY = COMMON_WILDCARD_ANY_ASTERISK
 export const CONDITION_ETAG_WEAK_PREFIX = 'W/'
 export const ETAG_QUOTE = '"'
 
@@ -146,7 +147,7 @@ export class ETag {
 		if(!isQuoted(quotedEtag)) { return undefined }
 		const etag = stripQuotes(quotedEtag)
 		if(etag === undefined) { return undefined }
-		if(etag === '') { return undefined }
+		if(etag === EMPTY) { return undefined }
 		if(etag === CONDITION_ETAG_ANY) { return ANY_ETAG_ITEM } // todo: should this return undefined?
 		if(!ETag.isValid(etag)) { return undefined }
 
@@ -186,8 +187,7 @@ export class FixDate {
 
 			return Temporal.Instant.compare(referenceInstant, testInstant) === -1
 		}
-
-		//
+		/* node:coverage disable */
 		const referenceDate = FixDate.toDate(reference)
 		const testDate = FixDate.toDate(test)
 
@@ -199,6 +199,7 @@ export class FixDate {
 		testDate.setMilliseconds(0)
 
 		return testDate > referenceDate
+		/* node:coverage enable */
 	}
 
 	/**
@@ -267,7 +268,7 @@ export class Conditional {
 		if(etagItem.etag === CONDITION_ETAG_ANY) { return undefined }
 		if(!ETag.isValid(etagItem.etag)) { return undefined }
 
-		const prefix = etagItem.weak ? CONDITION_ETAG_WEAK_PREFIX : ''
+		const prefix = etagItem.weak ? CONDITION_ETAG_WEAK_PREFIX : EMPTY
 		return `${prefix}${ETAG_QUOTE}${etagItem.etag}${ETAG_QUOTE}`
 	}
 

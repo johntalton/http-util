@@ -1,3 +1,4 @@
+import { COMMON_WILDCARD_ANY_ASTERISK } from '../defs.js'
 import { Assert } from './util/assert.js'
 import { KVP } from './util/kvp.js'
 
@@ -13,7 +14,7 @@ export const KNOWN_FORWARDED_KEYS = [
 	FORWARDED_KEY_PROTO
 ]
 
-export const SKIP_ANY = '*'
+export const SKIP_ANY = COMMON_WILDCARD_ANY_ASTERISK
 
 export const FORWARDED_SEPARATOR = {
 	ITEM: ','
@@ -57,43 +58,3 @@ export class Forwarded {
 		return undefined
 	}
 }
-
-/*
-	const examples = [
-		null,
-		undefined,
-		42,
-		'',
-		'			',
-		'some value here',
-		'======;;;',
-		',=,=,=;;;==,,,for',
-		'a=2, b=3, by=, =10',
-		'by=🚀',
-		'🔑="a key"',
-
-		'for="_gazonk"',
-		'for="_mdn"',
-		'For="[2001:db8:cafe::17]:4711"',
-		'for=192.0.2.60;proto=http;by=203.0.113.43',
-		'for=192.0.2.43, for=198.51.100.17',
-		'for=192.0.2.43',
-		'for=192.0.2.43, for=198.51.100.17;by=203.0.113.60;proto=http;host=example.com"',
-		'for=192.0.2.43, for="[2001:db8:cafe::17]"',
-		'for=192.0.2.43,for="[2001:db8:cafe::17]",for=unknown',
-		'for=192.0.2.43, for="[2001:db8:cafe::17]", for=unknown',
-		'for=_hidden, for=_SEVKISEK',
-		'for=192.0.2.43, for="[2001:db8:cafe::17]", for=unknown',
-
-		' for = 1.1.1.1   ,for=     2.2.2.2    ',
-		' fro=not_real, for=[::1]',
-		'FOr=192.0.2.43:47011,for="[2001:db8:cafe::17]:47011"',
-		' for=12.34.56.78, for=23.45.67.89;secret=egah2CGj55fSJFs, for=10.1.2.3'
-	]
-
-	for (const example of examples) {
-		console.log('================================')
-		console.log(example)
-		console.log(Forwarded.parse(example, [ ...KNOWN_FORWARDED_KEYS, 'secret', '🔑']))
-	}
-*/

@@ -1,5 +1,6 @@
 import { ReadableStream } from 'node:stream/web'
 
+import { EMPTY } from '../defs.js'
 import { ContentDisposition } from './content-disposition.js'
 import { ContentRange } from './content-range.js'
 import { CHARSET_UTF8 } from './content-type.js'
@@ -21,8 +22,6 @@ export const BOUNDARY_MARK = '--'
 export const MULTIPART_SEPARATOR = '\r\n'
 
 export const HEADER_SEPARATOR = ':'
-
-export const EMPTY = ''
 
 export const MULTIPART_HEADER = {
 	CONTENT_DISPOSITION: 'content-disposition',
@@ -62,7 +61,7 @@ export class Multipart {
 		Assert.isString(text, 'text')
 		Assert.isString(boundary, 'boundary')
 
-		if(text === '') {
+		if(text === EMPTY) {
 			// empty body
 			return formData
 		}

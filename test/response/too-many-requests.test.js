@@ -40,8 +40,8 @@ describe('Response', () => {
 				'content-type': undefined,
 				server: undefined,
 
-				'RateLimit': '"Test";r=42;t=77',
-				'RateLimit-Policy': '"TestPolicy";q=1000;qu="request";w=60',
+				'RateLimit': '"Test"; r=42; t=77',
+				'RateLimit-Policy': '"TestPolicy"; q=1000; qu="request"; w=60',
 				'retry-after': '77'
 			})
 

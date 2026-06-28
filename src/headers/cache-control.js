@@ -1,4 +1,5 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA, normalizeToArray } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, normalizeToArray } from '../defs.js'
+import { KVP } from './util/kvp.js'
 
 /** @typedef {'no-cache'|'no-store'|'no-transform'|'must-revalidate'|'immutable'|'must-understand'} Directives */
 
@@ -41,15 +42,15 @@ export class CacheControl {
 		}
 
 		if(maxAge !== undefined && Number.isInteger(maxAge) && maxAge >= 0) {
-			result.push(`max-age=${maxAge}`)
+			result.push(KVP.encode('max-age', maxAge))
 		}
 
 		if(staleWhileRevalidate !== undefined && Number.isInteger(staleWhileRevalidate) && staleWhileRevalidate >= 0) {
-			result.push(`stale-while-revalidate=${staleWhileRevalidate}`)
+			result.push(KVP.encode('stale-while-revalidate', staleWhileRevalidate))
 		}
 
 		if(staleIfError !== undefined && Number.isInteger(staleIfError) && staleIfError >= 0) {
-			result.push(`stale-if-error=${staleIfError}`)
+			result.push(KVP.encode('stale-if-error', staleIfError))
 		}
 
 		//

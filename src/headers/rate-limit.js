@@ -1,4 +1,6 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA, isNonEmptyArray } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_PARAMETER_JOINER_SEMICOLON, EMPTY, isNonEmptyArray } from '../defs.js'
+import { KVP } from './util/kvp.js'
+import { quoteValue } from './util/quote.js'
 
 // https://www.ietf.org/archive/id/draft-ietf-httpapi-ratelimit-headers-10.html
 
@@ -46,19 +48,51 @@ export class RateLimit {
 	/**
 	 * @param {RateLimitInfo} limitInfo
 	 */
-	static encode(limitInfo) {
+	static *#encode(limitInfo) {
 		if(limitInfo === undefined) { return undefined }
 		const { name, remaining, resetSeconds, partitionKey } = limitInfo
 
 		if(name === undefined || remaining === undefined) { return undefined }
 
-		const rs = resetSeconds ? `;${LIMIT_PARAMETERS.TIME_TILL_RESET_SECONDS}=${resetSeconds}` : ''
-		const pk = partitionKey ? `;${LIMIT_PARAMETERS.PARTITION_KEY}=${partitionKey}` : ''
-		return `"${name}";${LIMIT_PARAMETERS.REMAINING_QUOTA}=${remaining}${rs}${pk}`
+		yield quoteValue(name)
+		yield KVP.encode(LIMIT_PARAMETERS.REMAINING_QUOTA, remaining)
+
+		if(resetSeconds !== undefined && Number.isFinite(resetSeconds) && resetSeconds > 0) { yield KVP.encode(LIMIT_PARAMETERS.TIME_TILL_RESET_SECONDS, resetSeconds) }
+		if(partitionKey !== undefined) { yield KVP.encode(LIMIT_PARAMETERS.PARTITION_KEY, partitionKey) }
+	}
+
+	/**
+	 * @param {RateLimitInfo} limitInfo
+	 */
+	static encode(limitInfo) {
+		const result = Array.from(RateLimit.#encode(limitInfo))
+		if(result.length === 0) { return undefined }
+		return result.join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON)
 	}
 }
 
 export class RateLimitPolicy {
+	/**
+	 * @param {RateLimitPolicyInfo} policy
+	 */
+	static *#encode(policy) {
+		const {
+			name,
+			quota,
+			quotaUnits,
+			windowSeconds,
+			partitionKey
+		} = policy
+
+		yield quoteValue(name)
+		yield KVP.encode(POLICY_PARAMETER.QUOTA, quota)
+
+		if(quotaUnits !== undefined) { yield KVP.encode(POLICY_PARAMETER.QUOTA_UNITS, quotaUnits, true) }
+		if(Number.isFinite(windowSeconds)) { yield KVP.encode(POLICY_PARAMETER.WINDOW_SECONDS, windowSeconds) }
+		if(partitionKey !== undefined) { yield KVP.encode(POLICY_PARAMETER.PARTITION_KEY, partitionKey) }
+	}
+
+
 	/**
 	 * @param {...RateLimitPolicyInfo} policies
 	 */
@@ -69,7 +103,7 @@ export class RateLimitPolicy {
 			.filter(pol => {
 				if(pol === undefined) { return false }
 				if(pol.name === undefined) { return false }
-				if(pol.name === '') { return false }
+				if(pol.name === EMPTY) { return false }
 				if(!Number.isFinite(pol.quota)) { return false }
 
 				return true
@@ -79,21 +113,8 @@ export class RateLimitPolicy {
 
 		return remainingPolicies
 			.map(policy => {
-				const {
-					name,
-					quota,
-					quotaUnits,
-					windowSeconds,
-					partitionKey
-				} = policy
-
-				const q = `${POLICY_PARAMETER.QUOTA}=${quota}`
-				const qu = (quotaUnits !== undefined) ? `${POLICY_PARAMETER.QUOTA_UNITS}="${quotaUnits}"` : undefined
-				const ws = Number.isFinite(windowSeconds) ? `${POLICY_PARAMETER.WINDOW_SECONDS}=${windowSeconds}` : undefined
-				const pk = (partitionKey !== undefined) ? `${POLICY_PARAMETER.PARTITION_KEY}=${partitionKey}` : undefined
-				return [ `"${name}"`, q, qu, ws, pk ]
-					.filter(item => item !== undefined)
-					.join(';')
+				const result = Array.from(RateLimitPolicy.#encode(policy))
+				return result.join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON)
 			})
 			.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}

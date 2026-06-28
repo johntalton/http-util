@@ -1,3 +1,4 @@
+import { EMPTY } from '../../defs.js'
 import { Assert } from './assert.js'
 import { KVP } from './kvp.js'
 
@@ -33,7 +34,8 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 			.map(mediaRange => {
 				const { name, parameters } = KVP.parse(mediaRange) ?? { parameters: new Map() }
 				if(name === undefined) { return undefined }
-				if(name === '') { return undefined } // impossible as kvp.parse returns undefined if name empty
+				/* c8 ignore next */
+				if(name === EMPTY) { return undefined } // impossible as kvp.parse returns undefined if name empty
 
 				const quality = Number.parseFloat(parameters.get(QUALITY) ?? DEFAULT_QUALITY_STRING)
 

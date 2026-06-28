@@ -1,4 +1,5 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_VALUE_JOINER_COMMA } from "../defs.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_VALUE_JOINER_COMMA, EMPTY } from '../defs.js'
+import { KVP } from './util/kvp.js'
 
 /**
  * @typedef {Object} ChallengeItem
@@ -25,6 +26,8 @@ export const PARAMETERS_THAT_NEED_QUOTES = [
 	'error_description',
 	'error_uri'
 ]
+
+export const AUTH_SCHEME_PARAM_JOINER_SPACE = ' ' // this is odd
 
 /**
  * @param {string} paramName
@@ -112,12 +115,11 @@ export class Challenge {
 	static #encode(challenge) {
 		if(challenge === undefined) { return undefined }
 		if(challenge.scheme === undefined) { return undefined }
-		if(challenge.scheme === '') { return undefined }
+		if(challenge.scheme === EMPTY) { return undefined }
 
 		const parameters = challenge.parameters?.entries().map(([ key, value ]) => {
 			if(value === undefined) { return key }
-			if(paramNeedQuotes(key)) { return `${key}="${value}"` }
-			return `${key}=${value}`
+			return KVP.encode(key, value, paramNeedQuotes(key))
 		})
 
 		if(parameters === undefined) { return challenge.scheme }
@@ -125,7 +127,7 @@ export class Challenge {
 		if(params.length === 0) { return challenge.scheme }
 
 		const paramsStr = params.join(COMMON_LIST_VALUE_JOINER_COMMA)
-		return [ challenge.scheme, paramsStr ].join(' ')
+		return [ challenge.scheme, paramsStr ].join(AUTH_SCHEME_PARAM_JOINER_SPACE)
 	}
 }
 

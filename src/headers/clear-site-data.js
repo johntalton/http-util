@@ -1,6 +1,7 @@
+import { COMMON_LIST_VALUE_JOINER_COMMA, COMMON_WILDCARD_ANY_ASTERISK } from '../defs.js'
 
 /** @type {'*'} */
-export const WILDCARD = '*'
+export const WILDCARD = COMMON_WILDCARD_ANY_ASTERISK
 
 export const CSD_DIRECTIVE_SEPARATOR = ','
 export const CSD_QUOTE = '"'
@@ -48,6 +49,6 @@ export class SiteData {
 
 		return result
 			.map(item => `${CSD_QUOTE}${item}${CSD_QUOTE}`)
-			.join(CSD_DIRECTIVE_SEPARATOR)
+			.join(COMMON_LIST_VALUE_JOINER_COMMA)
 	}
 }

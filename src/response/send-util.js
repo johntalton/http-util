@@ -260,7 +260,7 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 
 	if(stream.writable && body !== undefined) {
 		if(body instanceof ReadableStream || body instanceof Readable) {
-			// todo this asyncs into the void, is that good?
+			// todo this goes async into the void, is that good?
 			pipeline(
 				body,
 				stream,

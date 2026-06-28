@@ -55,4 +55,27 @@ describe('SecFetch', () => {
 			assert.equal(result, 'document')
 		})
 	})
+
+	describe('parseUser', () => {
+		it('should handle undefined', () => {
+			const result = SecFetch.parseUser(undefined)
+			assert.equal(result, false)
+		})
+
+		it('should discard unknown', () => {
+			const result = SecFetch.parseUser('?TRUE')
+			assert.equal(result, false)
+		})
+
+		it('should return false when ?0', () => {
+			const result = SecFetch.parseUser('?0')
+			assert.equal(result, false)
+		})
+
+		it('should return true when ?1', () => {
+			const result = SecFetch.parseUser('?1')
+			assert.equal(result, true)
+		})
+	})
 })
+

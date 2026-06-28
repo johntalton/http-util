@@ -6,27 +6,31 @@ import { RateLimit, RateLimitPolicy } from '@johntalton/http-util/headers'
 describe('RateLimit', () => {
 	describe('encode', () => {
 		it('should handle undefined', () => {
+			// @ts-ignore
 			const result = RateLimit.encode(undefined)
 			assert.equal(result, undefined)
 		})
 
 		it('should reject missing name', () => {
+			// @ts-ignore
 			const result = RateLimit.encode({ })
 			assert.equal(result, undefined)
 		})
 
 		it('should reject missing remaining', () => {
+			// @ts-ignore
 			const result = RateLimit.encode({ name: 'TESTING' })
 			assert.equal(result, undefined)
 		})
 
 		it('should handle basic with missing reset', () => {
+			// @ts-ignore
 			const result = RateLimit.encode({
 				name: 'TESTING',
 				remaining: 42,
 				//resetSeconds: 0
 			})
-			assert.equal(result, '"TESTING";r=42')
+			assert.equal(result, '"TESTING"; r=42')
 		})
 
 		it('should handle basic with Zero reset', () => {
@@ -35,7 +39,7 @@ describe('RateLimit', () => {
 				remaining: 42,
 				resetSeconds: 0
 			})
-			assert.equal(result, '"TESTING";r=42')
+			assert.equal(result, '"TESTING"; r=42')
 		})
 
 		it('should handle basic', () => {
@@ -44,7 +48,7 @@ describe('RateLimit', () => {
 				remaining: 42,
 				resetSeconds: 77
 			})
-			assert.equal(result, '"TESTING";r=42;t=77')
+			assert.equal(result, '"TESTING"; r=42; t=77')
 		})
 
 		it('should handle basic with partition key', () => {
@@ -54,7 +58,7 @@ describe('RateLimit', () => {
 				resetSeconds: 77,
 				partitionKey: 'KEY'
 			})
-			assert.equal(result, '"TESTING";r=42;t=77;pk=KEY')
+			assert.equal(result, '"TESTING"; r=42; t=77; pk=KEY')
 		})
 
 
@@ -64,6 +68,7 @@ describe('RateLimit', () => {
 describe('RateLimitPolicy', () => {
 	describe('encode', () => {
 		it('should handle undefined', () => {
+			// @ts-ignore
 			const result = RateLimitPolicy.encode(undefined)
 			assert.equal(result, undefined)
 		})
@@ -74,16 +79,18 @@ describe('RateLimitPolicy', () => {
 		})
 
 		it('should handle missing values', () => {
+			// @ts-ignore
 			const result = RateLimitPolicy.encode({
 				name: 'FAKE',
 				quota: 42
 			})
-			assert.equal(result, '"FAKE";q=42')
+			assert.equal(result, '"FAKE"; q=42')
 		})
 
 		it('should handle drop invalid quota values (undefined)', () => {
 			const result = RateLimitPolicy.encode({
 				name: 'FAKE',
+				// @ts-ignore
 				quota: undefined,
 				size: 77,
 				quotaUnits: 'request',
@@ -94,6 +101,7 @@ describe('RateLimitPolicy', () => {
 
 		it('should handle drop invalid quota values (undefined name)', () => {
 			const result = RateLimitPolicy.encode({
+				// @ts-ignore
 				name: undefined,
 				quota: 42,
 				size: 77,
@@ -144,7 +152,7 @@ describe('RateLimitPolicy', () => {
 				quotaUnits: 'request',
 				windowSeconds: 1000
 			})
-			assert.equal(result, '"FAKE";q=42;qu="request";w=1000')
+			assert.equal(result, '"FAKE"; q=42; qu="request"; w=1000')
 		})
 
 		it('should handle common values (with partition key)', () => {
@@ -156,7 +164,7 @@ describe('RateLimitPolicy', () => {
 				windowSeconds: 1000,
 				partitionKey: 'KEY'
 			})
-			assert.equal(result, '"FAKE";q=42;qu="request";w=1000;pk=KEY')
+			assert.equal(result, '"FAKE"; q=42; qu="request"; w=1000; pk=KEY')
 		})
 
 		it('should handle multiple policies', () => {
@@ -173,7 +181,7 @@ describe('RateLimitPolicy', () => {
 				quotaUnits: 'bytes',
 				windowSeconds: 500
 			})
-			assert.equal(result, '"FAKE";q=42;qu="request";w=1000, "MORE_FAKE";q=1;qu="bytes";w=500')
+			assert.equal(result, '"FAKE"; q=42; qu="request"; w=1000, "MORE_FAKE"; q=1; qu="bytes"; w=500')
 		})
 	})
 })

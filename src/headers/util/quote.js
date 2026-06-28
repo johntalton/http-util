@@ -18,3 +18,10 @@ export function isQuoted(value) {
 	if(!value.endsWith(QUOTE)) { return false }
 	return true
 }
+
+/**
+ * @param {string|number} value
+ */
+export function quoteValue(value) {
+	return `${QUOTE}${value}${QUOTE}`
+}

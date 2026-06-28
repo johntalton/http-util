@@ -1,9 +1,9 @@
-import { isNonEmptyArray } from '../defs.js'
+import { COMMON_WILDCARD_ANY_ASTERISK, isNonEmptyArray } from '../defs.js'
 import { parseAcceptStyleHeader } from './util/accept-util.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
 
-export const LANGUAGE_ANY = '*'
+export const LANGUAGE_ANY = COMMON_WILDCARD_ANY_ASTERISK
 
 export const WELL_KNOWN_LANGUAGES = new Map([
 	[ 'en-US,en;q=0.5', [ { name: 'en-US', quality: 1 }, { name: 'en', quality: 0.5 } ] ],

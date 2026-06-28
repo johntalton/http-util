@@ -1,3 +1,4 @@
+import { EMPTY } from '../../defs.js'
 
 export class Assert {
 	/**
@@ -9,6 +10,6 @@ export class Assert {
 		if(value instanceof String) { return true }
 		if(typeof value === 'string') { return true }
 
-		throw new TypeError(`parameter${parameterName === undefined ? '' : ` (${parameterName})`} must be a string`)
+		throw new TypeError(`parameter${parameterName === undefined ? EMPTY : ` (${parameterName})`} must be a string`)
 	}
 }

@@ -1,6 +1,6 @@
 import http2 from 'node:http2'
 
-import { COMMON_LIST_VALUE_JOINER_COMMA, normalizeToArray, } from '../defs.js'
+import { COMMON_LIST_VALUE_JOINER_COMMA, CUSTOM_HEADER_PREFIX, normalizeToArray, } from '../defs.js'
 
 import {
 	HTTP_HEADER_SERVER_TIMING,
@@ -65,7 +65,6 @@ export function performanceHeaders(meta) {
  * @returns {OutgoingHttpHeaders}
  */
 export function customHeaders(meta) {
-	const CUSTOM_HEADER_PREFIX = 'X-'
 	const m = new Map(meta.customHeaders?.filter(h => h[0].startsWith(CUSTOM_HEADER_PREFIX)))
 	return Object.fromEntries(m)
 }
