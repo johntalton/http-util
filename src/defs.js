@@ -121,13 +121,22 @@ export const COMMON_WILDCARD_ANY_ASTERISK = '*'
 
 /**
  * @template T
- * @param {Array<T>|T|undefined} item
- * @returns {Array<T>|undefined}
+ * @overload
+ * @param {undefined} item
+ * @returns {undefined}
+ *
+ * @template T
+ * @overload
+ * @param {T | T[]} item
+ * @returns {T[]}
+ *
+ * @template T
+ * @param {T | T[] | undefined} item
+ * @returns {T[] | undefined}
  */
 export function normalizeToArray(item) {
 	if(item === undefined) { return undefined }
-	if(Array.isArray(item)) { return item }
-	return [ item ]
+	return Array.isArray(item) ? item  : [ item ]
 }
 
 /**

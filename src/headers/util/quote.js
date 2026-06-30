@@ -1,11 +1,28 @@
 export const QUOTE = '"'
 
 /**
+ * @param {string} value
+ */
+export function slashEncode(value) {
+	return value
+		.replaceAll(QUOTE, '\\"')
+}
+
+/**
+ * @param {string} value
+ */
+export function slashDecode(value) {
+	return value
+		.replaceAll('\\"', QUOTE)
+}
+
+/**
  * @param {string|undefined} value
  */
 export function stripQuotes(value) {
 	if(value === undefined) { return undefined }
-	return value.slice(1, -1)
+	const escapedValue = value.slice(1, -1)
+	return slashDecode(escapedValue)
 }
 
 /**
@@ -23,5 +40,6 @@ export function isQuoted(value) {
  * @param {string|number} value
  */
 export function quoteValue(value) {
-	return `${QUOTE}${value}${QUOTE}`
+	const escapedValue = slashEncode(`${value}`)
+	return `${QUOTE}${escapedValue}${QUOTE}`
 }

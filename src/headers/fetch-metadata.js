@@ -174,7 +174,7 @@ export class SecFetch {
 	 * @returns {boolean}
 	 */
 	static parseUser(header) {
-		if(header === undefined) { return false }
+		if(header === undefined) { return false } // todo should this return undefined
 		return header === SEC_FETCH_USER_TRUE
 	}
 }
