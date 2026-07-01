@@ -25,6 +25,8 @@ export const CSD_DIRECTIVE_STORAGE = 'storage'
  * @property {boolean} storage
  */
 
+/** @typedef {Partial<ClearOptions>|true|'*'} SiteDataItem */
+
 export class SiteData {
 	/**
 	 * @param {Partial<ClearOptions>} directives
@@ -40,7 +42,7 @@ export class SiteData {
 	}
 
 	/**
-	 * @param {Partial<ClearOptions>|true|'*'|undefined} directives
+	 * @param {SiteDataItem|undefined} directives
 	 */
 	static encode(directives) {
 		if(directives === undefined) { return undefined }
