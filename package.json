@@ -1,6 +1,6 @@
 {
   "name": "@johntalton/http-util",
-  "version": "7.2.1",
+  "version": "7.3.0",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
