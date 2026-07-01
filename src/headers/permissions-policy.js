@@ -1,6 +1,8 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_PARAMETER_JOINER_SEMICOLON, normalizeToArray } from "../defs.js"
-import { KVP } from "./util/kvp.js"
-import { quoteValue } from "./util/quote.js"
+import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_PARAMETER_JOINER_SEMICOLON, normalizeToArray } from '../defs.js'
+import { KVP } from './util/kvp.js'
+import { quoteValue } from './util/quote.js'
+
+/** @import { ReportingEndpointName } from './reporting-endpoints.js' */
 
 /** @typedef {
 	'accelerometer' |
@@ -59,7 +61,7 @@ import { quoteValue } from "./util/quote.js"
  * @typedef {Object} PermissionsPolicyItem
  * @property {PermissionPolicyDirective} directive
  * @property {PermissionsPolicyAllowList} allowList
- * @property {string|undefined} [reportTo]
+ * @property {ReportingEndpointName|undefined} [reportTo]
  */
 
 export const PERMISSION_POLICY_ALLOW_LIST_ANY = '*'
@@ -110,6 +112,7 @@ export class PermissionsPolicy {
 			return KVP.encode(directive, allowListString)
 		}
 
+		// todo valid reporting endpoint name
 		return [
 			KVP.encode(directive, allowListString),
 			KVP.encode(PERMISSION_POLICY_DIRECTIVE_REPORT_TO, reportTo) ]

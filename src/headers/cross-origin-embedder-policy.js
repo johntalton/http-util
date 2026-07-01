@@ -1,11 +1,13 @@
 import { COMMON_LIST_PARAMETER_JOINER_SEMICOLON } from '../defs.js'
 import { KVP } from './util/kvp.js'
 
+/** @import { ReportingEndpointName } from './reporting-endpoints.js' */
+
 /** @typedef {'unsafe-none'|'require-corp'|'credentialless'} COEPDirective */
 /**
  * @typedef {Object} COEPItem
  * @property {COEPDirective} directive
- * @property {string|undefined} [reportTo]
+ * @property {ReportingEndpointName|undefined} [reportTo]
  */
 
 export const COEP_REPORT_TO = 'report-to'
@@ -31,6 +33,7 @@ export class CrossOriginEmbedderPolicy {
 		yield directive
 
 		if(reportTo !== undefined) {
+			// todo valid reporting endpoint name
 			yield KVP.encode(COEP_REPORT_TO, reportTo, true)
 		}
 	}

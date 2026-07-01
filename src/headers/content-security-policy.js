@@ -7,6 +7,8 @@ import {
 	normalizeToArray
 } from '../defs.js'
 
+/** @import { ReportingEndpointName } from './reporting-endpoints.js' */
+
 /** @typedef {
 	'self' |
 	'trusted-types-eval' |
@@ -124,7 +126,7 @@ import {
 
 /**
  * @typedef {Object} CSPReportingPolicy
- * @property {string|undefined} [reportTo]
+ * @property {ReportingEndpointName|undefined} [reportTo]
  */
 
 
@@ -442,9 +444,10 @@ export function processOther(prefix, list) {
 
 /**
  * @param {CSPReportingDirective} prefix
- * @param {string} item
+ * @param {ReportingEndpointName} item
  */
 export function processReporting(prefix, item) {
+	// todo valid item is a reporting endpoint
 	return `${prefix} ${item}`
 }
 

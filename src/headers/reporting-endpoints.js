@@ -1,15 +1,38 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA, normalizeToArray } from '../defs.js'
+import { COMMON_LIST_HEADER_JOINER_COMMA, EMPTY, normalizeToArray } from '../defs.js'
 import { KVP } from './util/kvp.js'
 
+/** @typedef {string & { readonly __brand: unique symbol }} ReportingEndpointName */
+
 /**
- * @typedef {Object} EndpointItem
- * @property {string} name
+ * @typedef {Object} ReportingEndpointsItem
+ * @property {ReportingEndpointName} name
  * @property {URL|string} url
  */
 
+
+/**
+ * @param {string|undefined} name
+ * @returns {name is ReportingEndpointName}
+ */
+export function isReportingEndpointName(name) {
+	if(name === undefined) { return false }
+	if(name === EMPTY) { return false }
+
+	return true
+}
+
 export class ReportingEndpoints {
 	/**
-	 * @param {Array<EndpointItem>} endpoints
+	 * @param {string|undefined} name
+	 * @returns {ReportingEndpointName}
+	 */
+	static name(name) {
+		if(!isReportingEndpointName(name)) { throw new TypeError('Invalid Reporting Endpoint Name') }
+		return name
+	}
+
+	/**
+	 * @param {Array<ReportingEndpointsItem>} endpoints
 	 */
 	static *#encode(endpoints) {
 		for(const endpoint of endpoints) {
@@ -22,7 +45,7 @@ export class ReportingEndpoints {
 	}
 
 	/**
-	 * @param {Array<EndpointItem>|EndpointItem|undefined} endpoints
+	 * @param {Array<ReportingEndpointsItem>|ReportingEndpointsItem|undefined} endpoints
 	 */
 	static encode(endpoints) {
 		if(endpoints === undefined) { return undefined }
