@@ -304,6 +304,7 @@ export const POLICY_PARAM_JOINER_SPACE = ' '
  */
 export function isCSPHost(str) {
 	if(str === undefined) { return false }
+	if(str === EMPTY) { return false }
 
 	// todo this should be URL-like string
 

@@ -23,6 +23,24 @@ describe('PermissionsPolicy', () => {
       assert.equal(result, 'geolocation=*')
     })
 
+		it('should handle skipping directive that are undefined', () => {
+      // @ts-ignore
+      const result = PermissionsPolicy.encode({
+				directive: undefined,
+				allowList: []
+			})
+      assert.equal(result, undefined)
+    })
+
+		it('should handle skipping allow list that are undefined', () => {
+      // @ts-ignore
+      const result = PermissionsPolicy.encode({
+				directive: 'camera',
+				allowList: undefined
+			})
+      assert.equal(result, undefined)
+    })
+
 		it('should handle directive geolocation empty allow list', () => {
       const result = PermissionsPolicy.encode({
 				directive: 'geolocation',
@@ -39,7 +57,18 @@ describe('PermissionsPolicy', () => {
     //   assert.equal(result, 'geolocation=self')
     // })
 
-		it('should handle directive geolocation empty allow list', () => {
+		it('should throw when directive has non valid non array allow list', () => {
+			// @ts-ignore
+			assert.throws(() => PermissionsPolicy.encode({
+				directive: 'bluetooth',
+				allowList: 42
+			}), {
+				name: 'TypeError',
+				message: 'Invalid Allow List Value'
+			})
+		})
+
+		it('should throw when directive geolocation has any in allow list', () => {
       assert.throws(() => PermissionsPolicy.encode({
 				directive: 'geolocation',
 				allowList: ['*']
@@ -57,6 +86,14 @@ describe('PermissionsPolicy', () => {
       assert.equal(result, 'geolocation=(self)')
     })
 
+		it('should handle directive with src in allow list (rare)', () => {
+      const result = PermissionsPolicy.encode({
+				directive: 'web-share',
+				allowList: ['src']
+			})
+      assert.equal(result, 'web-share=(src)')
+    })
+
 		it('should handle directive geolocation host with wildcard', () => {
       const result = PermissionsPolicy.encode({
 				directive: 'geolocation',
@@ -64,7 +101,6 @@ describe('PermissionsPolicy', () => {
 			})
       assert.equal(result, 'geolocation=("*.fake-host.internal")')
     })
-
 
 		it('should handle directive geolocation multi item list', () => {
       const result = PermissionsPolicy.encode({
@@ -87,6 +123,17 @@ describe('PermissionsPolicy', () => {
 				allowList: []
 			}])
       assert.equal(result, 'microphone=(), geolocation=()')
+    })
+
+		it('should handle multiple directive with empty allow lists (as array)', () => {
+      const result = PermissionsPolicy.encode([{
+				directive: 'microphone',
+				allowList: []
+			}, {
+				directive: 'geolocation',
+				allowList: []
+			}], true)
+      assert.deepEqual(result, [ 'microphone=()', 'geolocation=()' ])
     })
 
 		it('should handle directive with report to url', () => {

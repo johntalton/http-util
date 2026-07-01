@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
-import { ContentSecurityPolicy } from '@johntalton/http-util/headers'
+import { ContentSecurityPolicy, isHash, isNonce, isPolicyName } from '@johntalton/http-util/headers'
 
 describe('ContentSecurityPolicy', () => {
 	describe('encode', () => {
@@ -53,6 +53,26 @@ describe('ContentSecurityPolicy', () => {
 			assert.deepEqual(result, 'default-src \'none\'; img-src *')
 		})
 
+		it('should throw with invalid host (empty)', () => {
+			assert.throws(() => ContentSecurityPolicy.encode([ {
+				defaultSrc: 'none',
+				imgSrc: ContentSecurityPolicy.host('')
+			} ]), {
+				name: 'TypeError',
+				message: 'Not a valid CSP host'
+			})
+		})
+
+		it('should throw with invalid host (undefined)', () => {
+			assert.throws(() => ContentSecurityPolicy.encode([ {
+				defaultSrc: 'none',
+				imgSrc: ContentSecurityPolicy.host(undefined)
+			} ]), {
+				name: 'TypeError',
+				message: 'Not a valid CSP host'
+			})
+		})
+
 		it('should handle fetch default with report-to', () => {
 			const result = ContentSecurityPolicy.encode({
 				defaultSrc: 'self',
@@ -78,6 +98,25 @@ describe('ContentSecurityPolicy', () => {
 			})
 
 			assert.equal(result, 'default-src \'self\'')
+		})
+
+		it('should handle fetch with more complete list of directives', () => {
+			const result = ContentSecurityPolicy.encode({
+				defaultSrc: 'self',
+				scriptSrc: [ 'inline-speculation-rules', 'strict-dynamic' ],
+				scriptSrcAttr: 'none',
+				scriptSrcElem: [ 'wasm-unsafe-eval' ],
+				styleSrc: 'nonce-ABCD',
+				childSrc: 'none',
+				fontSrc: 'self',
+				frameSrc: [ ],
+				manifestSrc: 'blob:',
+				mediaSrc: [ 'self', 'https:' ],
+				objectSrc: 'none',
+				workerSrc: ContentSecurityPolicy.host('worker.internal/worker')
+			})
+
+			assert.equal(result, 'default-src \'self\'; script-src \'inline-speculation-rules\' \'strict-dynamic\'; script-src-attr \'none\'; script-src-elem \'wasm-unsafe-eval\'; style-src \'nonce-ABCD\'; child-src \'none\'; font-src \'self\'; frame-src; manifest-src \'blob:\'; media-src \'self\' \'https:\'; object-src \'none\'; worker-src worker.internal/worker')
 		})
 
 		it('should handle script with hash and unsafe', () => {
@@ -406,5 +445,71 @@ describe('ContentSecurityPolicy', () => {
 		// Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://trusted-cdn.com https://google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.com; connect-src 'self' https://api.example.com; report-uri /csp-violation-endpoint;
 		// Content-Security-Policy-Report-Only: default-src 'self'; script-src 'nonce-rAnd0m210626' 'strict-dynamic' https:; object-src 'none'; base-uri 'self'; report-uri /csp-violation-endpoint;
 		// default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';base-uri 'self';form-action 'self'
+	})
+
+	describe('isPolicyName', () => {
+		it('should handle undefined', () => {
+			const result = isPolicyName(undefined)
+			assert.equal(result, false)
+		})
+
+		it('should handle any', () => {
+			const result = isPolicyName('*')
+			assert.equal(result, true)
+		})
+
+		it('should handle valid policy name', () => {
+			const result = isPolicyName('pol-1_#.2')
+			assert.equal(result, true)
+		})
+
+		it('should handle invalid policy name', () => {
+			const result = isPolicyName('pol-$$$')
+			assert.equal(result, false)
+		})
+	})
+
+	describe('isHash', () => {
+		it('should handle undefined', () => {
+			const result = isHash(undefined)
+			assert.equal(result, false)
+		})
+
+		it('should handle sha256', () => {
+			const result = isHash('sha256-ABCDEF')
+			assert.equal(result, true)
+		})
+
+		it('should handle sha512', () => {
+			const result = isHash('sha512-ABCDEF')
+			assert.equal(result, true)
+		})
+
+		it('should handle sha384', () => {
+			const result = isHash('sha384-ABCDEF')
+			assert.equal(result, true)
+		})
+
+		it('should handle invalid', () => {
+			const result = isHash('sha1-ABCDEF')
+			assert.equal(result, false)
+		})
+	})
+
+	describe('isNonce', () => {
+		it('should handle undefined', () => {
+			const result = isNonce(undefined)
+			assert.equal(result, false)
+		})
+
+		it('should handle nonce', () => {
+			const result = isNonce('nonce-SOME_VALUE')
+			assert.equal(result, true)
+		})
+
+		it('should handle invalid', () => {
+			const result = isNonce('not-a-nonce')
+			assert.equal(result, false)
+		})
 	})
 })
