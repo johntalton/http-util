@@ -27,6 +27,8 @@ export const INTEGRITY_POLICY_SOURCE_INLINE = 'inline'
  * @property {Array<ReportingEndpointName>|ReportingEndpointName} [endpoints]
  */
 
+/** @typedef {Array<IntegrityPolicyItem>|IntegrityPolicyItem} IntegrityPolicyInput */
+
 export class IntegrityPolicy {
 	/**
 	 * @param {IntegrityPolicyItem} policy
@@ -75,7 +77,7 @@ export class IntegrityPolicy {
 	}
 
 	/**
-	 * @param {Array<IntegrityPolicyItem>|IntegrityPolicyItem|undefined} policies
+	 * @param {IntegrityPolicyInput|undefined} policies
 	 * @param {boolean} [asArray=false]
 	 */
 	static encode(policies, asArray = false) {

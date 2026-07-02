@@ -31,7 +31,7 @@ import {
 /** @typedef {'http:'|'https:'|'ws:'|'wss:'|'blob:'|'data:'} CSPSchemeSource */
 /** @typedef {`nonce-${string}`} CSPNonceSource */
 /** @typedef {`sha256-${string}`|`sha384-${string}`|`sha512-${string}`} CSPHashSource */
-/** @typedef {string & { __brand: 'host' }} CSPHostSource */
+/** @typedef {string & { readonly __brand: unique symbol }} CSPHostSource */
 
 
 

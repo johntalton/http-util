@@ -46,6 +46,9 @@ export const DIRECTIVE_REPRESENTATION_FULL = 'representation'
 /** @typedef {RequestPreferencesBase<Preference>} RequestPreferences */
 /** @typedef {RequestPreferencesBase<Partial<Omit<Preference,'parameters'>>|undefined>} AppliedRequestPreferences */
 
+/** @typedef {Partial<AppliedRequestPreferences>|Map<string, string|undefined>} AppliedPreferencesInput */
+
+
 export class Preferences {
 	/**
 	 * @param {string|undefined} header
@@ -108,7 +111,7 @@ export class AppliedPreferences {
 	}
 
 	/**
-	 * @param {Partial<AppliedRequestPreferences>|Map<string, string|undefined>|undefined} preferences
+	 * @param {AppliedPreferencesInput|undefined} preferences
 	 */
 	static encode(preferences) {
 		if(preferences === undefined) { return undefined}

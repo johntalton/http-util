@@ -51,6 +51,34 @@ export const KNOWN_CLIENT_HINTS = [
 	CLIENT_HINT_GLOBAL_PRIVACY_CONTROL
 ]
 
+/**
+ * @typedef {
+	CLIENT_HINT_USER_AGENT |
+	CLIENT_HINT_ARCHITECTURE |
+	CLIENT_HINT_BITNESS |
+	CLIENT_HINT_FORM_FACTORS |
+	CLIENT_HINT_VERSION_LIST |
+	CLIENT_HINT_MOBILE |
+	CLIENT_HINT_MODEL |
+	CLIENT_HINT_PLATFORM |
+	CLIENT_HINT_PLATFORM_VERSION |
+	CLIENT_HINT_WOW64 |
+	CLIENT_HINT_PREFERS_COLOR_SCHEME |
+	CLIENT_HINT_PREFERS_REDUCED_MOTION |
+	CLIENT_HINT_PREFERS_REDUCED_TRANSPARENCY |
+	CLIENT_HINT_DEVICE_MEMORY |
+	CLIENT_HINT_DEVICE_PIXEL_RATIO |
+	CLIENT_HINT_VIEWPORT_HEIGHT |
+	CLIENT_HINT_VIEWPORT_WIDTH |
+	CLIENT_HINT_IMAGE_WIDTH |
+	CLIENT_HINT_DOWNLINK |
+	CLIENT_HINT_EFFECTIVE_CONNECTION_TYPE |
+	CLIENT_HINT_ROUND_TRIP_TIME |
+	CLIENT_HINT_SAVE_DATA |
+	CLIENT_HINT_GLOBAL_PRIVACY_CONTROL
+ } ClientHintsDirective
+ */
+
 export const KNOWN_FORM_FACTORS = [
 	'Desktop',
 	'Automotive',
@@ -68,8 +96,9 @@ export const CLIENT_HINT_FALSE = '?0'
 export class ClientHints {
 
 	/**
-	 * @param {Array<String>} hints
+	 * @param {Array<ClientHintsDirective>|undefined} hints
 	 * @param {boolean} [asArray = false]
+	 * @returns {string[]|string|undefined}
 	 */
 	static encode(hints, asArray = false) {
 		if(hints === undefined) { return undefined }
@@ -77,12 +106,11 @@ export class ClientHints {
 
 		const remaining = hints
 			.filter(hint => KNOWN_CLIENT_HINTS.includes(hint))
+			// .map(hint => hint.toLowerCase()) // todo is this needed / correct (client hints ARE headers, and all headers are lowercase)
+			// .map(hint => `${hint}`)
 
 		if(remaining.length === 0) { return undefined }
 
 		return asArray ? remaining : remaining.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }
-
-
-

@@ -52,14 +52,17 @@ import { quoteValue } from './util/quote.js'
 	'web-share' |
 	'window-management' |
 	'xr-spatial-tracking'
- } PermissionPolicyDirective */
-/** @typedef {string} PermissionPolicyOrigin */
+ } PermissionsPolicyDirective */
 
-/** @typedef {'*'|'()'|Array<'self'|'src'|PermissionPolicyOrigin>} PermissionsPolicyAllowList */
+
+ // todo add __brand to string
+/** @typedef {string} PermissionsPolicyOrigin */
+
+/** @typedef {'*'|'()'|Array<'self'|'src'|PermissionsPolicyOrigin>} PermissionsPolicyAllowList */
 
 /**
  * @typedef {Object} PermissionsPolicyItem
- * @property {PermissionPolicyDirective} directive
+ * @property {PermissionsPolicyDirective} directive
  * @property {PermissionsPolicyAllowList} allowList
  * @property {ReportingEndpointName|undefined} [reportTo]
  */
