@@ -3,15 +3,16 @@ import http2 from 'node:http2'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { SendContext, Metadata } from '../../defs.js' */
 
 const { HTTP_STATUS_FORBIDDEN} = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendForbidden(stream, meta) {
+export function sendForbidden(stream, context, meta) {
 	send_no_body(stream, HTTP_STATUS_FORBIDDEN, {
-	}, [], meta)
+	}, [], context, meta)
 }

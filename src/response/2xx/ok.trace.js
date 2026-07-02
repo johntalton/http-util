@@ -5,7 +5,7 @@ import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { IncomingHttpHeaders } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { SendContext, Metadata } from '../../defs.js' */
 
 const { HTTP_STATUS_OK } = http2.constants
 
@@ -17,9 +17,10 @@ const PSEUDO_HEADER_PREFIX = ':'
  * @param {string} method
  * @param {URL} url
  * @param {IncomingHttpHeaders} headers
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendTrace(stream, method, url, headers, meta) {
+export function sendTrace(stream, method, url, headers, context, meta) {
 	const FILTER_KEYS = [ 'authorization', 'cookie' ]
 	const HTTP_VERSION = new Map([
 		[ 'h2', 'HTTP/2' ],
@@ -39,5 +40,5 @@ export function sendTrace(stream, method, url, headers, meta) {
 		]
 		.join(LINE_ENDING)
 
-	send(stream, HTTP_STATUS_OK, {}, [], CONTENT_TYPE_MESSAGE_HTTP, reconstructed, meta)
+	send(stream, HTTP_STATUS_OK, {}, [], CONTENT_TYPE_MESSAGE_HTTP, reconstructed, context, meta)
 }

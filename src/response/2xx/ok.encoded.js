@@ -3,7 +3,7 @@ import http2 from 'node:http2'
 import { send_encoded } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendContent, SendInfo, Metadata, SendBody } from '../../defs.js' */
+/** @import { SendContent, SendInfo, SendContext, Metadata, SendBody } from '../../defs.js' */
 
 const { HTTP_STATUS_OK } = http2.constants
 
@@ -12,11 +12,13 @@ const { HTTP_STATUS_OK } = http2.constants
  * @param {SendBody|undefined} obj
  * @param {Omit<SendContent, 'rangeDirective' | 'contentLength'>} content
  * @param {Pick<SendInfo, 'supportedQueryTypes'>} info
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendEncoded(stream, obj, content, info, meta) {
+export function sendEncoded(stream, obj, content, info, context, meta) {
 	const {
 		contentType,
+		contentDisposition,
 		encoding,
 		etag,
 		lastModified,
@@ -28,5 +30,5 @@ export function sendEncoded(stream, obj, content, info, meta) {
 	} = info
 
 	const acceptRanges = undefined
-	send_encoded(stream, HTTP_STATUS_OK, contentType, obj, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
+	send_encoded(stream, HTTP_STATUS_OK, contentType, obj, contentDisposition, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
 }

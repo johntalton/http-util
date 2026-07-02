@@ -15,9 +15,9 @@ describe('Response', () => {
 	describe('bytes', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
+			const contentDisposition = undefined
 			const contentType = undefined
 			const contentLength = undefined
-			const encoding = undefined
 			const etag = undefined
 			const lastModified = undefined
 			const age = undefined
@@ -25,16 +25,16 @@ describe('Response', () => {
 			const acceptRanges = undefined
 			const obj = 'TEST'
 			Response.bytes(stream, obj, {
+				contentDisposition,
 				contentType,
 				contentLength,
-				encoding,
 				etag,
 				lastModified,
 				age,
 				cacheControl
 			}, {
 				acceptRanges
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -49,6 +49,7 @@ describe('Response', () => {
 				'accept-query': undefined,
 				'accept-ranges': undefined,
 				'cache-control': undefined,
+				'content-disposition': undefined,
 				'content-encoding': undefined,
 				'content-length': undefined,
 				'content-range': undefined,

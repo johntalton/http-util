@@ -6,7 +6,7 @@ import { MIME_TYPE_MULTIPART_RANGE, MIME_TYPE_OCTET_STREAM } from '../../headers
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendContent, Metadata, SendBody, NonEmptyArray } from '../../defs.js' */
+/** @import { SendContent, SendContext, Metadata, SendBody, NonEmptyArray } from '../../defs.js' */
 /** @import { ContentRangeDirective } from '../../headers/content-range.js' */
 
 const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
@@ -21,12 +21,14 @@ const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
  * @param {ServerHttp2Stream} stream
  * @param {NonEmptyArray<PartialBytes>|PartialBytes} objs
  * @param {Omit<SendContent, 'rangeDirective'>} content
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendPartialContent(stream, objs, content, meta) {
+export function sendPartialContent(stream, objs, content, context, meta) {
 	const {
 		contentType,
 		contentLength,
+		contentDisposition,
 		encoding,
 		etag,
 		lastModified,
@@ -49,6 +51,7 @@ export function sendPartialContent(stream, objs, content, meta) {
 			HTTP_STATUS_PARTIAL_CONTENT,
 			multipartContentType,
 			obj,
+			contentDisposition,
 			undefined,
 			undefined,
 			encoding,
@@ -58,6 +61,7 @@ export function sendPartialContent(stream, objs, content, meta) {
 			cacheControl,
 			acceptRanges,
 			supportedQueryTypes,
+			context,
 			meta)
 
 		return
@@ -65,5 +69,5 @@ export function sendPartialContent(stream, objs, content, meta) {
 
 	// single range, send as regular object
 	const obj = Array.isArray(objs) ? objs[0] : objs
-	send_bytes(stream, HTTP_STATUS_PARTIAL_CONTENT, contentType, obj.obj, obj.range, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
+	send_bytes(stream, HTTP_STATUS_PARTIAL_CONTENT, contentType, obj.obj, contentDisposition, obj.range, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
 }

@@ -16,7 +16,7 @@ describe('Response', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
 			const location = undefined
-			Response.accepted(stream, location, structuredClone(DEFAULT_META))
+			Response.accepted(stream, location, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -38,7 +38,7 @@ describe('Response', () => {
 		it('should handle basic values (location string)', () => {
 			const stream = new MockHttp2Stream()
 			const location = 'over-here'
-			Response.accepted(stream, location, structuredClone(DEFAULT_META))
+			Response.accepted(stream, location, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -60,7 +60,7 @@ describe('Response', () => {
 		it('should handle basic values (location url)', () => {
 			const stream = new MockHttp2Stream()
 			const location = new URL('/page', 'https://host/')
-			Response.accepted(stream, location, structuredClone(DEFAULT_META))
+			Response.accepted(stream, location, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

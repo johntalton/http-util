@@ -13,7 +13,7 @@ import { coerceSupportedTypes } from '../header-util.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendInfo, Metadata } from '../../defs.js' */
+/** @import { SendInfo, SendContext, Metadata } from '../../defs.js' */
 
 const {
 	HTTP2_HEADER_CONTENT_TYPE,
@@ -32,9 +32,10 @@ const { HTTP_STATUS_OK } = http2.constants
 /**
  * @param {ServerHttp2Stream} stream
  * @param {Pick<SendInfo, 'supportedMethods' | 'supportedTypes' | 'supportedQueryTypes' | 'acceptRanges'>} info
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendPreflight(stream, info, meta) {
+export function sendPreflight(stream, info, context, meta) {
 	const {
 		supportedMethods,
 		supportedTypes,
@@ -70,5 +71,5 @@ export function sendPreflight(stream, info, meta) {
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
 			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA) // todo should empty array return undef
 			// Access-Control-Allow-Credentials
-		}, exposedHeaders, meta)
+		}, exposedHeaders, context, meta)
 }

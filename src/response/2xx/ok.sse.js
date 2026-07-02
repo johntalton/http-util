@@ -26,6 +26,7 @@ export function sendSSE(stream, meta) {
 	stream.respond({
 		...coreHeaders(status, SSE_MIME, [], meta),
 		...performanceHeaders(meta)
+		// todo cache-control: no-cache
 
 		// [HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true'
 	})

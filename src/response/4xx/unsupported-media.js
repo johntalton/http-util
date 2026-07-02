@@ -10,7 +10,7 @@ import { coerceSupportedTypes } from '../header-util.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendInfo, Metadata } from '../../defs.js' */
+/** @import { SendContext, SendInfo, Metadata } from '../../defs.js' */
 
 const { HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE } = http2.constants
 
@@ -18,9 +18,10 @@ const { HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE } = http2.constants
  * @param {ServerHttp2Stream} stream
  * @param {string|undefined} method
  * @param {Pick<SendInfo, 'supportedTypes' | 'supportedQueryTypes'>} info
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendUnsupportedMediaType(stream, method, info, meta) {
+export function sendUnsupportedMediaType(stream, method, info, context, meta) {
 	const {
 		supportedQueryTypes,
 		supportedTypes,
@@ -39,5 +40,5 @@ export function sendUnsupportedMediaType(stream, method, info, meta) {
 			[HTTP_HEADER_ACCEPT_POST]: supportedTypesRecord.post?.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP_HEADER_ACCEPT_PATCH]: supportedTypesRecord.patch?.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA)
-		}, exposedHeaders, meta)
+		}, exposedHeaders, context, meta)
 }

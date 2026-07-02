@@ -9,7 +9,7 @@ import {
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendInfo, Metadata } from '../../defs.js' */
+/** @import { SendContext, SendInfo, Metadata } from '../../defs.js' */
 
 const {
 	HTTP2_HEADER_RETRY_AFTER
@@ -20,9 +20,10 @@ const { HTTP_STATUS_TOO_MANY_REQUESTS } = http2.constants
 /**
  * @param {ServerHttp2Stream} stream
  * @param {Pick<SendInfo, 'limitInfo' | 'policies'>} info
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendTooManyRequests(stream, info, meta) {
+export function sendTooManyRequests(stream, info, context, meta) {
 	const {
 		limitInfo,
 		policies
@@ -38,5 +39,6 @@ export function sendTooManyRequests(stream, info, meta) {
 			HTTP_HEADER_RATE_LIMIT,
 			HTTP_HEADER_RATE_LIMIT_POLICY
 		],
+		context,
 		meta)
 }

@@ -19,6 +19,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const obj = undefined
 			Response.encoded(stream, obj, {
+				contentDisposition: undefined,
 				contentType: undefined,
 				encoding: undefined,
 				age: undefined,
@@ -27,7 +28,7 @@ describe('Response', () => {
 				cacheControl: {}
 			}, {
 				supportedQueryTypes: undefined
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 
 			assert.equal(stream.headersSent, true)
@@ -43,6 +44,7 @@ describe('Response', () => {
 				'accept-query': undefined,
 				'accept-ranges': undefined,
 				'cache-control': undefined,
+				'content-disposition': undefined,
 				'content-encoding': undefined,
 				'content-length': undefined,
 				'content-range': undefined,
@@ -61,6 +63,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const obj = undefined
 			Response.encoded(stream, obj, {
+				contentDisposition: undefined,
 				contentType: undefined,
 				encoding: 'identity',
 				age: undefined,
@@ -69,7 +72,7 @@ describe('Response', () => {
 				cacheControl: {}
 			}, {
 				supportedQueryTypes: undefined
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 
 			assert.equal(stream.headersSent, true)
@@ -85,6 +88,7 @@ describe('Response', () => {
 				'accept-query': undefined,
 				'accept-ranges': undefined,
 				'cache-control': undefined,
+				'content-disposition': undefined,
 				'content-encoding': 'identity',
 				'content-length': undefined,
 				'content-range': undefined,
@@ -103,6 +107,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const obj = undefined
 			Response.encoded(stream, obj, {
+				contentDisposition: undefined,
 				contentType: undefined,
 				encoding: 'gzip',
 				age: undefined,
@@ -111,7 +116,7 @@ describe('Response', () => {
 				cacheControl: {}
 			}, {
 				supportedQueryTypes: undefined
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 
 			assert.equal(stream.headersSent, true)
@@ -127,6 +132,7 @@ describe('Response', () => {
 				'accept-query': undefined,
 				'accept-ranges': undefined,
 				'cache-control': undefined,
+				'content-disposition': undefined,
 				'content-encoding': 'gzip',
 				'content-length': undefined,
 				'content-range': undefined,
@@ -145,6 +151,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const obj = Buffer.from('TESTING')
 			Response.encoded(stream, obj, {
+				contentDisposition: undefined,
 				contentType: undefined,
 				encoding: 'identity',
 				age: undefined,
@@ -153,7 +160,7 @@ describe('Response', () => {
 				cacheControl: {}
 			}, {
 				supportedQueryTypes: undefined
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 
 			assert.equal(stream.headersSent, true)
@@ -169,6 +176,7 @@ describe('Response', () => {
 				'accept-query': undefined,
 				'accept-ranges': undefined,
 				'cache-control': undefined,
+				'content-disposition': undefined,
 				'content-encoding': 'identity',
 				'content-length': undefined,
 				'content-range': undefined,
@@ -186,6 +194,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			const obj = Buffer.from('TESTING')
 			Response.encoded(stream, obj, {
+				contentDisposition: undefined,
 				contentType: undefined,
 				encoding: 'br',
 				age: undefined,
@@ -194,7 +203,7 @@ describe('Response', () => {
 				cacheControl: {}
 			}, {
 				supportedQueryTypes: undefined
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 
 			assert.equal(stream.headersSent, true)

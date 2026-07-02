@@ -6,6 +6,19 @@
 /** @import { CacheControlOptions } from './headers/cache-control.js' */
 /** @import { ContentRangeDirective } from './headers/content-range.js' */
 /** @import { RateLimitPolicyInfo, RateLimitInfo } from './headers/rate-limit.js' */
+/** @import { DispositionInput } from './headers/content-disposition.js' */
+/** @import { CSPPolicy } from './headers/content-security-policy.js'  */
+/** @import { COEPItem } from './headers/cross-origin-embedder-policy.js'  */
+/** @import { COOPDirective } from './headers/cross-origin-opener-policy.js'  */
+/** @import { CORPDirective } from './headers/cross-origin-resource-policy.js'  */
+/** @import { PermissionsPolicyItem } from './headers/permissions-policy.js'  */
+/** @import { ReferrerPolicyDirective } from './headers/referrer-policy.js'  */
+/** @import { IntegrityPolicyInput } from './headers/integrity-policy.js'  */
+/** @import { ReportingEndpointsItem } from './headers/reporting-endpoints.js'  */
+/** @import { SiteDataItem } from './headers/clear-site-data.js'  */
+/** @import { ClientHintsDirective } from './headers/client-hints.js'  */
+/** @import { LinkItem } from './headers/link.js'  */
+/** @import { AppliedPreferencesInput } from './headers/preference.js'  */
 
 /**
  * @template T
@@ -38,6 +51,7 @@
  * @typedef {Object} SendContent
  * @property {string|undefined} contentType
  * @property {number|undefined} contentLength
+ * @property {DispositionInput|undefined} contentDisposition
  * @property {string|undefined} encoding
  * @property {EtagItem|undefined} etag
  * @property {IMFFixDateInput|string|undefined} lastModified
@@ -74,6 +88,29 @@
  * @property {number|undefined} retryAfter
  */
 
+/** @typedef {{ reportOnly?: boolean|undefined }} ReportOnlyPolicy */
+
+/**
+ * @typedef {Object} ClientPolicyMap
+ * @property {Array<CSPPolicy & ReportOnlyPolicy>|(CSPPolicy & ReportOnlyPolicy)|undefined} [CSP] Content Security Policy
+ * @property {(COEPItem & ReportOnlyPolicy)|undefined} [COEP] Cross Origin Embedder Policy
+ * @property {COOPDirective|undefined} [COOP] Cross Origin Opener Policy
+ * @property {CORPDirective|undefined} [CORP] Cross Origin Resource Policy
+ * @property {Array<PermissionsPolicyItem & ReportOnlyPolicy>|(PermissionsPolicyItem & ReportOnlyPolicy)|undefined} [permissions] Permissions Policy
+ * @property {ReferrerPolicyDirective|undefined} [referrer] Referrer Policy
+ * @property {(IntegrityPolicyInput & ReportOnlyPolicy)|undefined} [integrity] Integrity Policy
+ * @property {ReportingEndpointsItem|undefined} [reportingEndpoints]
+ */
+
+/**
+ * @typedef {Object} SendContext
+ * @property {SiteDataItem|undefined} [clearSiteData]
+ * @property {Array<ClientHintsDirective>|undefined} [acceptClientHints]
+ * @property {Array<LinkItem>|LinkItem|undefined} [links]
+ * @property {ClientPolicyMap|undefined} [policy]
+ * @property {AppliedPreferencesInput|undefined} [appliedPreferences]
+ */
+
 /** @type {''} */
 export const EMPTY = ''
 
@@ -91,6 +128,20 @@ export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
 export const HTTP_HEADER_ACCEPT_PATCH = 'accept-patch'
 export const HTTP_HEADER_CLEAR_SITE_DATE = 'clear-site-data'
 export const HTTP_HEADER_PREFERENCE_APPLIED = 'preference-applied'
+export const HTTP_HEADER_ACCEPT_CLIENT_HINTS = 'accept-ch'
+export const HTTP_HEADER_CONTENT_SECURITY_POLICY = 'content-security-policy'
+export const HTTP_HEADER_CROSS_ORIGIN_OPENER_POLICY = 'cross-origin-opener-policy'
+export const HTTP_HEADER_CROSS_ORIGIN_RESOURCE_POLICY = 'cross-origin-resource-policy'
+export const HTTP_HEADER_REFERRER_POLICY = 'referrer-policy'
+export const HTTP_HEADER_CONTENT_SECURITY_POLICY_REPORT_ONLY = 'content-security-policy-report-only'
+export const HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY = 'cross-origin-embedder-policy'
+export const HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY_REPORT_ONLY = 'cross-origin-embedder-policy-report-only'
+export const HTTP_HEADER_PERMISSIONS_POLICY = 'permissions-policy'
+export const HTTP_HEADER_PERMISSIONS_POLICY_REPORT_ONLY = 'permissions-policy-report-only'
+export const HTTP_HEADER_INTEGRITY_POLICY = 'integrity-policy'
+export const HTTP_HEADER_INTEGRITY_POLICY_REPORT_ONLY = 'integrity-policy-report-only'
+export const HTTP_HEADER_REPORTING_ENDPOINTS = 'reporting-endpoints'
+
 
 export const HTTP_METHOD_QUERY = 'QUERY'
 export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'

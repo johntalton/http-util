@@ -21,7 +21,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -50,7 +50,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -79,7 +79,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -108,7 +108,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -137,7 +137,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -166,7 +166,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -197,7 +197,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -228,7 +228,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -260,7 +260,7 @@ describe('Response', () => {
 			Response.unsupportedMediaType(stream, method, {
 				supportedTypes,
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

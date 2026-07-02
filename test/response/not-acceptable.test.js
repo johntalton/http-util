@@ -18,7 +18,7 @@ describe('Response', () => {
 			const stream = new MockHttp2Stream()
 			/** @type {string[]} */
 			const acceptableTypes = []
-			Response.notAcceptable(stream, { acceptableTypes }, structuredClone(DEFAULT_META))
+			Response.notAcceptable(stream, { acceptableTypes }, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -40,7 +40,7 @@ describe('Response', () => {
 		it('should handle basic values (acceptable type non-empty)', () => {
 			const stream = new MockHttp2Stream()
 			const acceptableTypes = [ 'text/plain', 'application/json' ]
-			Response.notAcceptable(stream, { acceptableTypes }, structuredClone(DEFAULT_META))
+			Response.notAcceptable(stream, { acceptableTypes }, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -62,7 +62,7 @@ describe('Response', () => {
 		it('should handle basic values (acceptable type singular)', () => {
 			const stream = new MockHttp2Stream()
 			const acceptableTypes = 'application/json'
-			Response.notAcceptable(stream, { acceptableTypes }, structuredClone(DEFAULT_META))
+			Response.notAcceptable(stream, { acceptableTypes }, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {

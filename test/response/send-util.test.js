@@ -22,7 +22,7 @@ describe('send_util', () => {
 		it('should send with no body', () => {
 			const stream = new MockHttp2Stream()
 			const message = undefined
-			send_no_body(stream, 200, {}, [], structuredClone(DEFAULT_META))
+			send_no_body(stream, 200, {}, [], {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.sentHeaders[':status'], 200)
 			assert.equal(stream.sentHeaders['server'], 'TEST-SERVER-v1')
@@ -36,7 +36,7 @@ describe('send_util', () => {
 		it('should send with default message', () => {
 			const stream = new MockHttp2Stream()
 			const message = undefined
-			send_error(stream, 500, message, undefined, structuredClone(DEFAULT_META))
+			send_error(stream, 500, message, undefined, {}, structuredClone(DEFAULT_META))
 
 			const result = stream.read()
 			const decoder = new TextDecoder('utf-8')
@@ -47,7 +47,7 @@ describe('send_util', () => {
 		it('should send with message', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'A Message'
-			send_error(stream, 500, message, undefined, structuredClone(DEFAULT_META))
+			send_error(stream, 500, message, undefined, {}, structuredClone(DEFAULT_META))
 
 			const result = stream.read()
 			const decoder = new TextDecoder('utf-8')
@@ -59,7 +59,7 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'A Message'
 			const retryAfter = 42
-			send_error(stream, 500, message, retryAfter, structuredClone(DEFAULT_META))
+			send_error(stream, 500, message, retryAfter, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.sentHeaders[':status'], 500)
 			assert.equal(stream.sentHeaders['retry-after'], '42')
@@ -77,7 +77,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = undefined
 			const encoding = 'br'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -90,7 +91,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = 'A STRING'
 			const encoding = undefined
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], undefined)
@@ -104,7 +106,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = 'A STRING'
 			const encoding = 'identity'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -118,7 +121,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = 'A STRING'
 			const encoding = 'br'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -134,7 +138,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = Buffer.from('A Buffer', 'utf-8')
 			const encoding = 'br'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -151,7 +156,8 @@ describe('send_util', () => {
 			const encoder = new TextEncoder()
 			const body = encoder.encode('An ArrayBuffer').buffer
 			const encoding = 'br'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -168,7 +174,8 @@ describe('send_util', () => {
 			const encoder = new TextEncoder()
 			const body = encoder.encode('A Uint8Array')
 			const encoding = 'zstd'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'zstd')
@@ -184,7 +191,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = ReadableStream.from('A ReadableStream<string>')
 			const encoding = 'identity'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -198,7 +206,8 @@ describe('send_util', () => {
 			const encoder = new TextEncoder()
 			const body = ReadableStream.from([ Buffer.from('A ReadableStream<Buffer>') ])
 			const encoding = 'identity'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -212,7 +221,8 @@ describe('send_util', () => {
 			const encoder = new TextEncoder()
 			const body = ReadableStream.from('ReadableStream<encoded string>')
 			const encoding = 'zstd'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'zstd')
@@ -228,7 +238,8 @@ describe('send_util', () => {
 			const encoder = new TextEncoder()
 			const body = ReadableStream.from([ Buffer.from('ReadableStream<encoded Buffer>') ])
 			const encoding = 'gzip'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'gzip')
@@ -244,7 +255,8 @@ describe('send_util', () => {
 			const encoder = new TextEncoder()
 			const body = Readable.from('Readable string')
 			const encoding = 'identity'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -258,7 +270,8 @@ describe('send_util', () => {
 			const encoder = new TextEncoder()
 			const body = Readable.from('Readable brotli string')
 			const encoding = 'br'
-			send_encoded(stream, 200, undefined, body, encoding, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -275,7 +288,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = 'TEST'
 			const contentLength = NaN
-			send_bytes(stream, 200, 'application/json', body, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-length'], undefined)
@@ -285,7 +299,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = 'TEST'
 			const contentLength = body.length
-			send_bytes(stream, 200, 'application/json', body, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-length'], '4')
@@ -295,7 +310,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = 'TEST'
 			const supportedQueryTypes = [ 'text/plain', 'application/json' ]
-			send_bytes(stream, 200, 'application/json', body, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, supportedQueryTypes, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, supportedQueryTypes, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-length'], undefined)
@@ -306,7 +322,8 @@ describe('send_util', () => {
 			const stream = new MockHttp2Stream()
 			const body = 'TEST'
 			const age = 42
-			send_bytes(stream, 200, 'application/json', body, undefined, undefined, undefined, undefined, undefined, age, undefined, undefined, undefined, structuredClone(DEFAULT_META))
+			const contentDisposition = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, undefined, undefined, undefined, undefined, age, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['age'], '42')
@@ -317,7 +334,7 @@ describe('send_util', () => {
 		it('should return without sending if stream is undefined', () => {
 			const stream = undefined
 			assert.doesNotThrow(() => {
-				send(stream, 200, {}, [], undefined, undefined, structuredClone(DEFAULT_META))
+				send(stream, 200, {}, [], undefined, undefined, {}, structuredClone(DEFAULT_META))
 			})
 		})
 
@@ -326,7 +343,7 @@ describe('send_util', () => {
 			stream.close('induced')
 
 			const obj = 'NEVER SENT'
-			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
+			send(stream, 200, {}, [], undefined, obj, {}, structuredClone(DEFAULT_META))
 			assert.deepEqual(stream.sentHeaders, {})
 			assert.equal(stream.closed, true)
 
@@ -340,7 +357,7 @@ describe('send_util', () => {
 				pull() { throw new Error('induced') }
 			})
 
-			send(stream, 200, {}, [], undefined, obj, structuredClone(DEFAULT_META))
+			send(stream, 200, {}, [], undefined, obj, {}, structuredClone(DEFAULT_META))
 
 			// todo what can we assert to make sure that happend
 			//  does the source stream get closed? or aborted?

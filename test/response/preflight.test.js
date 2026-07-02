@@ -24,7 +24,7 @@ describe('Response', () => {
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: undefined
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -60,7 +60,7 @@ describe('Response', () => {
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: undefined
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -96,7 +96,7 @@ describe('Response', () => {
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: 'text/plain'
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['accept-post'], 'text/plain')
@@ -115,7 +115,7 @@ describe('Response', () => {
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: 'text/plain'
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['accept-post'], undefined)
@@ -134,7 +134,7 @@ describe('Response', () => {
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: [ 'text/plain' ]
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['accept-post'], undefined)
@@ -153,7 +153,7 @@ describe('Response', () => {
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: [ 'text/plain', 'application/json' ]
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['accept-post'], undefined)
@@ -172,7 +172,7 @@ describe('Response', () => {
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: [ 'text/plain' ]
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['accept-post'], undefined)
@@ -195,7 +195,7 @@ describe('Response', () => {
 					patch: 'text/plain',
 					post: 'application/json'
 				}
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['accept-post'], 'application/json')

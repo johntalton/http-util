@@ -15,6 +15,7 @@ describe('Response', () => {
 	describe('json', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
+			const contentDisposition = undefined
 			const encoding = undefined
 			const etag = undefined
 			const lastModified = undefined
@@ -23,6 +24,7 @@ describe('Response', () => {
 			const supportedQueryTypes = undefined
 			const obj = { test: true, param: 42 }
 			Response.json(stream, obj, {
+				contentDisposition,
 				encoding,
 				etag,
 				lastModified,
@@ -30,7 +32,7 @@ describe('Response', () => {
 				cacheControl
 			}, {
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -45,6 +47,7 @@ describe('Response', () => {
 				'accept-query': undefined,
 				'accept-ranges': undefined,
 				'cache-control': undefined,
+				'content-disposition': undefined,
 				'content-encoding': undefined,
 				'content-length': undefined,
 				'content-range': undefined,
@@ -65,6 +68,7 @@ describe('Response', () => {
 
 			stream.close()
 
+			const contentDisposition = undefined
 			const encoding = undefined
 			const etag = undefined
 			const lastModified = undefined
@@ -73,6 +77,7 @@ describe('Response', () => {
 			const supportedQueryTypes = undefined
 			const obj = { test: true, param: 42 }
 			Response.json(stream, obj, {
+				contentDisposition,
 				encoding,
 				etag,
 				lastModified,
@@ -80,7 +85,7 @@ describe('Response', () => {
 				cacheControl
 			}, {
 				supportedQueryTypes
-			}, structuredClone(DEFAULT_META))
+			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, false)
 			assert.deepEqual(stream.sentHeaders, {})

@@ -6,9 +6,11 @@ import zlib from 'node:zlib'
 import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY } from '../defs.js'
 import { CacheControl } from '../headers/cache-control.js'
 import { Conditional } from '../headers/conditional.js'
+import { ContentDisposition } from '../headers/content-disposition.js'
 import { ContentRange } from '../headers/content-range.js'
 import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
 import {
+	contextHeaders,
 	coreHeaders,
 	customHeaders,
 	legacyHeaders,
@@ -18,10 +20,11 @@ import {
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { InputType, BrotliOptions, ZlibOptions, ZstdOptions } from 'node:zlib' */
-/** @import { AcceptRangeUnits, Metadata, SendBody } from '../defs.js' */
+/** @import { AcceptRangeUnits, Metadata, SendContext, SendBody } from '../defs.js' */
 /** @import { EtagItem, IMFFixDateInput } from '../headers/conditional.js' */
 /** @import { CacheControlOptions } from '../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
+/** @import { DispositionInput } from '../headers/content-disposition.js' */
 
 const {
 	HTTP_STATUS_INTERNAL_SERVER_ERROR,
@@ -39,6 +42,7 @@ const {
 	HTTP2_HEADER_ACCEPT_RANGES,
 	HTTP2_HEADER_CONTENT_RANGE,
 	HTTP2_HEADER_CONTENT_LENGTH,
+	HTTP2_HEADER_CONTENT_DISPOSITION,
 	HTTP2_HEADER_ACCEPT,
 	HTTP2_HEADER_ACCEPT_ENCODING,
 	HTTP2_HEADER_RANGE,
@@ -50,10 +54,11 @@ const {
  * @param {number} status
  * @param {OutgoingHttpHeaders} headers
  * @param {Array<string>} exposedHeaders
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send_no_body(stream, status, headers, exposedHeaders, meta) {
-	send(stream, status, headers, exposedHeaders, undefined, undefined, meta)
+export function send_no_body(stream, status, headers, exposedHeaders, context, meta) {
+	send(stream, status, headers, exposedHeaders, undefined, undefined, context, meta)
 }
 
 
@@ -62,9 +67,10 @@ export function send_no_body(stream, status, headers, exposedHeaders, meta) {
  * @param {number} status
  * @param {string|undefined} message
  * @param {number|undefined} retryAfter
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send_error(stream, status, message, retryAfter, meta) {
+export function send_error(stream, status, message, retryAfter, context, meta) {
 	// Assert.isString(message, 'message') if not undefined
 
 	const obj = JSON.stringify({
@@ -75,7 +81,7 @@ export function send_error(stream, status, message, retryAfter, meta) {
 
 	send(stream, status, {
 		[HTTP2_HEADER_RETRY_AFTER]: Number.isInteger(retryAfter) ? `${retryAfter}` : undefined
-	}, exposedHeaders, CONTENT_TYPE_JSON, obj, meta) // todo should this be plain text
+	}, exposedHeaders, CONTENT_TYPE_JSON, obj, context, meta) // todo should this be plain text
 }
 
 /** @typedef { (data: InputType) => Buffer<ArrayBuffer> } EncoderFun */
@@ -137,6 +143,7 @@ export function lookupEncoder(encoding, listing) {
  * @param {number} status
  * @param {string|undefined} contentType
  * @param {SendBody|undefined} body
+ * @param {DispositionInput|undefined} contentDisposition
  * @param {string|undefined} encoding
  * @param {EtagItem|undefined} etag
  * @param {IMFFixDateInput|string|undefined} lastModified
@@ -144,13 +151,14 @@ export function lookupEncoder(encoding, listing) {
  * @param {CacheControlOptions|undefined} cacheControl
  * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send_encoded(stream, status, contentType, body, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+export function send_encoded(stream, status, contentType, body, contentDisposition, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta) {
 	// Assert.isString(encoding) if not undefined
 	if(body === undefined) {
 		meta.performance.push({ name: 'encode', duration: 0 })
-		send_bytes(stream, status, contentType, body, undefined, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
+		send_bytes(stream, status, contentType, body, contentDisposition, undefined, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
 		return
 	}
 
@@ -159,7 +167,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
 	if((obj instanceof ReadableStream) || (obj instanceof Readable)) {
 		const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding,	 ENCODER_STREAM_MAP)
 		const encodedStream = (encoderFn === undefined) ? obj : encoderFn((obj instanceof ReadableStream) ? Readable.fromWeb(obj) : obj)
-		send_bytes(stream, status, contentType, encodedStream, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
+		send_bytes(stream, status, contentType, encodedStream, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
 		return
 	}
 
@@ -172,7 +180,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
 
-	send_bytes(stream, status, contentType, encodedData, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta)
+	send_bytes(stream, status, contentType, encodedData, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
 }
 
 /**
@@ -180,6 +188,7 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
  * @param {number} status
  * @param {string|undefined} contentType
  * @param {SendBody|undefined} obj
+ * @param {DispositionInput|undefined} contentDisposition
  * @param {ContentRangeDirective|undefined} range
  * @param {number|undefined} contentLength
  * @param {string|undefined} encoding
@@ -189,9 +198,10 @@ export function send_encoded(stream, status, contentType, body, encoding, etag, 
  * @param {CacheControlOptions|undefined} cacheControl
  * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send_bytes(stream, status, contentType, obj, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, meta) {
+export function send_bytes(stream, status, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta) {
 	// todo Assert.isString(encoding) if not undefined
 	const contentLen = Number.isInteger(contentLength) ? `${contentLength}` : undefined
 	const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
@@ -215,10 +225,11 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
 			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified),
 			[HTTP2_HEADER_AGE]: Number.isInteger(age) ? `${age}` : undefined,
 			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
+			[HTTP2_HEADER_CONTENT_DISPOSITION]: ContentDisposition.encode(contentDisposition),
 			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
 			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA)
-		}, exposedHeaders, contentType, obj, meta)
+		}, exposedHeaders, contentType, obj, context, meta)
 }
 
 /**
@@ -228,9 +239,10 @@ export function send_bytes(stream, status, contentType, obj, range, contentLengt
  * @param {Array<string>} exposedHeaders
  * @param {string|undefined} contentType
  * @param {SendBody|undefined} body
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send(stream, status, headers, exposedHeaders, contentType, body, meta) {
+export function send(stream, status, headers, exposedHeaders, contentType, body, context, meta) {
 	// todo Assert.isString(contentType) if not undefined
 	// if(status >= 400) { console.warn(status, body) }
 	if(status === HTTP_STATUS_UNAUTHORIZED) { console.warn(status, body) }
@@ -255,6 +267,7 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 		stream.respond({
 			...legacyHeaders(false),
 			...coreHeaders(status, contentType, exposed, meta),
+			...contextHeaders(context),
 			...performanceHeaders(meta),
 			...headers,
 			...custom

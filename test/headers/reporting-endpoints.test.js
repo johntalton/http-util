@@ -39,7 +39,7 @@ describe('ReportingEndpoints', () => {
 
 		it('should handle a empty url string', () => {
 			assert.throws(() => ReportingEndpoints.encode({
-				name: 'FAKE',
+				name: ReportingEndpoints.name('FAKE'),
 				url: ''
 			}), {
 				name: 'TypeError',
@@ -49,7 +49,7 @@ describe('ReportingEndpoints', () => {
 
 		it('should handle valid item', () => {
 			const result = ReportingEndpoints.encode({
-				name: 'FAKE-1',
+				name: ReportingEndpoints.name('FAKE-1'),
 				url: 'https://valid.intenral/'
 			})
 			assert.equal(result, 'FAKE-1="https://valid.intenral/"')
@@ -57,7 +57,7 @@ describe('ReportingEndpoints', () => {
 
 		it('should handle valid item (via URL)', () => {
 			const result = ReportingEndpoints.encode({
-				name: 'FAKE-1',
+				name: ReportingEndpoints.name('FAKE-1'),
 				url: new URL('https://valid.intenral/path/')
 			})
 			assert.equal(result, 'FAKE-1="https://valid.intenral/path/"')
@@ -65,7 +65,7 @@ describe('ReportingEndpoints', () => {
 
 		it('should handle valid single item array', () => {
 			const result = ReportingEndpoints.encode([ {
-				name: 'FAKE-1',
+				name: ReportingEndpoints.name('FAKE-1'),
 				url: 'https://reporting.internal'
 			} ])
 			assert.equal(result, 'FAKE-1="https://reporting.internal/"')
@@ -73,10 +73,10 @@ describe('ReportingEndpoints', () => {
 
 		it('should handle multiple valid item array', () => {
 			const result = ReportingEndpoints.encode([ {
-				name: 'FAKE-1',
+				name: ReportingEndpoints.name('FAKE-1'),
 				url: 'https://fake1.internal'
 			}, {
-				name: 'FAKE-2',
+				name: ReportingEndpoints.name('FAKE-2'),
 				url: new URL('https://fake2.internal/path/file')
 			} ])
 			assert.equal(result, 'FAKE-1="https://fake1.internal/", FAKE-2="https://fake2.internal/path/file"')
@@ -84,14 +84,35 @@ describe('ReportingEndpoints', () => {
 
 		it('should handle multiple valid item array skipping invalid', () => {
 			const result = ReportingEndpoints.encode([ {
-				name: 'FAKE-1',
+				name: ReportingEndpoints.name('FAKE-1'),
 				// @ts-ignore
 				url: undefined
 			}, {
-				name: 'FAKE-2',
+				name: ReportingEndpoints.name('FAKE-2'),
 				url: new URL('https://fake2.internal/path/file')
 			} ])
 			assert.equal(result, 'FAKE-2="https://fake2.internal/path/file"')
+		})
+	})
+
+	describe('name', () => {
+		it('should throw undefined', () => {
+			assert.throws(() => ReportingEndpoints.name(undefined), {
+				name: 'TypeError',
+				message: 'Invalid Reporting Endpoint Name'
+			})
+		})
+
+		it('should throw empty', () => {
+			assert.throws(() => ReportingEndpoints.name(''), {
+				name: 'TypeError',
+				message: 'Invalid Reporting Endpoint Name'
+			})
+		})
+
+		it('should handle valid name', () => {
+			const result = ReportingEndpoints.name('Some-Name#1')
+			assert.equal(result, 'Some-Name#1')
 		})
 	})
 })

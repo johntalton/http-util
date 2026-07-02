@@ -5,8 +5,13 @@ import {
 	coreHeaders,
 	customHeaders,
 	performanceHeaders,
-	coerceSupportedTypes
+	coerceSupportedTypes,
+	contextHeaders,
+	policyHeaders,
+	legacyHeaders
 } from '@johntalton/http-util/response'
+
+import { ReportingEndpoints } from '@johntalton/http-util/headers'
 
 /** @import { Metadata } from '@johntalton/http-util/response' */
 
@@ -205,6 +210,119 @@ describe('Header Util', () => {
 				put: [ 'TYPE/A' ],
 				post: undefined,
 				patch: [ 'TYPE/B' ]
+			})
+		})
+	})
+
+	describe('contextHeaders', () => {
+		it('should handle undefined', () => {
+			const result = contextHeaders(undefined)
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle empty set', () => {
+			const result = contextHeaders({})
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle basics', () => {
+			const result = contextHeaders({
+				acceptClientHints: [ 'Save-Data', 'RTT' ],
+				appliedPreferences: { wait: 42, handling: 'lenient', representation: 'minimal' },
+				clearSiteData: '*',
+				links: [ { relation: 'test', url: './test' } ]
+			})
+			assert.deepEqual(result, {
+				'accept-ch': 'Save-Data, RTT',
+				'preference-applied': 'return=minimal,handling=lenient,wait=42',
+				'clear-site-data': '*',
+				'link': '<./test>; rel="test"'
+			})
+		})
+	})
+
+	describe('policyHeaders', () => {
+		it('should handle undefined', () => {
+			const result = policyHeaders(undefined)
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle empty set', () => {
+			const result = policyHeaders({})
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle integrity only reportOnly or enforced (enforced)', () => {
+			const result = policyHeaders({
+				integrity: {
+					reportOnly: false,
+					blockedDestinations: 'script',
+					endpoints: ReportingEndpoints.name('fake')
+				}
+			})
+			assert.deepEqual(result, {
+				'integrity-policy': 'blocked-destinations=(script),endpoints=(fake)'
+			})
+		})
+
+		it('should handle integrity only reportOnly or enforced (reportOnly)', () => {
+			const result = policyHeaders({
+				integrity: {
+					reportOnly: true,
+					blockedDestinations: 'script',
+					endpoints: ReportingEndpoints.name('fake')
+				}
+			})
+			assert.deepEqual(result, {
+				'integrity-policy-report-only': 'blocked-destinations=(script),endpoints=(fake)'
+			})
+		})
+
+		it('should handle split permission between reportOnly and enforced headers', () => {
+			const result = policyHeaders({
+				permissions: {
+					directive: 'gamepad',
+					allowList: '()',
+					reportOnly: true
+				}
+			})
+			assert.deepEqual(result, {
+				'permissions-policy-report-only': 'gamepad=()'
+			})
+		})
+
+		it('should handle split CSP between reportOnly and enforce headers', () => {
+			const result = policyHeaders({
+				CSP: [{
+					defaultSrc: 'self'
+				}, {
+					imgSrc: 'blob:',
+					reportOnly: true
+				}]
+			})
+			assert.deepEqual(result, {
+				'content-security-policy': 'default-src \'self\'',
+				'content-security-policy-report-only': 'img-src \'blob:\''
+			})
+		})
+	})
+
+	describe('legacyHeaders', () => {
+		it('should handle undefined', () => {
+			const result = legacyHeaders(undefined)
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle false', () => {
+			const result = legacyHeaders(false)
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle true', () => {
+			const result = legacyHeaders(true)
+			assert.deepEqual(result, {
+				'x-content-type-options': 'nosniff',
+				'x-xss-protection': '0'
 			})
 		})
 	})

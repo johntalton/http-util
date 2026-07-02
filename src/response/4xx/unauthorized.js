@@ -4,7 +4,7 @@ import { Challenge } from '../../headers/www-authenticate.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { SendContext, Metadata } from '../../defs.js' */
 /** @import { ChallengeItem } from '../../headers/www-authenticate.js' */
 
 const {
@@ -16,10 +16,11 @@ const { HTTP_STATUS_UNAUTHORIZED } = http2.constants
 /**
  * @param {ServerHttp2Stream} stream
  * @param {Array<ChallengeItem>|undefined} challenge
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendUnauthorized(stream, challenge, meta) {
+export function sendUnauthorized(stream, challenge, context, meta) {
 	send_no_body(stream, HTTP_STATUS_UNAUTHORIZED, {
 			[HTTP2_HEADER_WWW_AUTHENTICATE]: Challenge.encode(challenge),
-		}, [ HTTP2_HEADER_WWW_AUTHENTICATE ], meta)
+		}, [ HTTP2_HEADER_WWW_AUTHENTICATE ], context, meta)
 }

@@ -3,14 +3,15 @@ import http2 from 'node:http2'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { Metadata } from '../../defs.js' */
+/** @import { SendContext, Metadata } from '../../defs.js' */
 
 const { HTTP_STATUS_GONE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
+ * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendGone(stream, meta) {
-	send_no_body(stream, HTTP_STATUS_GONE, {}, [], meta)
+export function sendGone(stream, context, meta) {
+	send_no_body(stream, HTTP_STATUS_GONE, {}, [], context, meta)
 }
