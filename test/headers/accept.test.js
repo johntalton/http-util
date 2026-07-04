@@ -3,7 +3,6 @@ import { describe, it } from 'node:test'
 
 import { Accept } from '@johntalton/http-util/headers'
 
-
 const ITEM_JSON = {
 	name: 'application/json;charset=utf-8',
 	mimetype: 'application/json',
@@ -43,8 +42,6 @@ const ITEM_ANY = {
 	subtype: '*',
 	parameters: new Map([])
 }
-
-
 
 describe('Accept', () => {
 	describe('compare', () => {

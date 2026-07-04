@@ -34,8 +34,6 @@ import {
 /** @typedef {string & { readonly __brand: unique symbol }} CSPHostSource */
 
 
-
-
 /** @typedef {Extract<CSPSourceExpression, 'self'>| CSPSchemeSource | CSPHostSource} CSPFetchCommonSource */
 /** @typedef {CSPSourceExpression | CSPHostSource | CSPSchemeSource | CSPNonceSource | CSPHashSource} CSPFetchAllSources */
 /** @typedef {Extract<CSPSourceExpression, 'unsafe-hashes'|'unsafe-inline'|'report-sample'>} CSPFetchScriptAttr */
@@ -65,8 +63,6 @@ import {
  */
 
 
-
-
 /** @typedef {Extract<CSPSourceExpression, 'self'>| CSPSchemeSource | CSPHostSource} CSPDocumentBaseURI */
 
 /** @typedef {
@@ -93,8 +89,6 @@ import {
  */
 
 
-
-
 /** @typedef {Extract<CSPSourceExpression, 'self'>| CSPSchemeSource | CSPHostSource} CSPNavigationCommon */
 
 /**
@@ -102,8 +96,6 @@ import {
  * @property {Array<CSPNavigationCommon> | CSPNavigationCommon | CSPNoneSource | undefined} [frameAncestors]
  * @property {Array<CSPNavigationCommon> | CSPNavigationCommon | CSPNoneSource | undefined} [formAction]
  */
-
-
 
 
 /** @typedef {string & { readonly __brand: unique symbol }} CSPOtherPolicyName */
@@ -123,17 +115,14 @@ import {
  */
 
 
-
 /**
  * @typedef {Object} CSPReportingPolicy
  * @property {ReportingEndpointName|undefined} [reportTo]
  */
 
-
 /**
  * @typedef {CSPFetchPolicy & CSPDocumentPolicy & CSPNavigationPolicy & CSPOtherPolicy & CSPReportingPolicy} CSPPolicy
  */
-
 
 //
 export const CSP_DIRECTIVE_FETCH_DEFAULT = 'default-src'

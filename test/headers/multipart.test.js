@@ -31,7 +31,6 @@ const EXAMPLE_MULTIPART_MULTI_TEXT = [
 	"--BOUNDARY--"
 ].join('\r\n')
 
-
 describe('Multipart', () => {
 	describe('parse', () => {
 		it('should handle undefined', () => {

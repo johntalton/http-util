@@ -23,7 +23,7 @@ describe('Response', () => {
 				supportedMethods,
 				supportedQueryTypes,
 				acceptRanges,
-				supportedTypes: undefined
+				supportedTypes: []
 			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
@@ -59,7 +59,7 @@ describe('Response', () => {
 				supportedMethods,
 				supportedQueryTypes,
 				acceptRanges,
-				supportedTypes: undefined
+				supportedTypes: []
 			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
@@ -163,12 +163,11 @@ describe('Response', () => {
 
 		it('should handle supported types (string no methods)', () => {
 			const stream = new MockHttp2Stream()
-			const supportedMethods = [ ]
 			const supportedQueryTypes = undefined
 			const acceptRanges = undefined
 
 			Response.preflight(stream, {
-				supportedMethods,
+				supportedMethods: [],
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: [ 'text/plain' ]

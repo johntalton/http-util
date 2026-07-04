@@ -3,7 +3,6 @@ import { describe, it } from 'node:test'
 
 import { Link } from '@johntalton/http-util/headers'
 
-
 describe('Link', () => {
 	describe('encode', () => {
 		it('should handle undefined', () => {

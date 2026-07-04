@@ -61,7 +61,6 @@ export function send_no_body(stream, status, headers, exposedHeaders, context, m
 	send(stream, status, headers, exposedHeaders, undefined, undefined, context, meta)
 }
 
-
 /**
  * @param {ServerHttp2Stream} stream
  * @param {number} status
@@ -206,7 +205,7 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
 	const contentLen = Number.isInteger(contentLength) ? `${contentLength}` : undefined
 	const supportsQuery = isNonEmptyArray(supportedQueryTypes)
 
-	const exposedHeaders = [ ]
+	const exposedHeaders = []
 	if(age !== undefined) { exposedHeaders.push(HTTP2_HEADER_AGE) }
 	if(acceptRanges !== undefined) { exposedHeaders.push(HTTP2_HEADER_ACCEPT_RANGES) }
 	if(range !== undefined) { exposedHeaders.push(HTTP2_HEADER_CONTENT_RANGE) }

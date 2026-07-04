@@ -11,7 +11,6 @@ const DEFAULT_META = {
 	origin: undefined
 }
 
-
 describe('Response', () => {
 	describe('notAcceptable', () => {
 		it('should handle basic values (acceptable type array empty)', () => {

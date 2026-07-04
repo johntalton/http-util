@@ -160,8 +160,5 @@ describe('Challenge', () => {
 			}], true)
 			assert.deepEqual(result, [ 'FAKE foo=bar,biz=bang', 'ANOTHER quix=quack' ])
 		})
-
-
-
 	})
 })

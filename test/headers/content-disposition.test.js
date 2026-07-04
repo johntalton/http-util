@@ -217,6 +217,7 @@ describe('ContentDisposition', () => {
 
 	describe('fallbackFilenameSafe', () => {
 		it('should handle undefined', () => {
+			// @ts-ignore
 			const result = fallbackFilenameSafe(undefined)
 			assert.equal(result, undefined)
 		})

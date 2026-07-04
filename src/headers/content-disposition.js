@@ -102,7 +102,6 @@ export class ContentDisposition {
 			}
 		}
 
-
 		if(disposition.parameters === undefined) { return }
 		for(const [ key, value ] of disposition.parameters) {
 			yield KVP.encode(key, value, false) // do not quote by default?

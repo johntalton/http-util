@@ -19,7 +19,6 @@ export const CACHE_CONTROL_DIRECTIVE_MAX_AGE = 'max-age'
 export const CACHE_CONTROL_DIRECTIVE_STALE_WHILE_REVALIDATE = 'stale-while-revalidate'
 export const CACHE_CONTROL_DIRECTIVE_STALE_IF_ERROR = 'stale-if-error'
 
-
 export class CacheControl {
 	/**
 	 * @param {CacheControlOptions} options

@@ -35,7 +35,7 @@
  * @property {Array<TimingsInfo>} performance
  * @property {string|undefined} servername
  * @property {string|undefined} origin
- * @property {StrictTransportSecurityOptions|undefined} HSTS
+ * @property {StrictTransportSecurityOptions|undefined} [HSTS]
  * @property {Array<[ CustomHeaderKey, string | Array<string> ]>|undefined} [customHeaders]
  */
 
@@ -116,6 +116,7 @@
 /** @type {''} */
 export const EMPTY = ''
 
+//
 export const HTTP_HEADER_ORIGIN = 'origin'
 export const HTTP_HEADER_USER_AGENT = 'user-agent'
 export const HTTP_HEADER_FORWARDED = 'forwarded'
@@ -143,17 +144,18 @@ export const HTTP_HEADER_PERMISSIONS_POLICY_REPORT_ONLY = 'permissions-policy-re
 export const HTTP_HEADER_INTEGRITY_POLICY = 'integrity-policy'
 export const HTTP_HEADER_INTEGRITY_POLICY_REPORT_ONLY = 'integrity-policy-report-only'
 export const HTTP_HEADER_REPORTING_ENDPOINTS = 'reporting-endpoints'
-
-
-export const HTTP_METHOD_QUERY = 'QUERY'
 export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
+export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
 
+//
+export const HTTP_METHOD_QUERY = 'QUERY'
+
+//
 export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]
 
-export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
 export const PREFLIGHT_AGE_SECONDS = '500'
 
-
+//
 export const CUSTOM_HEADER_PREFIX = 'X-'
 
 /** @type {'bytes'} */

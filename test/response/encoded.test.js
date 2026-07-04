@@ -30,7 +30,6 @@ describe('Response', () => {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
 
-
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
 				':status': 200,
@@ -73,7 +72,6 @@ describe('Response', () => {
 			}, {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
-
 
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
@@ -118,7 +116,6 @@ describe('Response', () => {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
 
-
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
 				':status': 200,
@@ -162,7 +159,6 @@ describe('Response', () => {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
 
-
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
 				':status': 200,
@@ -204,7 +200,6 @@ describe('Response', () => {
 			}, {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
-
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')

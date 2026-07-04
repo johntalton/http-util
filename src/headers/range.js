@@ -42,7 +42,6 @@ export const RANGE_LIST_SEPARATOR = ','
  * @property {boolean} overlap
  */
 
-
 export class Range {
 	/**
 	 * @param {string|undefined} rangeHeader

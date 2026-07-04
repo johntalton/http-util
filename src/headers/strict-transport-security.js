@@ -7,7 +7,6 @@ export const STS_PRELOAD = 'preload'
 
 export const STS_MIN_AGE_FOR_PRELOAD_SECS = 60 * 60 * 24 * 365 // 31536000
 
-
 /**
  * @typedef {Object} StrictTransportSecurityOptions
  * @property {number} maxAge

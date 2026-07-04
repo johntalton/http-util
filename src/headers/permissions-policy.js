@@ -54,7 +54,6 @@ import { quoteValue } from './util/quote.js'
 	'xr-spatial-tracking'
  } PermissionsPolicyDirective */
 
-
  // todo add __brand to string
 /** @typedef {string} PermissionsPolicyOrigin */
 

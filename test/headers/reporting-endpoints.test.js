@@ -36,7 +36,6 @@ describe('ReportingEndpoints', () => {
 			assert.equal(result, undefined)
 		})
 
-
 		it('should handle a empty url string', () => {
 			assert.throws(() => ReportingEndpoints.encode({
 				name: ReportingEndpoints.name('FAKE'),

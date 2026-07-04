@@ -50,7 +50,7 @@ export class SiteData {
 		if(directives === WILDCARD) { return WILDCARD }
 
 		const result = Array.from(SiteData.#encode(directives))
-		if(result.length === 0) {return undefined }
+		if(result.length === 0) { return undefined }
 
 		return result
 			.join(COMMON_LIST_VALUE_JOINER_COMMA)

@@ -3,7 +3,6 @@ import { describe, it } from 'node:test'
 
 import { IntegrityPolicy, ReportingEndpoints } from '@johntalton/http-util/headers'
 
-
 describe('IntegrityPolicy', () => {
 	describe('encode', () => {
 		it('should handle undefined', () => {

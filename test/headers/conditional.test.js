@@ -27,7 +27,6 @@ const EXAMPLE_IMF_DATE_LATE = { ...EXAMPLE_IMF_LATE, date: EXAMPLE_DATE_LATE }
 
 const EXAMPLE_STRING_MIDDLE = 'Mon, 01 Jan 2001 00:00:00 GMT'
 
-
 describe('ETag', () => {
 	describe('isValid', () => {
 		it('should handle undefined', () => {
@@ -221,7 +220,6 @@ describe('FixDate', () => {
 	})
 })
 
-
 describe('Conditional', () => {
 	describe('encodeEtag', () => {
 		it('should handle undefined', () => {
@@ -239,7 +237,7 @@ describe('Conditional', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should reject any with improper anyt', () => {
+		it('should reject any with improper any', () => {
 			const result = Conditional.encodeEtag({ any: false, etag: '*', weak: false })
 			assert.equal(result, undefined)
 		})

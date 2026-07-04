@@ -11,7 +11,6 @@ const DEFAULT_META = {
 	origin: undefined
 }
 
-
 describe('Response', () => {
 	describe('unavailable', () => {
 		it('should handle basic values', () => {

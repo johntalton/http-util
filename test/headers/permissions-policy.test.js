@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
-import { PermissionsPolicy } from '@johntalton/http-util/headers'
+import { PermissionsPolicy, ReportingEndpoints } from '@johntalton/http-util/headers'
 
 describe('PermissionsPolicy', () => {
   describe('encode', () => {
@@ -140,7 +140,7 @@ describe('PermissionsPolicy', () => {
       const result = PermissionsPolicy.encode({
 				directive: 'geolocation',
 				allowList: [],
-				reportTo: 'geo_endpoint'
+				reportTo: ReportingEndpoints.name('geo_endpoint')
 			})
       assert.equal(result, 'geolocation=(); report-to=geo_endpoint')
     })
@@ -149,11 +149,11 @@ describe('PermissionsPolicy', () => {
       const result = PermissionsPolicy.encode([ {
 				directive: 'geolocation',
 				allowList: [],
-				reportTo: 'geo_endpoint'
+				reportTo: ReportingEndpoints.name('geo_endpoint')
 			}, {
 				directive: 'fullscreen',
 				allowList: '*',
-				reportTo: 'fakeEP'
+				reportTo: ReportingEndpoints.name('fakeEP')
 			} ])
       assert.equal(result, 'geolocation=(); report-to=geo_endpoint, fullscreen=*; report-to=fakeEP')
     })

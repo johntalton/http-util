@@ -173,7 +173,5 @@ describe('AppliedPreferences', () => {
 			]))
 			assert.equal(result, 'wait=1000')
 		})
-
-
 	})
 })

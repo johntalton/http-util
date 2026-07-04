@@ -48,7 +48,6 @@ export const DIRECTIVE_REPRESENTATION_FULL = 'representation'
 
 /** @typedef {Partial<AppliedRequestPreferences>|Map<string, string|undefined>} AppliedPreferencesInput */
 
-
 export class Preferences {
 	/**
 	 * @param {string|undefined} header

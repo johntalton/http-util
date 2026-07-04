@@ -213,7 +213,6 @@ describe('Response', () => {
 				'ANOTHER\r\n' +
 				'--PARTIAL_CONTENT_BOUNDARY--'
 
-
 			assert.equal(result, expected)
 
 		})

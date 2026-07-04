@@ -9,7 +9,6 @@ import { KVP } from './util/kvp.js'
  * @property {URL|string} url
  */
 
-
 /**
  * @param {string|undefined} name
  * @returns {name is ReportingEndpointName}

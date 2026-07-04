@@ -13,14 +13,14 @@ describe('ContentSecurityPolicy', () => {
 		it('should handle basic', () => {
 			const result = ContentSecurityPolicy.encode({
 				defaultSrc: 'self',
-				connectSrc: ContentSecurityPolicy.host('galerie.internal:9413'),
+				connectSrc: ContentSecurityPolicy.host('testing.internal:9413'),
 				imgSrc: [
 					'self',
 					ContentSecurityPolicy.host('https://picsum.photo'),
 					ContentSecurityPolicy.host('https://fastly.picsum.photo')
 				],
 			})
-			assert.equal(result, 'default-src \'self\'; connect-src galerie.internal:9413; img-src \'self\' https://picsum.photo https://fastly.picsum.photo')
+			assert.equal(result, 'default-src \'self\'; connect-src testing.internal:9413; img-src \'self\' https://picsum.photo https://fastly.picsum.photo')
 		})
 
 		it('should handle script with hash', () => {
@@ -109,7 +109,7 @@ describe('ContentSecurityPolicy', () => {
 				styleSrc: 'nonce-ABCD',
 				childSrc: 'none',
 				fontSrc: 'self',
-				frameSrc: [ ],
+				frameSrc: [],
 				manifestSrc: 'blob:',
 				mediaSrc: [ 'self', 'https:' ],
 				objectSrc: 'none',

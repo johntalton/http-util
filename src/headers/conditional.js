@@ -88,7 +88,6 @@ export const DATE_ZONE = 'GMT'
 export const MINIMUM_YEAR = 1900
 export const MAXIMUM_DAY = 31
 
-
 export class ETag {
 	/**
 	 * @param {string|undefined} etag

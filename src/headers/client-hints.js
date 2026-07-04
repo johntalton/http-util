@@ -92,7 +92,6 @@ export const KNOWN_FORM_FACTORS = [
 export const CLIENT_HINT_TRUE = '?1'
 export const CLIENT_HINT_FALSE = '?0'
 
-
 export class ClientHints {
 
 	/**

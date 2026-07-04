@@ -184,11 +184,7 @@ describe('Body', () => {
 
 		it('should handle reading blob (content type from options)', async () => {
 			const stream = Readable.from([ Buffer.from('A TEST') ])
-			const options = {
-				contentType: {
-					mimetype: 'text/plain'
-				}
-			}
+			const options = { contentType: ContentType.parse('text/plain') }
 			const futureBody = requestBody(stream, options)
 
 			const result = await futureBody.blob()
@@ -251,7 +247,6 @@ describe('Body', () => {
 			const result = await futureBody.json()
 			assert.deepEqual(result, { test: true })
 		})
-
 
 		it('should throw error on FordData unknown content type ', async () => {
 			const stream = Readable.from([ Buffer.from('A TEST') ])

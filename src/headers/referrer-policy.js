@@ -11,7 +11,6 @@
 	'unsafe-url'
 } ReferrerPolicyDirective */
 
-
 export const REFERER_POLICY_DIRECTIVE_NO_REFERRER = 'no-referrer'
 export const REFERER_POLICY_DIRECTIVE_NO_REFERRER_WHEN_DOWNGRADE = 'no-referrer-when-downgrade'
 export const REFERER_POLICY_DIRECTIVE_ORIGIN = 'origin'

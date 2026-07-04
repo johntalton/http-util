@@ -75,8 +75,6 @@ describe('KVP', () => {
 				parameters: new Map([ [ 'foo', '2' ] ])
 			})
 		})
-
-
 	})
 
 	describe('parseParameters', () => {

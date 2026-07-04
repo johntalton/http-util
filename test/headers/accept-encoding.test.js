@@ -38,11 +38,13 @@ describe('AcceptEncoding', () => {
 
 	describe('selectItemFrom', () => {
 		it('should handle undefined', () => {
+			// @ts-ignore
 			const result = AcceptEncoding.selectItemFrom(undefined, undefined)
 			assert.equal(result, undefined)
 		})
 
 		it('should handle non-array', () => {
+			// @ts-ignore
 			const result = AcceptEncoding.selectItemFrom('TEST', [])
 			assert.equal(result, undefined)
 		})
@@ -53,12 +55,14 @@ describe('AcceptEncoding', () => {
 		})
 
 		it('should handle array of undefined', () => {
+			// @ts-ignore
 			const result = AcceptEncoding.selectItemFrom([ undefined ], [ 'fake' ])
 			assert.equal(result, undefined)
 		})
 
 		it('should handle array of name undefined', () => {
 			const result = AcceptEncoding.selectItemFrom([ {
+				// @ts-ignore
 				name: undefined
 			}], [ '*' ])
 			assert.equal(result, undefined)
@@ -67,6 +71,7 @@ describe('AcceptEncoding', () => {
 		it('should handle array of name undefined', () => {
 			const result = AcceptEncoding.selectItemFrom([ {
 				name: '*'
+			// @ts-ignore
 			}], [ undefined ])
 			assert.equal(result, undefined)
 		})
@@ -74,6 +79,7 @@ describe('AcceptEncoding', () => {
 		it('should handle undefined supported', () => {
 			const result = AcceptEncoding.selectItemFrom([ {
 				name: 'FAKE'
+			// @ts-ignore
 			} ], undefined)
 			assert.equal(result, undefined)
 		})

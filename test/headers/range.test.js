@@ -98,8 +98,6 @@ describe('Range', () => {
 			assert.equal(result, undefined)
 		})
 
-
-
 		it('should handle fixed range', () => {
 			const result = Range.normalize({
 				units: 'bytes',

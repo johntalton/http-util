@@ -160,11 +160,10 @@ describe('Response', () => {
 
 		it('should handle basic values (structured supportedTypes undefined)', () => {
 			const stream = new MockHttp2Stream()
-			const supportedTypes = undefined
 			const supportedQueryTypes = undefined
 			const method = 'PATCH'
 			Response.unsupportedMediaType(stream, method, {
-				supportedTypes,
+				supportedTypes: [],
 				supportedQueryTypes
 			}, {}, structuredClone(DEFAULT_META))
 

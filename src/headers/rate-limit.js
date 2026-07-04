@@ -92,7 +92,6 @@ export class RateLimitPolicy {
 		if(partitionKey !== undefined) { yield KVP.encode(POLICY_PARAMETER.PARTITION_KEY, partitionKey) }
 	}
 
-
 	/**
 	 * @param {...RateLimitPolicyInfo} policies
 	 */

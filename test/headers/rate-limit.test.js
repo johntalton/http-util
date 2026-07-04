@@ -60,8 +60,6 @@ describe('RateLimit', () => {
 			})
 			assert.equal(result, '"TESTING"; r=42; t=77; pk=KEY')
 		})
-
-
 	})
 })
 
