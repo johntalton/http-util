@@ -23,5 +23,5 @@ export function sendSeeOther(stream, location, context, meta) {
 
 	send_no_body(stream, HTTP_STATUS_SEE_OTHER, {
 		[HTTP2_HEADER_LOCATION]: loc
-	}, [HTTP2_HEADER_LOCATION], context, meta)
+	}, [ HTTP2_HEADER_LOCATION ], context, meta)
 }

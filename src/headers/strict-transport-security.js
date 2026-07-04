@@ -17,24 +17,24 @@ export const STS_MIN_AGE_FOR_PRELOAD_SECS = 60 * 60 * 24 * 365 // 31536000
 
 export class StrictTransportSecurity {
 	/**
-	 * @param {StrictTransportSecurityOptions} sts
+	 * @param {StrictTransportSecurityOptions} hsts
 	 */
-	static *#encode(sts) {
-		if(!Number.isFinite(sts.maxAge)) {
-			throw new Error('invalid max-age')
+	static *#encode(hsts) {
+		if(!Number.isFinite(hsts.maxAge)) {
+			throw new TypeError('invalid max-age')
 		}
 
-		const maxAge = sts.preload ? Math.max(STS_MIN_AGE_FOR_PRELOAD_SECS, sts.maxAge) : sts.maxAge
+		const maxAge = hsts.preload ? Math.max(STS_MIN_AGE_FOR_PRELOAD_SECS, hsts.maxAge) : hsts.maxAge
 		yield KVP.encode(STS_MAX_AGE, maxAge)
-		if(sts.includeSubDomains) { yield STS_INCLUDE_SUBDOMAIN }
-		if(sts.preload) { yield STS_PRELOAD }
+		if(hsts.includeSubDomains) { yield STS_INCLUDE_SUBDOMAIN }
+		if(hsts.preload) { yield STS_PRELOAD }
 	}
 
 	/**
-	 * @param {StrictTransportSecurityOptions} sts
+	 * @param {StrictTransportSecurityOptions|undefined} hsts
 	 */
-	static encode(sts) {
-		if(sts === undefined) { return undefined }
-		return [ ...StrictTransportSecurity.#encode(sts) ].join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON)
+	static encode(hsts) {
+		if(hsts === undefined) { return undefined }
+		return [ ...StrictTransportSecurity.#encode(hsts) ].join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON)
 	}
 }

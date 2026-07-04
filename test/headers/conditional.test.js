@@ -48,7 +48,10 @@ describe('ETag', () => {
 
 	describe('weak', () => {
 		it('should throw on undefined', () => {
-			assert.throws(() => { ETag.weak('INVALID ETAG') })
+			assert.throws(() => { ETag.weak('INVALID ETAG') }, {
+				name: 'TypeError',
+				message: 'invalid etag format'
+			})
 		})
 
 		it('should handle valid', () => {
@@ -59,7 +62,10 @@ describe('ETag', () => {
 
 	describe('strong', () => {
 		it('should throw on undefined', () => {
-			assert.throws(() => { ETag.strong('INVALID ETAG') })
+			assert.throws(() => { ETag.strong('INVALID ETAG') }, {
+				name: 'TypeError',
+				message: 'invalid etag format'
+			})
 		})
 
 		it('should handle valid', () => {

@@ -53,22 +53,34 @@ describe('Multipart', () => {
 		})
 
 		it('should throw on no boundary start', () => {
-			assert.throws(() => Multipart.parse('TESTING', 'BOUNDARY'), { message: 'missing beginning boundary' })
+			assert.throws(() => Multipart.parse('TESTING', 'BOUNDARY'), {
+				name: 'Error',
+				message: 'missing beginning boundary'
+			})
 		})
 
 		it('should throw if disposition is not form-data', () => {
 			const content = EXAMPLE_MULTIPART_TEXT.replace('form-data', 'FAKE')
-			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), { message: 'disposition not form-data' })
+			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), {
+				name: 'Error',
+				message: 'disposition not form-data'
+			})
 		})
 
 		it('should throw part is unnamed', () => {
 			const content = EXAMPLE_MULTIPART_TEXT.replace(';name=\"TEST\"', '')
-			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), { message: 'unnamed part' })
+			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), {
+				name: 'Error',
+				message: 'unnamed part'
+			})
 		})
 
 		it('should throw if ending boundary missing', () => {
 			const content = EXAMPLE_MULTIPART_TEXT.replace('--BOUNDARY--', '')
-			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), { message: 'missing boundary or end' })
+			assert.throws(() => Multipart.parse(content, 'BOUNDARY'), {
+				name: 'Error',
+				message: 'missing boundary or end'
+			})
 		})
 
 		it('should handle simplified string', () => {

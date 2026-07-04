@@ -19,6 +19,7 @@
 /** @import { ClientHintsDirective } from './headers/client-hints.js'  */
 /** @import { LinkItem } from './headers/link.js'  */
 /** @import { AppliedPreferencesInput } from './headers/preference.js'  */
+/** @import { StrictTransportSecurityOptions } from './headers/strict-transport-security.js' */
 
 /**
  * @template T
@@ -34,6 +35,7 @@
  * @property {Array<TimingsInfo>} performance
  * @property {string|undefined} servername
  * @property {string|undefined} origin
+ * @property {StrictTransportSecurityOptions|undefined} HSTS
  * @property {Array<[ CustomHeaderKey, string | Array<string> ]>|undefined} [customHeaders]
  */
 
@@ -182,10 +184,11 @@ export function normalizeToArray(item) {
 
 /**
  * @template T
- * @param {Array<T>} arr
+ * @param {Array<T>|undefined} arr
  * @returns {arr is NonEmptyArray<T>}
  */
 export function isNonEmptyArray(arr) {
+  if(arr === undefined) { return false }
 	if(!Array.isArray(arr)) { return false }
   return arr.length > 0
 }

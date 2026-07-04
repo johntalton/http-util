@@ -214,7 +214,6 @@ export function requestBody(stream, options) {
 export async function bodyBlob(reader, mimetype) {
 	const parts = []
 	for await (const part of reader) {
-		// console.log('push part', part.length)
 		parts.push(part)
 	}
 

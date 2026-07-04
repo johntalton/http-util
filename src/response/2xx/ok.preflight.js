@@ -7,7 +7,8 @@ import {
 	HTTP_HEADER_ACCEPT_QUERY,
 	HTTP_METHOD_QUERY,
 	HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE,
-	PREFLIGHT_AGE_SECONDS
+	isNonEmptyArray,
+	PREFLIGHT_AGE_SECONDS,
 } from '../../defs.js'
 import { coerceSupportedTypes } from '../header-util.js'
 import { send_no_body } from '../send-util.js'
@@ -45,7 +46,7 @@ export function sendPreflight(stream, info, context, meta) {
 
 	const supportedTypesRecord = coerceSupportedTypes(supportedMethods, supportedTypes)
 
-	const supportsQuery = supportedMethods.includes(HTTP_METHOD_QUERY) && supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
+	const supportsQuery = supportedMethods.includes(HTTP_METHOD_QUERY) && isNonEmptyArray(supportedQueryTypes)
 
 	const exposedHeaders = []
 	if(acceptRanges !== undefined) { exposedHeaders.push(HTTP2_HEADER_ACCEPT_RANGES) }

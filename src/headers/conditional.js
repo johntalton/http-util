@@ -112,7 +112,7 @@ export class ETag {
 	 * @returns {WeakEtagItem}
 	 */
 	static weak(etag) {
-		if(!ETag.isValid(etag)) { throw new Error('invalid etag format') }
+		if(!ETag.isValid(etag)) { throw new TypeError('invalid etag format') }
 		return { any: false, weak: true, etag }
 	}
 
@@ -121,7 +121,7 @@ export class ETag {
 	 * @returns {NotWeakEtagItem}
 	 */
 	static strong(etag) {
-		if(!ETag.isValid(etag)) { throw new Error('invalid etag format') }
+		if(!ETag.isValid(etag)) { throw new TypeError('invalid etag format') }
 		return { any: false, weak: false, etag }
 	}
 

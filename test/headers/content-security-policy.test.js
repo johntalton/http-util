@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
-import { ContentSecurityPolicy, isHash, isNonce, isPolicyName } from '@johntalton/http-util/headers'
+import { ContentSecurityPolicy, isHash, isNonce, isPolicyName, ReportingEndpoints } from '@johntalton/http-util/headers'
 
 describe('ContentSecurityPolicy', () => {
 	describe('encode', () => {
@@ -76,7 +76,7 @@ describe('ContentSecurityPolicy', () => {
 		it('should handle fetch default with report-to', () => {
 			const result = ContentSecurityPolicy.encode({
 				defaultSrc: 'self',
-				reportTo: 'csp-endpoint'
+				reportTo: ReportingEndpoints.name('csp-endpoint')
 			})
 
 			assert.equal(result, 'default-src \'self\'; report-to csp-endpoint')

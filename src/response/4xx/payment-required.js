@@ -14,5 +14,5 @@ const { HTTP_STATUS_PAYMENT_REQUIRED } = http2.constants
  */
 export function sendPaymentRequired(stream, context, meta) {
 	send_no_body(stream, HTTP_STATUS_PAYMENT_REQUIRED, {
-	}, [ ], context, meta)
+	}, [], context, meta)
 }

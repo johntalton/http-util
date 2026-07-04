@@ -1,6 +1,6 @@
 import http2 from 'node:http2'
 
-import { normalizeToArray } from '../../defs.js'
+import { isNonEmptyArray, normalizeToArray } from '../../defs.js'
 import { CONTENT_TYPE_JSON } from '../../headers/content-type.js'
 import { send } from '../send-util.js'
 
@@ -19,7 +19,7 @@ export function sendNotAcceptable(stream, info, context, meta) {
 	const { acceptableTypes } = info
 
 	const acceptableTypesList = normalizeToArray(acceptableTypes)
-	const has = acceptableTypesList !== undefined && acceptableTypesList.length > 0
+	const has = isNonEmptyArray(acceptableTypesList)
 
 	send(stream,
 		HTTP_STATUS_NOT_ACCEPTABLE,

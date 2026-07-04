@@ -11,7 +11,17 @@ describe('StrictTransportSecurity', () => {
 		})
 
 		it('should throw on missing max-age', () => {
-			assert.throws(() => StrictTransportSecurity.encode({}))
+			assert.throws(() => StrictTransportSecurity.encode({}), {
+				name: 'TypeError',
+				message: 'invalid max-age'
+			})
+		})
+
+		it('should handle max-age as Zero ti disable', () => {
+			const result = StrictTransportSecurity.encode({
+				maxAge: 0
+			})
+			assert.equal(result, 'max-age=0')
 		})
 
 		it('should handle simple max-age', () => {

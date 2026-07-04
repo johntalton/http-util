@@ -38,6 +38,7 @@ import {
 	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
 	ServerTiming
 } from '../headers/server-timing.js'
+import { StrictTransportSecurity } from '../headers/strict-transport-security.js'
 import { ContentTypeOptions, HTTP_HEADER_CONTENT_TYPE_OPTIONS } from '../headers/x-content-type-options.js'
 import { HTTP_HEADER_XSS_PROTECTION, XSSProtection } from '../headers/x-xss-protection.js'
 
@@ -53,12 +54,12 @@ const {
 	HTTP2_HEADER_CONTENT_TYPE,
 	HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
 	HTTP2_HEADER_ETAG,
-	// HTTP2_HEADER_STRICT_TRANSPORT_SECURITY
-	HTTP2_HEADER_LINK
+	HTTP2_HEADER_LINK,
+	HTTP2_HEADER_STRICT_TRANSPORT_SECURITY
 } = http2.constants
 
 /**
- * @param {Record<string,Array<string>|string|undefined>} headers
+ * @param {Record<string,Array<string>|string|number|undefined>} headers
  */
 function cleanHeaders(headers) {
 	return Object.fromEntries(Object.entries(headers)
@@ -157,15 +158,18 @@ export function coreHeaders(status, contentType, exposedHeaders, meta) {
 	// todo Assert.isString(meta.servername) if not undefined
 	// todo Assert.isString(meta.origin) if not undefined
 
-	return {
-		// todo [HTTP2_HEADER_STRICT_TRANSPORT_SECURITY]: StrictTransportSecurity.encode(meta.hsts)
+	const hsts = StrictTransportSecurity.encode(meta.HSTS)
+	const hstsHeaders = hsts === undefined ? {} : { [HTTP2_HEADER_STRICT_TRANSPORT_SECURITY]: hsts }
+
+	return ({
 		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
 		[HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS]: exposed.join(COMMON_LIST_VALUE_JOINER_COMMA),
 		// Access-Control-Allow-Credentials // for non-preflight
 		[HTTP2_HEADER_STATUS]: status,
 		[HTTP2_HEADER_CONTENT_TYPE]: contentType,
-		[HTTP2_HEADER_SERVER]: meta.servername
-	}
+		[HTTP2_HEADER_SERVER]: meta.servername,
+		...hstsHeaders
+	})
 }
 
 /**
@@ -226,6 +230,7 @@ export function coerceSupportedTypes(methods, supportedTypes) {
 				patch: undefined
 			}
 		}
+
 		return coerceSupportedTypes_FromArray(methods, supportedTypes)
 	}
 

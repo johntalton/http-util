@@ -7,7 +7,7 @@ export class XSSProtection {
 	 */
 	static encode(enable) {
 		if(enable === undefined) { return undefined }
-		if(enable) { throw new Error('never enable this :)') }
+		if(enable) { throw new TypeError('never enable this :)') }
 		return '0'
 	}
 }

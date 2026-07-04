@@ -3,7 +3,7 @@ import { compose, pipeline, Readable } from 'node:stream'
 import { ReadableStream } from 'node:stream/web'
 import zlib from 'node:zlib'
 
-import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY } from '../defs.js'
+import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY, isNonEmptyArray } from '../defs.js'
 import { CacheControl } from '../headers/cache-control.js'
 import { Conditional } from '../headers/conditional.js'
 import { ContentDisposition } from '../headers/content-disposition.js'
@@ -204,7 +204,7 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 export function send_bytes(stream, status, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta) {
 	// todo Assert.isString(encoding) if not undefined
 	const contentLen = Number.isInteger(contentLength) ? `${contentLength}` : undefined
-	const supportsQuery = supportedQueryTypes !== undefined && supportedQueryTypes.length > 0
+	const supportsQuery = isNonEmptyArray(supportedQueryTypes)
 
 	const exposedHeaders = [ ]
 	if(age !== undefined) { exposedHeaders.push(HTTP2_HEADER_AGE) }

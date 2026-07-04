@@ -26,7 +26,7 @@ export class ServerTiming {
 	 */
 	static encode(timings, asArray = false) {
 		if(timings === undefined) { return undefined }
-		if(timings.length <= 0) { return undefined }
+		if(timings.length === 0) { return undefined }
 
 		const ary = timings
 			.map(({ name, duration, description }) => [

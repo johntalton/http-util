@@ -21,7 +21,10 @@ describe('XSSProtection', () => {
 		})
 
 		it('should handle true', () => {
-			assert.throws(() => XSSProtection.encode(true))
+			assert.throws(() => XSSProtection.encode(true), {
+				name: 'TypeError',
+				message: 'never enable this :)'
+			})
 		})
 	})
 })

@@ -23,5 +23,5 @@ export function sendMovedPermanently(stream, location, context, meta) {
 
 	send_no_body(stream, HTTP_STATUS_MOVED_PERMANENTLY, {
 		[HTTP2_HEADER_LOCATION]: loc
-	}, [HTTP2_HEADER_LOCATION], context, meta)
+	}, [ HTTP2_HEADER_LOCATION ], context, meta)
 }
