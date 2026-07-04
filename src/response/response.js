@@ -8,6 +8,7 @@ import { sendPreflight } from './2xx/ok.preflight.js'
 import { sendSSE } from './2xx/ok.sse.js'
 import { sendTrace } from './2xx/ok.trace.js'
 import { sendPartialContent } from './2xx/partial-content.js'
+import { sendResetContent } from './2xx/reset-content.js'
 import { sendFound } from './3xx/found.js'
 import { sendMovedPermanently } from './3xx/moved-permanently.js'
 import { sendMultipleChoices } from './3xx/multiple-choices.js'
@@ -68,6 +69,7 @@ export const Response = {
 	preconditionRequired: sendPreconditionRequired,
 	preflight: sendPreflight,
 	rangeNotSatisfiable: sendRangeNotSatisfiable,
+	resetContent: sendResetContent,
 	seeOther: sendSeeOther,
 	sse: sendSSE,
 	temporaryRedirect: sendTemporaryRedirect,

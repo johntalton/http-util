@@ -9,7 +9,7 @@
 | accepted                  | 202 |     |     |     |
 | ~~non-authoritative~~     | 203 |     |     |     |
 | no-content                | 204 |     |     |     |
-| **reset-content**         | 205 |     |     |     |
+| reset-content             | 205 |     |     |     |
 | partial-content           | 206 |     |     |     |
 | **multiple-choices**      |     | 300 |     |     |
 | moved-permanently         |     | 301 |     |     |
