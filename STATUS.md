@@ -9,21 +9,21 @@
 | accepted                  | 202 |     |     |     |
 | ~~non-authoritative~~     | 203 |     |     |     |
 | no-content                | 204 |     |     |     |
-| ~~reset-content~~         | 205 |     |     |     |
+| **reset-content**         | 205 |     |     |     |
 | partial-content           | 206 |     |     |     |
 | **multiple-choices**      |     | 300 |     |     |
 | moved-permanently         |     | 301 |     |     |
-| ~~found~~                 |     | 302 |     |     |
+| found                     |     | 302 |     |     |
 | see-other                 |     | 303 |     |     |
 | not-modified              |     | 304 |     |     |
 ||| 305 |||
 ||| 306 |||
 | temporary-redirect        |     | 307 |     |     |
-| **permanent-redirect**    |     | 308 |     |     |
-| ~~bad-request~~           |     |     | 400 |     |
+| permanent-redirect        |     | 308 |     |     |
+| bad-request               |     |     | 400 |     |
 | unauthorized              |     |     | 401 |     |
-| ~~payment-required~~      |     |     | 402 |     |
-| **forbidden**             |     |     | 403 |     |
+| payment-required          |     |     | 402 |     |
+| forbidden                 |     |     | 403 |     |
 | not-found                 |     |     | 404 |     |
 | not-allowed               |     |     | 405 |     |
 | not-acceptable            |     |     | 406 |     |
@@ -48,7 +48,7 @@
 | ~~too-early~~             |     |     | 425 |     |
 | ~~upgrade-required~~      |     |     | 426 |     |
 |||| 427 ||
-| ~~precondition-required~~ |     |     | 428 |     |
+| precondition-required     |     |     | 428 |     |
 | too-many-requests         |     |     | 429 |     |
 |||| 430 ||
 | ~~request-header-filed-too-larger~~ ||| 431 |     |
@@ -59,7 +59,7 @@
 | unavailable               |     |     |     | 503 |
 | ~~gateway-timeout~~       |     |     |     | 504 |
 | ~~http-version-not-supported~~ ||     |     | 505 |
-| ~~variant-also-negotiates~~    ||     |     | 506 |
+| **variant-also-negotiates**    ||     |     | 506 |
 | insufficient-storage      |     |     |     | 507 |
 | ~~loop-detected~~         |     |     |     | 508 |
 ||||| 509 |

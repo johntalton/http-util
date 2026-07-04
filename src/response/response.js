@@ -26,6 +26,7 @@ import { sendNotAllowed } from './4xx/not-allowed.js'
 import { sendNotFound } from './4xx/not-found.js'
 import { sendPaymentRequired } from './4xx/payment-required.js'
 import { sendPreconditionFailed } from './4xx/precondition-failed.js'
+import { sendPreconditionRequired } from './4xx/precondition-required.js'
 import { sendRangeNotSatisfiable } from './4xx/range-not-satisfiable.js'
 import { sendTimeout } from './4xx/timeout.js'
 import { sendTooManyRequests } from './4xx/too-many-requests.js'
@@ -64,6 +65,7 @@ export const Response = {
 	paymentRequired: sendPaymentRequired,
 	permanentRedirect: sendPermanentRedirect,
 	preconditionFailed: sendPreconditionFailed,
+	preconditionRequired: sendPreconditionRequired,
 	preflight: sendPreflight,
 	rangeNotSatisfiable: sendRangeNotSatisfiable,
 	seeOther: sendSeeOther,
