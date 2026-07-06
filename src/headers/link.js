@@ -5,6 +5,12 @@ import { KVP } from './util/kvp.js'
  * @typedef {Object} LinkItem
  * @property {URL|string} url
  * @property {string|undefined} [relation]
+//  * @property {string|undefined} [anchor]
+//  * @property {string|undefined} [rev]
+//  * @property {string|undefined} [hreflang]
+//  * @property {string|undefined} [media]
+//  * @property {string|undefined} [title]
+//  * @property {string|undefined} [type]
  * @property {Map<string, string>|undefined} [parameters]
  */
 
@@ -16,7 +22,17 @@ export class Link {
 		const encodedUri = (link.url instanceof URL) ? link.url : encodeURI(link.url)
 
 		yield `<${encodedUri}>`
+
 		if(link.relation !== undefined) { yield KVP.encode('rel', link.relation, true) }
+		// if(link.anchor !== undefined) { yield KVP.encode('anchor', link.anchor, true) }
+		// if(link.rev !== undefined) { yield KVP.encode('rev', link.rev, true) }
+		// if(link.hreflang !== undefined) { yield KVP.encode('hreflang', link.hreflang, true) }
+		// if(link.media !== undefined) { yield KVP.encode('media', link.media, true) }
+		// if(link.type !== undefined) { yield KVP.encode('type', link.type, true) }
+
+		// if(link.title !== undefined) { yield KVP.encode('title', link.title, true) }
+		// if(link.title !== undefined) { yield KVP.encode('title*', link.title, true) }
+
 		if(link.parameters === undefined) { return }
 		for(const [ key, value ] of link.parameters) {
 			yield KVP.encode(key, value, true)

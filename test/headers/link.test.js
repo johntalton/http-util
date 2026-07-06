@@ -73,6 +73,24 @@ describe('Link', () => {
 			assert.equal(result, '<http://param/>; this="that"')
 		})
 
+		it('should handle item with parameters (type)', () => {
+			const result = Link.encode({
+				url: '/feed',
+				relation: 'alternate',
+				parameters: new Map([ [ 'type', 'application/rss+xml'] ])
+			})
+			assert.equal(result, '</feed>; rel="alternate"; type="application/rss+xml"')
+		})
+
+		it('should handle item with parameters (hreflang)', () => {
+			const result = Link.encode({
+				url: '/en-ca/home',
+				relation: 'alternate',
+				parameters: new Map([ [ 'hreflang', 'en-CA'] ])
+			})
+			assert.equal(result, '</en-ca/home>; rel="alternate"; hreflang="en-CA"')
+		})
+
 		it('should handle array of many', () => {
 			const result = Link.encode([
 				{ url: 'foo.html', relation: 'foo' },
