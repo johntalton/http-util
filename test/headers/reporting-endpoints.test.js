@@ -67,7 +67,7 @@ describe('ReportingEndpoints', () => {
 				name: ReportingEndpoints.name('FAKE-1'),
 				url: 'https://reporting.internal'
 			} ])
-			assert.equal(result, 'FAKE-1="https://reporting.internal/"')
+			assert.equal(result, 'FAKE-1="https://reporting.internal"')
 		})
 
 		it('should handle multiple valid item array', () => {
@@ -78,7 +78,7 @@ describe('ReportingEndpoints', () => {
 				name: ReportingEndpoints.name('FAKE-2'),
 				url: new URL('https://fake2.internal/path/file')
 			} ])
-			assert.equal(result, 'FAKE-1="https://fake1.internal/", FAKE-2="https://fake2.internal/path/file"')
+			assert.equal(result, 'FAKE-1="https://fake1.internal", FAKE-2="https://fake2.internal/path/file"')
 		})
 
 		it('should handle multiple valid item array skipping invalid', () => {

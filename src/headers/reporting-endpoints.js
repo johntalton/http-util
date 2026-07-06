@@ -37,9 +37,11 @@ export class ReportingEndpoints {
 		for(const endpoint of endpoints) {
 			if(endpoint.name === undefined) { continue }
 			if(endpoint.url === undefined) { continue }
-			const url = endpoint.url instanceof URL ? endpoint.url : new URL(endpoint.url)
+			if(endpoint.url === EMPTY) { throw new TypeError('Invalid URL') }
+
+			const url = endpoint.url instanceof URL ? endpoint.url.href : endpoint.url
 			// todo assert url.scheme is secure
-			yield KVP.encode(endpoint.name, url.href, true)
+			yield KVP.encode(endpoint.name, url, true)
 		}
 	}
 
