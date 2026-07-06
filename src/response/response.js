@@ -38,6 +38,7 @@ import { sendError } from './5xx/error.js'
 import { sendInsufficientStorage } from './5xx/insufficient-storage.js'
 import { sendNotImplemented } from './5xx/not-implemented.js'
 import { sendUnavailable } from './5xx/unavailable.js'
+import { sendVariantAlsoNegotiates } from './5xx/variant-also-negotiates.js'
 
 export const Response = {
 	accepted: sendAccepted,
@@ -79,5 +80,6 @@ export const Response = {
 	unauthorized: sendUnauthorized,
 	unavailable: sendUnavailable,
 	unprocessable: sendUnprocessable,
-	unsupportedMediaType: sendUnsupportedMediaType
+	unsupportedMediaType: sendUnsupportedMediaType,
+	variantAlsoNegotiates: sendVariantAlsoNegotiates
 }
