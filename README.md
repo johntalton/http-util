@@ -7,37 +7,60 @@
 
 Set of utilities to aid in building from-scratch [node:http2](https://nodejs.org/docs/latest/api/http2.html) stream compatible services.
 
-- [Header parsers](#header-parsers)
-- [Stream Response methods](#response)
+A comprehensive server framework that uses this library can be found at [http-core](https://github.com/johntalton/http-core).
+
+A full range of header parsing and encoding, as well are response stream methods.  A deferred `body` reader (akin to fetch api) is provided.
+
+- [Header](#header-parsers--encoders)
+- [Response](#response)
 - [Body parser](#body)
 
 ## Header Parsers / Encoders
-### From Client:
-- Accept Encoding - `parse` and `select` based on server/client values
-- Accept Language - `parse` and `select`
-- Accept - `parse` and `select`
 
-- Content Type - returns structured data object for use with Body/etc
-- Forwarded - `parse` with select-right-most helper
-- Multipart - parse into `FormData`
-- Content Disposition - for use inside of Multipart
-- Conditionals - Etag / FixDate for IfMatch, IfModifiedSince etc
-- Client Hints
-- Forwarded
-- Applied Preferences
+A wide range of supported header are available.  For incoming header (from client) `parse` methods exist, For outgoing header (sent from server) the `encode` method is used.
 
-### Server Sent:
-- Rate Limit
-- Server Timing
-- Cache Control
-- Clear Site Data
-- Conditional (Etag / IMF Date)
-- Content Range
-- Preferences
-- WWW Auth
-- STS
+Many header require common handling (aka. select from accept-encoding list) in such cases extra methods are provided to accomplish these tasks.
+
+| Header | parse | encode | extras
+|--------|-------|--------|--------
+| accept                        | ✅ |   | compare, select |
+| accept-encoding               | ✅ |   | select |
+| accept-language               | ✅ |   | select |
+| access-control-request-method | ✅ |   ||
+| access-control-request-header | ✅ |   ||
+| cache-control                 |   | ✅ ||
+| clear-site-data               |   | ✅ ||
+| client-hints                  |   | ✅ ||
+| conditional (etag)            | ✅ | ✅ | has, hayAny, weak, strong |
+| conditional {lastModified}    | ✅ | ✅ | toDate, toInstant, isAfter |
+| content-disposition           | ✅ | ✅ ||
+| content-range                 |    | ✅ ||
+| content-security-policy       |   | ✅ ||
+| content-type                  | ✅    ||
+| cross-origin-embedder-policy  |   | ✅ ||
+| cross-origin-opener-policy    |   | ✅ ||
+| sec-fetch-*                   | ✅ |   ||
+| forwarded                     | ✅ |   | select |
+| integrity-policy              |   | ✅ ||
+| link                          |   | ✅ ||
+| permissions-policy            |   | ✅ ||
+| preference / applied          | ✅ | ✅ ||
+| range                         | ✅ |   | normalize |
+| rate-limit / policy           |   | ✅ ||
+| referrer-policy               |   | ✅ ||
+| reporting-endpoints           |   | ✅ ||
+| server-timing                 |   | ✅ ||
+| strict-transport-security     |   | ✅ ||
+| www-authenticate              |   | ✅ | basic, bearer |
+| x-content-type-options        |   | ✅ ||
+| x-xss-protection              |   | ✅ ||
 
 
+
+
+## Example Accept Header
+
+Using the `selectItemFrom` function to perform server-side content-negotiation (aka, select from server supported types given client accept types).
 
 ```javascript
 import {
@@ -46,66 +69,97 @@ import {
   MIME_TYPE_TEXT
 } from '@johntalton/http-util/headers'
 
-// assuming our path/method/server supports content in json or text
+// assuming our service supports content in JSON or TEXT
 const supportedType = [ MIME_TYPE_JSON, MIME_TYPE_TEXT ]
 
-// from request.header.accept (client prefers json)
+// from request.header.accept (client prefers JSON)
 const acceptHeader = 'application/json;q=.5, */*;q.4'
 
-const bestMatchingType = Accept.select(acceptHeader, supportedType)
-// bestMatchingType === 'application/json'
+const acceptItems = Accept.parse(acceptHeader)
+const matchItem = Accept.selectItemFrom(acceptItems, supportedType)
+// returned matchItem will be undefined if no valid match
+//   otherwise it will contain the full users AcceptItem
+//   (AcceptItem will be resolved if mimetype any is encountered)
+
+// matchItem.mimetype === 'application/json'
+// generate a JSON response (Response.json(...))
 ```
 
 ## Response
 
-All responders take in a `stream` as well as a metadata object to hint on servername and origin strings etc.
+Response class contain a full list of response function that represent their HTTP status codes.
 
-- [`sendAccepted`](#responseaccepted)
-- [`sendConflict`](#responseconflict)
-- [`sendContentTooLarge`](#)
-- [`sendCreated`](#responsecreated)
-- [`sendError`](#responseerror) - 500
-- [`sendForbidden`](#responseforbidden)
-- [`sendGone`](#responsegone)
-- [`sendImATeapot`](#)
-- [`sendInsufficientStorage`](#)
-- [`sendJSON`](#responsejson) - Standard Ok response with encoding
-- [`sendMovedPermanently`](#responsemovedpermanently)
-- [`sendMultipleChoices`](#)
-- [`sendNoContent`](#responsenocontent)
-- [`sendNotAcceptable`](#responsenotacceptable)
-- [`sendNotAllowed`](#responsenotallowed) - Method not supported / allowed
-- [`sendNotFound`](#responsenotfound) - 404
-- [`sendNotImplemented`](#responsenotimplemented)
-- [`sendNotModified`](#responsenotmodified)
-- [`sendPartialContent`](#)
-- [`sendPermanentRedirect`](#)
-- [`sendPreconditionFailed`](#responsepreconditionfailed)
-- [`sendPreflight`](#responsepreflight) - Response to OPTIONS with CORS headers
-- [`sendRangeNotSatisfiable`](#responserangenotsatisfiable)
-- [`sendSeeOther`](#)
-- [`sendTemporaryRedirect`](#)
-- [`sendTimeout`](#responsetimeout)
-- [`sendTooManyRequests`](#responsetoomanyrequests) - Rate limit response (429)
-- [`sendTrace`](#responsetrace)
-- [`sendUnauthorized`](#responseunauthorized) - Unauthorized
-- [`sendUnavailable`](#responseunavailable)
-- [`sendUnprocessable`](#responseunprocessable)
-- [`sendUnsupportedMediaType`](#responseunsupportedmediatype)
-- [`sendSSE`](#responsesse) - SSE header (leave the `stream` open)
+Each functions first parameter is the response `stream`, they all also take in a `context` and `meta`.
 
-Responses allow for optional CORS headers as well as Server Timing meta data.
+Each function takes a specific set of parameters that are related to the status code grammar.  This help create consistency across responses.
 
-## Response Object
+- 2xx
+  - [`Accepted`](#)
+  - [`Created`](#)
+  - [`NoContent`](#)
+  - [`Bytes`](#) - access to response with raw bytes (un-encoded)
+  - [`Encoded`](#) - access to response with encoded byte stream
+  - [`JSON`](#) - response with JSON object (auto encoded)
+  - [`Preflight`](#) - Response to OPTIONS with CORS headers
+  - [`SSE`](#) - SSE header (leave the `stream` open)
+  - [`Trace`](#)
+  - [`PartialContent`](#)
+  - [`ResetContent`](#)
 
-The response methods `sendXYZ` are also wrapped in a `Response` object which can make imports simpler and help organize code.
+- 3xx
+  - [`Found`](#)
+  - [`MovedPermanently`](#)
+  - [`MultipleChoices`](#)
+  - [`NotModified`](#)
+  - [`PermanentRedirect`](#)
+  - [`SeeOther`](#)
+  - [`TemporaryRedirect`](#)
+
+- 4xx
+  - [`BadRequest`](#)
+  - [`Conflict`](#)
+  - [`ContentTooLarge`](#)
+  - [`Forbidden`](#)
+  - [`Gone`](#)
+  - [`ImATeapot`](#)
+  - [`NotAcceptable`](#)
+  - [`NotAllowed`](#) - Method not supported / allowed
+  - [`NotFound`](#) - 404
+  - [`PaymentRequired`](#)
+  - [`PreconditionFailed`](#)
+  - [`PreconditionRequired`](#)
+  - [`RangeNotSatisfiable`](#)
+  - [`Timeout`](#)
+  - [`TooManyRequests`](#) - Rate limit response (429)
+  - [`Unauthorized`](#) - Unauthorized
+  - [`Unprocessable`](#)
+  - [`UnsupportedMediaType`](#)
+
+- 5xx
+  - [`Error`](#) - 500
+  - [`InsufficientStorage`](#)
+  - [`NotImplemented`](#)
+  - [`Unavailable`](#)
+  - [`VariantAlsoNegotiates`](#)
+
+## Example Response
 
 ```js
 import { Response } from '@johntalton/http-util/response/object'
 
-// ... sendNotFound becomes .notFound
+//
 Response.notFound(stream, meta)
 ```
+
+Alternatively, calling function style exists, and is identical.
+
+```js
+import { Response } from '@johntalton/http-util/response'
+
+//
+sendNotFound(stream, meta)
+```
+
 
 ## Body
 
@@ -134,235 +188,3 @@ const body = futureBody.json()
 
 ```
 
-## Response method API
-
-All response methods take in the `stream` and a `meta` property.
-
-Additional parameters are specific to each return type.
-
-Each return type semantic may also expose header (in addition to the standard headers) to the calling code as needed.
-
-Some common objects can be passed such as `EtagItem`, `CacheControlOptions` and `Metadata` have their own structure.
-
-Many parameters accept `undefined` to skip/ignore the usage
-
-### Response.accepted
-
-Parameters:
-- stream
-- meta
-
-### Response.conflict
-
-Parameters:
-- stream
-- meta
-
-
-### Response.created
-
-Parameters:
-- stream
-- location - URL to newly create object
-- etag - etag of the related object
-- meta
-
-Additional Exposed Headers:
-- location
-
-### Response.error
-
-Parameters:
-- stream
-- meta
-
-### Response.forbidden
-
-Parameters:
-- stream
-- meta
-
-### Response.gone
-
-Parameters:
-- stream
-- meta
-
-### Response.movedPermanently
-
-Parameters:
-- steam
-- location
-- meta
-
-Additional Exposed Headers:
-- location
-
-### Response.json
-
-Parameters:
-- stream
-- object
-- encoding - undefined | 'identity' | 'br' | 'gzip' | 'deflate' | 'zstd'
-- etag
-- age
-- cacheControl
-- supportedQueryTypes - undefined | Array of supported query types
-- meta
-
-Additional Exposed Headers
-- age
-- accept-query
-
-### Response.noContent
-
-Parameters:
-- stream
-- etag
-- meta
-
-### Response.notAcceptable
-
-Parameters:
-- stream
-- acceptedTypes - mime types list this route can generate
-- meta
-
-### Response.notAllowed
-
-Parameters:
-- stream
-- methods - Array of allowed methods
-- meta
-
-Additional Exposed Headers:
-- allow
-
-### Response.notFound
-
-Parameters:
-- stream
-- message
-- meta
-
-### Response.notImplemented
-
-Parameters:
-- stream
-- message
-- meta
-
-### Response.notModified
-
-Parameters:
-- stream
-- etag
-- age
-- cacheControl
-- meta
-
-Additional Exposed Headers:
-- age
-
-### Response.preconditionFailed
-
-Parameters:
-- stream
-- meta
-
-### Response.preflight
-
-Parameters:
-- stream
-- methods
-- supportedQueryTypes - undefined | Array of supported types
-- acceptRanges
-- meta
-
-Additional Exposed Headers:
-- accept-query
-- accept-ranges
-
-### Response.rangeNotSatisfiable
-
-Parameters:
-- stream
-- directive - specify size of acceptable range of bytes
-- meta
-
-Additional Exposed Headers:
-- content-range
-
-### Response.sse
-
-Parameters:
-- stream
-- meta
-
-
-### Response.timeout
-
-Parameters:
-- stream
-- meta
-
-
-### Response.tooManyRequests
-
-Parameters:
-- stream
-- limitInfo - `RateLimitInfo`
-- policies - Array of `RateLimitPolicyInfo`
-- meta
-
-Additional Exposed Headers:
-- retry-after
-- rate-limit
-- rate-limit-policy
-
-### Response.trace
-
-Parameters:
-- stream
-- method
-- url
-- headers
-- meta
-
-### Response.unauthorized
-
-Parameters:
-- stream
-- challenge
-- meta
-
-
-### Response.unavailable
-
-Parameters:
-- stream
-- message
-- retryAfter
-- meta
-
-Additional Exposed Headers:
-- retry-after
-
-### Response.unprocessable
-
-Parameters:
-- stream
-- meta
-
-### Response.unsupportedMediaType
-
-Parameters:
-- stream
-- supportedPostType
-- supportedPatchType
-- supportedQueryTypes
-- meta
-
-Additional Exposed Headers:
-- accept-query
-- accept-post
