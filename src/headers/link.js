@@ -1,4 +1,4 @@
-import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_PARAMETER_JOINER_SEMICOLON, normalizeToArray } from '../defs.js'
+import { COMMON_LIST_HEADER_JOINER_COMMA, COMMON_LIST_PARAMETER_JOINER_SEMICOLON, EMPTY, normalizeToArray } from '../defs.js'
 import { KVP } from './util/kvp.js'
 
 /**
@@ -18,7 +18,10 @@ export class Link {
 	/**
 	 * @param {LinkItem} link
 	 */
-	static *#encode(link) {
+	static *#encodeLink(link) {
+		if(link.url === undefined) { return }
+		if(link.url === EMPTY) { return }
+
 		const encodedUri = (link.url instanceof URL) ? link.url : encodeURI(link.url)
 
 		yield `<${encodedUri}>`
@@ -40,6 +43,17 @@ export class Link {
 	}
 
 	/**
+	 * @param {Array<LinkItem>} links
+	 */
+	static *#encodeList(links) {
+		for(const link of links) {
+			const result = Array.from(Link.#encodeLink(link))
+			if(result.length === 0) { continue }
+			yield result.join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON)
+		}
+	}
+
+	/**
 	 * @param {Array<LinkItem>|LinkItem|undefined} links
 	 * @param {boolean} [asArray = false]
 	 */
@@ -48,8 +62,8 @@ export class Link {
 		if(linkAry === undefined) { return undefined }
 		if(linkAry.length === 0) { return undefined }
 
-		const ary = linkAry
-			.map(link => [ ...Link.#encode(link) ].join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON))
+		const ary = Array.from(Link.#encodeList(linkAry))
+		if(ary.length === 0) { return undefined }
 
 		return asArray ? ary : ary.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}

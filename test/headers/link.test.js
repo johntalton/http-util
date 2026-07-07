@@ -106,6 +106,28 @@ describe('Link', () => {
 			], true)
 			assert.deepEqual(result, ['<foo.html>; rel="foo"', '<bar.html>; rel="bar"' ])
 		})
+
+		it('should handle dropping when link url is undefined', () => {
+			const result = Link.encode([
+				{ url: undefined, relation: 'NotOK' }
+			])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle dropping when link url is Empty string', () => {
+			const result = Link.encode([
+				{ url: '', relation: 'NotOK' }
+			])
+			assert.equal(result, undefined)
+		})
+
+		it('should handle dropping when link url is undefined (multiple)', () => {
+			const result = Link.encode([
+				{ url: 'valid', relation: 'OK' },
+				{ url: undefined, relation: 'NotOK' }
+			])
+			assert.equal(result, '<valid>; rel="OK"')
+		})
 	})
 })
 
