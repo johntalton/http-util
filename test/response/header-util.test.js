@@ -302,7 +302,7 @@ describe('Header Util', () => {
 			})
 			assert.deepEqual(result, {
 				'content-security-policy': 'default-src \'self\'',
-				'content-security-policy-report-only': 'img-src \'blob:\''
+				'content-security-policy-report-only': 'img-src blob:'
 			})
 		})
 	})

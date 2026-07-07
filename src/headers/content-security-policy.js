@@ -353,7 +353,7 @@ export function singleQuoteValue(value) {
  */
 export function processFetchSource(source) {
 	if(source === CSP_SOURCE_NONE) { return singleQuoteValue(source) }
-	if(KNOWN_CSP_SCHEME_SOURCE.includes(source)) { return singleQuoteValue(source) }
+	if(KNOWN_CSP_SCHEME_SOURCE.includes(source)) { return source }
 	if(KNOWN_CSP_SOURCE_EXPRESSIONS.includes(source)) { return singleQuoteValue(source) }
 
 	if(isHash(source)) { return singleQuoteValue(source) }
@@ -376,7 +376,7 @@ export function processFetch(prefix, list) {
  */
 export function processDocumentValue(value) {
 	if(value === CSP_SOURCE_NONE) { return singleQuoteValue(value) }
-	if(KNOWN_CSP_SCHEME_SOURCE.includes(value)) { return singleQuoteValue(value) }
+	if(KNOWN_CSP_SCHEME_SOURCE.includes(value)) { return value }
 	if(KNOWN_CSP_SOURCE_EXPRESSIONS.includes(value)) { return singleQuoteValue(value) }
 
 	return value
@@ -396,7 +396,7 @@ export function processDocument(prefix, list) {
  */
 export function processNavigationValue(value) {
 	if(value === CSP_SOURCE_NONE) { return singleQuoteValue(value) }
-	if(KNOWN_CSP_SCHEME_SOURCE.includes(value)) { return singleQuoteValue(value) }
+	if(KNOWN_CSP_SCHEME_SOURCE.includes(value)) { return value }
 	if(KNOWN_CSP_SOURCE_EXPRESSIONS.includes(value)) { return singleQuoteValue(value) }
 
 	return value

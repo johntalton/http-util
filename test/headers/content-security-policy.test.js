@@ -116,7 +116,7 @@ describe('ContentSecurityPolicy', () => {
 				workerSrc: ContentSecurityPolicy.host('worker.internal/worker')
 			})
 
-			assert.equal(result, 'default-src \'self\'; script-src \'inline-speculation-rules\' \'strict-dynamic\'; script-src-attr \'none\'; script-src-elem \'wasm-unsafe-eval\'; style-src \'nonce-ABCD\'; child-src \'none\'; font-src \'self\'; frame-src; manifest-src \'blob:\'; media-src \'self\' \'https:\'; object-src \'none\'; worker-src worker.internal/worker')
+			assert.equal(result, 'default-src \'self\'; script-src \'inline-speculation-rules\' \'strict-dynamic\'; script-src-attr \'none\'; script-src-elem \'wasm-unsafe-eval\'; style-src \'nonce-ABCD\'; child-src \'none\'; font-src \'self\'; frame-src; manifest-src blob:; media-src \'self\' https:; object-src \'none\'; worker-src worker.internal/worker')
 		})
 
 		it('should handle script with hash and unsafe', () => {
@@ -184,7 +184,7 @@ describe('ContentSecurityPolicy', () => {
 			const result = ContentSecurityPolicy.encode({
 				baseUri: 'https:'
 			})
-			assert.equal(result, 'base-uri \'https:\'')
+			assert.equal(result, 'base-uri https:')
 		})
 
 		it('should handle document base uri as scheme', () => {
@@ -235,7 +235,7 @@ describe('ContentSecurityPolicy', () => {
 				sandbox: [ 'allow-popups', 'allow-modals' ],
 				connectSrc: 'https:'
 			})
-			assert.equal(result, 'connect-src \'https:\'; sandbox allow-popups allow-modals')
+			assert.equal(result, 'connect-src https:; sandbox allow-popups allow-modals')
 		})
 
 		it('should handle navigation frame ancestors self', () => {
@@ -256,7 +256,7 @@ describe('ContentSecurityPolicy', () => {
 			const result = ContentSecurityPolicy.encode({
 				frameAncestors: 'blob:'
 			})
-			assert.equal(result, 'frame-ancestors \'blob:\'')
+			assert.equal(result, 'frame-ancestors blob:')
 		})
 
 		it('should handle navigation frame ancestors empty array ', () => {
@@ -270,7 +270,7 @@ describe('ContentSecurityPolicy', () => {
 			const result = ContentSecurityPolicy.encode({
 				frameAncestors: [ 'blob:', 'https:' ]
 			})
-			assert.equal(result, 'frame-ancestors \'blob:\' \'https:\'')
+			assert.equal(result, 'frame-ancestors blob: https:')
 		})
 
 		it('should handle navigation frame ancestors host', () => {
