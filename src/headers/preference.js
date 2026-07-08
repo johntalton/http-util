@@ -60,11 +60,13 @@ export class Preferences {
 		const preferences = new Map(header.split(PREFERENCE_SEPARATOR.PREFERENCE)
 			.map(pref => {
 				const { name: kvp, parameters } = KVP.parse(pref) ?? { parameters: new Map() }
-				const [ key, rawValue ] = kvp?.split(PREFERENCE_SEPARATOR.KVP) ?? []
+				const [ rawKey, rawValue ] = kvp?.split(PREFERENCE_SEPARATOR.KVP) ?? []
 
-				if(key === undefined) { return {} }
+				if(rawKey === undefined) { return {} }
 				const valueOrEmpty = isQuoted(rawValue) ? stripQuotes(rawValue) : rawValue
 				const value = (valueOrEmpty !== EMPTY) ? valueOrEmpty : undefined
+
+				const key = rawKey.toLowerCase()
 
 				return { key, value, parameters }
 			})

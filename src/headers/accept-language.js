@@ -25,6 +25,8 @@ export class AcceptLanguage {
 	 * @returns {AcceptStyleItem | undefined}
 	 */
 	static selectItemFrom(acceptLanguages, supportedTypes) {
+		// todo this does NOT follow https://www.rfc-editor.org/rfc/rfc4647.html
+
 		if(!isNonEmptyArray(acceptLanguages)) { return undefined }
 		if(!isNonEmptyArray(supportedTypes)) { return undefined }
 

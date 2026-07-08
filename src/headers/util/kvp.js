@@ -48,13 +48,19 @@ export class KVP {
 		if(str === undefined) { return undefined }
 		if(str === EMPTY) { return undefined }
 
-		const [ name, ...params ] = str
+		const [ rawName, ...params ] = str
 			.trim()
 			.split(DEFAULT_DELIMITER)
 			.map(p => p.trim())
 
-		if(name === EMPTY) { return undefined }
-		// todo most callers expect name to be lowercase, is that always?
+		// todo rawName === undefined ?
+
+		if(rawName === EMPTY) { return undefined }
+
+		// We specifically do NOT assign name to the lower case version
+		//  because it may itself be a KVP, and thus the caller is responsible
+		//  for the processing.
+		const name = rawName
 
 		const parameters = KVP.#parse(params, acceptableKeys)
 

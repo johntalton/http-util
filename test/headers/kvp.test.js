@@ -45,7 +45,7 @@ describe('KVP', () => {
 		})
 
 		it('should handle named and name only param', () => {
-			const result = KVP.parse('NAME;foo')
+			const result = KVP.parse('NAME;FOO')
 			assert.deepEqual(result, {
 				name: 'NAME',
 				parameters: new Map([ [ 'foo', undefined] ])
@@ -73,6 +73,14 @@ describe('KVP', () => {
 			assert.deepEqual(result, {
 				name: 'NAME',
 				parameters: new Map([ [ 'foo', '2' ] ])
+			})
+		})
+
+		it('should handle parameter value case sensitive (name preserves case)', () => {
+			const result = KVP.parse('NAME;FOO=BAR')
+			assert.deepEqual(result, {
+				name: 'NAME',
+				parameters: new Map([ [ 'foo', 'BAR'] ])
 			})
 		})
 	})

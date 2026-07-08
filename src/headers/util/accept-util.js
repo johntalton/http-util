@@ -32,10 +32,12 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 		.trim()
 			.split(SEPARATOR.MEDIA_RANGE)
 			.map(mediaRange => {
-				const { name, parameters } = KVP.parse(mediaRange) ?? { parameters: new Map() }
-				if(name === undefined) { return undefined }
+				const { name: rawName, parameters } = KVP.parse(mediaRange) ?? { parameters: new Map() }
+				if(rawName === undefined) { return undefined }
 				/* c8 ignore next */
-				if(name === EMPTY) { return undefined } // impossible as kvp.parse returns undefined if name empty
+				if(rawName === EMPTY) { return undefined } // impossible as kvp.parse returns undefined if name empty
+
+				const name = rawName.toLowerCase()
 
 				const quality = Number.parseFloat(parameters.get(QUALITY) ?? DEFAULT_QUALITY_STRING)
 

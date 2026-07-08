@@ -99,6 +99,82 @@ describe('Preferences', () => {
 			})
 		})
 
+		it('should treat empty and blank as same', () => {
+			const resultA = Preferences.parse('foo; bar')
+			const resultB = Preferences.parse('foo; bar=""')
+			const resultC = Preferences.parse('foo=""; bar')
+
+			assert.deepEqual(resultA, resultB)
+			assert.deepEqual(resultA, resultC)
+
+			assert.deepEqual(resultA, {
+				asynchronous: false,
+				handling: undefined,
+				preferences: new Map([
+					[ 'foo', {
+						value: undefined,
+						parameters: new Map([
+							[ 'bar', undefined ]
+						])
+					} ],
+				]),
+				representation: undefined,
+				timezone: undefined,
+				wait: undefined
+			})
+		})
+
+		it('should handle asynchronous (no value)', () => {
+			const result = Preferences.parse('respond-async; foo=bar, handling="STRICT"')
+			assert.deepEqual(result, {
+				asynchronous: true,
+				handling: 'STRICT',
+				representation: undefined,
+				timezone: undefined,
+				wait: undefined,
+				preferences: new Map([
+					[ 'handling', { value: 'STRICT', parameters: new Map() } ],
+					[ 'respond-async', { value: undefined, parameters: new Map([ [ 'foo', 'bar' ] ]) } ]
+				])
+			})
+		})
+
+		it('should handle asynchronous (no value - swapped order)', () => {
+			const result = Preferences.parse('handling="STRICT", respond-async; foo=bar')
+			assert.deepEqual(result, {
+				asynchronous: true,
+				handling: 'STRICT',
+				representation: undefined,
+				timezone: undefined,
+				wait: undefined,
+				preferences: new Map([
+					[ 'handling', { value: 'STRICT', parameters: new Map() } ],
+					[ 'respond-async', { value: undefined, parameters: new Map([ [ 'foo', 'bar' ] ]) } ]
+				])
+			})
+		})
+
+
+		it('should handle case-insensitive keys', () => {
+			const result = Preferences.parse('RETURN="Minimal"')
+			assert.deepEqual(result, {
+				asynchronous: false,
+				handling: undefined,
+				representation: 'Minimal',
+				timezone: undefined,
+				wait: undefined,
+				preferences: new Map([
+					[
+						'return',
+						{
+							value: 'Minimal',
+							parameters: new Map()
+						}
+					]
+				])
+			})
+		})
+
 	})
 })
 
