@@ -98,7 +98,10 @@ export class ContentDisposition {
 
 			// todo this is just hacked in - charset is variable and the quotes could be a language
 			if(fallbackFilename !== disposition.filename) {
-				yield KVP.encode(DISPOSITION_PARAM_FILENAME_EXTENDED, 'UTF-8\'\'' + encodeURIComponent(disposition.filename))
+				const encoding = 'UTF-8'
+				const lang = ''
+				const prefix = `${encoding}'${lang}'`
+				yield KVP.encode(DISPOSITION_PARAM_FILENAME_EXTENDED, `${prefix}${encodeURIComponent(disposition.filename)}`)
 			}
 		}
 
