@@ -14,7 +14,8 @@ import {
 	coreHeaders,
 	customHeaders,
 	legacyHeaders,
-	performanceHeaders
+	performanceHeaders,
+	varyHeaders
 } from './header-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
@@ -34,7 +35,6 @@ const {
 
 const {
 	HTTP2_HEADER_CONTENT_ENCODING,
-	HTTP2_HEADER_VARY,
 	HTTP2_HEADER_CACHE_CONTROL,
 	HTTP2_HEADER_ETAG,
 	HTTP2_HEADER_LAST_MODIFIED,
@@ -45,7 +45,6 @@ const {
 	HTTP2_HEADER_CONTENT_DISPOSITION,
 	HTTP2_HEADER_ACCEPT,
 	HTTP2_HEADER_ACCEPT_ENCODING,
-	HTTP2_HEADER_RANGE,
 	HTTP2_HEADER_RETRY_AFTER
 } = http2.constants
 
@@ -58,7 +57,7 @@ const {
  * @param {Metadata} meta
  */
 export function send_no_body(stream, status, headers, exposedHeaders, context, meta) {
-	send(stream, status, headers, exposedHeaders, undefined, undefined, context, meta)
+	send(stream, status, headers, exposedHeaders, undefined, undefined, undefined, context, meta)
 }
 
 /**
@@ -77,10 +76,11 @@ export function send_error(stream, status, message, retryAfter, context, meta) {
 	})
 
 	const exposedHeaders = Number.isInteger(retryAfter) ? [ HTTP2_HEADER_RETRY_AFTER ] : []
+	const customVaryHeaders = undefined
 
 	send(stream, status, {
 		[HTTP2_HEADER_RETRY_AFTER]: Number.isInteger(retryAfter) ? `${retryAfter}` : undefined
-	}, exposedHeaders, CONTENT_TYPE_JSON, obj, context, meta) // todo should this be plain text
+	}, exposedHeaders, customVaryHeaders, CONTENT_TYPE_JSON, obj, context, meta) // todo should this be plain text
 }
 
 /** @typedef { (data: InputType) => Buffer<ArrayBuffer> } EncoderFun */
@@ -211,14 +211,13 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
 	if(range !== undefined) { exposedHeaders.push(HTTP2_HEADER_CONTENT_RANGE) }
 	if(supportsQuery) { exposedHeaders.push(HTTP_HEADER_ACCEPT_QUERY) }
 
-	const varyHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
-	if(range !== undefined) { varyHeaders.push(HTTP2_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
+	const customVaryHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
+	//if(range !== undefined) { customVaryHeaders.push(HTTP2_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
 	// todo add to Vary "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site"
 	// todo add to Very "Origin"
 
 	send(stream, status, {
 			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
-			[HTTP2_HEADER_VARY]: varyHeaders.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
 			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified),
@@ -228,7 +227,7 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
 			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
 			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA)
-		}, exposedHeaders, contentType, obj, context, meta)
+		}, exposedHeaders, customVaryHeaders, contentType, obj, context, meta)
 }
 
 /**
@@ -236,12 +235,13 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
  * @param {number} status
  * @param {OutgoingHttpHeaders} headers
  * @param {Array<string>} exposedHeaders
+ * @param {Array<string>|undefined} customVaryHeaders
  * @param {string|undefined} contentType
  * @param {SendBody|undefined} body
  * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send(stream, status, headers, exposedHeaders, contentType, body, context, meta) {
+export function send(stream, status, headers, exposedHeaders, customVaryHeaders, contentType, body, context, meta) {
 	// todo Assert.isString(contentType) if not undefined
 	// if(status >= 400) { console.warn(status, body) }
 	if(status === HTTP_STATUS_UNAUTHORIZED) { console.warn(status, body) }
@@ -263,10 +263,13 @@ export function send(stream, status, headers, exposedHeaders, contentType, body,
 		const custom = customHeaders(meta)
 		const exposed = [ ...exposedHeaders, ...Object.keys(custom) ]
 
+		const { vary: contextVaryHeaders, headers: contextValues } = contextHeaders(context)
+
 		stream.respond({
 			...legacyHeaders(false),
 			...coreHeaders(status, contentType, exposed, meta),
-			...contextHeaders(context),
+			...contextValues,
+			...varyHeaders(customVaryHeaders, contextVaryHeaders),
 			...performanceHeaders(meta),
 			...headers,
 			...custom

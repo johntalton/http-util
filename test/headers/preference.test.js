@@ -188,7 +188,7 @@ describe('AppliedPreferences', () => {
 		it('should handle empty', () => {
 			const result = AppliedPreferences.encode({
 			})
-			assert.equal(result, '')
+			assert.equal(result, undefined)
 		})
 
 		it('should handle wait', () => {

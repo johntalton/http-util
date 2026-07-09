@@ -101,21 +101,23 @@ export class AppliedPreferences {
 	 * @param {Map<string, string|undefined>} preferences
 	 */
 	static #encode_Map(preferences) {
-		return [ ...preferences.entries()
+		const result = [ ...preferences.entries()
 			.map(([ key, value ]) => {
 				// todo check if value should be quoted
-				// todo use joiner over separator
 				if(value !== undefined) { return KVP.encode(key, value) }
 				return key
 			}) ]
-			.join(COMMON_LIST_VALUE_JOINER_COMMA)
+
+		if(result.length === 0) { return undefined }
+
+		return result.join(COMMON_LIST_VALUE_JOINER_COMMA)
 	}
 
 	/**
 	 * @param {AppliedPreferencesInput|undefined} preferences
 	 */
 	static encode(preferences) {
-		if(preferences === undefined) { return undefined}
+		if(preferences === undefined) { return undefined }
 		if(preferences instanceof Map) {
 			return AppliedPreferences.#encode_Map(preferences)
 		}

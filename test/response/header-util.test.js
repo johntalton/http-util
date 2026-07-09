@@ -8,7 +8,8 @@ import {
 	coerceSupportedTypes,
 	contextHeaders,
 	policyHeaders,
-	legacyHeaders
+	legacyHeaders,
+	mergeHeaders
 } from '@johntalton/http-util/response'
 
 import { ReportingEndpoints } from '@johntalton/http-util/headers'
@@ -222,7 +223,10 @@ describe('Header Util', () => {
 
 		it('should handle empty set', () => {
 			const result = contextHeaders({})
-			assert.deepEqual(result, {})
+			assert.deepEqual(result, {
+				vary: undefined,
+				headers: {}
+			})
 		})
 
 		it('should handle basics', () => {
@@ -233,10 +237,13 @@ describe('Header Util', () => {
 				links: [ { relation: 'test', url: './test' } ]
 			})
 			assert.deepEqual(result, {
-				'accept-ch': 'Save-Data, RTT',
-				'preference-applied': 'return=minimal,handling=lenient,wait=42',
-				'clear-site-data': '*',
-				'link': '<./test>; rel="test"'
+				vary: [ 'prefer' ],
+				headers: {
+					'accept-ch': 'Save-Data, RTT',
+					'preference-applied': 'return=minimal,handling=lenient,wait=42',
+					'clear-site-data': '*',
+					'link': '<./test>; rel="test"'
+					}
 			})
 		})
 	})
@@ -324,6 +331,40 @@ describe('Header Util', () => {
 				'x-content-type-options': 'nosniff',
 				'x-xss-protection': '0'
 			})
+		})
+	})
+
+	describe('cleanHeaders', () => {})
+
+	describe('mergeHeaders', () => {
+		it('should handle undefined', () => {
+			const result = mergeHeaders(undefined)
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle empty array', () => {
+			const result = mergeHeaders([])
+			assert.deepEqual(result, {})
+		})
+
+		it('should return identity', () => {
+			const result = mergeHeaders([{ vary: 'bar' }])
+			assert.deepEqual(result, { vary: 'bar' })
+		})
+
+		it('should return merge duplicate', () => {
+			const result = mergeHeaders([{ vary: 'bar' }, { vary: 'foo' }])
+			assert.deepEqual(result, { vary: 'bar, foo' })
+		})
+
+		it('should return merge duplicate array', () => {
+			const result = mergeHeaders([{ accept: ['bar', 'bang' ] }, { accept: 'foo' }])
+			assert.deepEqual(result, { accept: 'bar, bang, foo' })
+		})
+
+		it('should return skip undefined', () => {
+			const result = mergeHeaders([{ vary: undefined }, { vary: 'foo' }])
+			assert.deepEqual(result, { vary: 'foo' })
 		})
 	})
 })

@@ -1,6 +1,7 @@
 import http2 from 'node:http2'
 
 import {
+	COMMON_LIST_HEADER_JOINER_COMMA,
 	COMMON_LIST_VALUE_JOINER_COMMA,
 	CUSTOM_HEADER_PREFIX,
 	HTTP_HEADER_ACCEPT_CLIENT_HINTS,
@@ -55,7 +56,9 @@ const {
 	HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
 	HTTP2_HEADER_ETAG,
 	HTTP2_HEADER_LINK,
-	HTTP2_HEADER_STRICT_TRANSPORT_SECURITY
+	HTTP2_HEADER_STRICT_TRANSPORT_SECURITY,
+	HTTP2_HEADER_VARY,
+	HTTP2_HEADER_PREFER
 } = http2.constants
 
 /**
@@ -129,17 +132,40 @@ export function policyHeaders(policy) {
 
 /**
  * @param {SendContext} context
- * @returns {OutgoingHttpHeaders}
+ * @returns {{ vary?: Array<string>|undefined, headers?: OutgoingHttpHeaders }}
  */
 export function contextHeaders(context) {
 	if(context === undefined) { return {} }
 
+	const appliedPreferences = AppliedPreferences.encode(context.appliedPreferences)
+	const vary = appliedPreferences === undefined ? undefined : [ HTTP2_HEADER_PREFER ]
+
+	return {
+		vary,
+		headers: cleanHeaders({
+			[HTTP_HEADER_CLEAR_SITE_DATE]: SiteData.encode(context.clearSiteData),
+			[HTTP_HEADER_ACCEPT_CLIENT_HINTS]: ClientHints.encode(context.acceptClientHints),
+			[HTTP2_HEADER_LINK]: Link.encode(context.links),
+			[HTTP_HEADER_PREFERENCE_APPLIED]: appliedPreferences,
+			...policyHeaders(context.policy)
+		})
+	}
+}
+
+/**
+ * @param {...Array<string>|undefined} headers
+ */
+export function varyHeaders(...headers) {
+	const vary = headers.map(header => {
+		if(header === undefined) { return undefined }
+		return header.join(COMMON_LIST_VALUE_JOINER_COMMA)
+	})
+	.filter(header => header !== undefined)
+
+	if(vary.length === 0) { return {} }
+
 	return cleanHeaders({
-		[HTTP_HEADER_CLEAR_SITE_DATE]: SiteData.encode(context.clearSiteData),
-		[HTTP_HEADER_ACCEPT_CLIENT_HINTS]: ClientHints.encode(context.acceptClientHints),
-		[HTTP2_HEADER_LINK]: Link.encode(context.links),
-		[HTTP_HEADER_PREFERENCE_APPLIED]: AppliedPreferences.encode(context.appliedPreferences),
-		...policyHeaders(context.policy)
+		[HTTP2_HEADER_VARY]: vary.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	})
 }
 
@@ -245,4 +271,35 @@ export function coerceSupportedTypes(methods, supportedTypes) {
 		post: normalizeToArray(supportedTypes.post),
 		patch: normalizeToArray(supportedTypes.patch)
 	}
+}
+
+/**
+ * @param {Array<OutgoingHttpHeaders>} headersSet
+ */
+export function mergeHeaders(headersSet) {
+	if(headersSet === undefined) { return {} }
+	const result = new Map()
+
+	for(const headers of headersSet) {
+		for(const [ header, value ] of Object.entries(headers)) {
+			if(value === undefined) {
+				if(result.has(header)) { continue }
+				result.set(header, [])
+			}
+			else if(result.has(header)) {
+				const current = result.get(header)
+				result.set(header, [ ...current, value ])
+			}
+			else {
+				result.set(header, Array.isArray(value) ? value : [ value ])
+			}
+		}
+	}
+
+	return Object.fromEntries(result.entries()
+		.map(([ key, value ]) => {
+			if(value.length === 0) { return [ key, undefined ] }
+			if(value.length === 1) { return [ key, value[0] ] }
+			return [ key, value?.join(COMMON_LIST_HEADER_JOINER_COMMA) ]
+		}))
 }

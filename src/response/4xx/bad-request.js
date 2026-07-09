@@ -17,5 +17,5 @@ const { HTTP_STATUS_BAD_REQUEST } = http2.constants
 export function sendBadRequest(stream, message, context, meta) {
 	// todo Assert.isString(message) if not undefined
 	// todo if message is undefined used send_no_body
-	send(stream, HTTP_STATUS_BAD_REQUEST, {}, [], CONTENT_TYPE_TEXT, message, context, meta)
+	send(stream, HTTP_STATUS_BAD_REQUEST, {}, [], undefined, CONTENT_TYPE_TEXT, message, context, meta)
 }

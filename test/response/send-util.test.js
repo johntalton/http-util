@@ -357,7 +357,7 @@ describe('send_util', () => {
 				pull() { throw new Error('induced') }
 			})
 
-			send(stream, 200, {}, [], undefined, obj, {}, structuredClone(DEFAULT_META))
+			send(stream, 200, {}, [], undefined, undefined, obj, {}, structuredClone(DEFAULT_META))
 
 			// todo what can we assert to make sure that happend
 			//  does the source stream get closed? or aborted?

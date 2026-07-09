@@ -40,5 +40,5 @@ export function sendTrace(stream, method, url, headers, context, meta) {
 		]
 		.join(LINE_ENDING)
 
-	send(stream, HTTP_STATUS_OK, {}, [], CONTENT_TYPE_MESSAGE_HTTP, reconstructed, context, meta)
+	send(stream, HTTP_STATUS_OK, {}, [], undefined, CONTENT_TYPE_MESSAGE_HTTP, reconstructed, context, meta)
 }

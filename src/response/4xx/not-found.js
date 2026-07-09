@@ -17,5 +17,5 @@ const { HTTP_STATUS_NOT_FOUND } = http2.constants
 export function sendNotFound(stream, message, context, meta) {
 	// todo Assert.isString(message) if not undefined
 	// todo if message is undefined used send_no_body
-	send(stream, HTTP_STATUS_NOT_FOUND, {}, [], CONTENT_TYPE_TEXT, message, context, meta)
+	send(stream, HTTP_STATUS_NOT_FOUND, {}, [], undefined, CONTENT_TYPE_TEXT, message, context, meta)
 }
