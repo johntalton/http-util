@@ -9,7 +9,9 @@ import {
 	contextHeaders,
 	policyHeaders,
 	legacyHeaders,
-	mergeHeaders
+	mergeHeaders,
+	varyHeaders,
+	cleanHeaders
 } from '@johntalton/http-util/response'
 
 import { ReportingEndpoints } from '@johntalton/http-util/headers'
@@ -334,7 +336,85 @@ describe('Header Util', () => {
 		})
 	})
 
-	describe('cleanHeaders', () => {})
+	describe('cleanHeaders', () => {
+		it('should handle undefined', () => {
+			const result = cleanHeaders(undefined)
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle empty object', () => {
+			const result = cleanHeaders({})
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle pass identity', () => {
+			const result = cleanHeaders({ foo: 'bar' })
+			assert.deepEqual(result, { foo: 'bar' })
+		})
+
+		it('should handle removing undefined values', () => {
+			const result = cleanHeaders({ key: undefined })
+			assert.deepEqual(result, {})
+		})
+	})
+
+	describe('varyHeaders', () => {
+		it('should handle undefined', () => {
+			const result = varyHeaders(undefined)
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle empty array', () => {
+			const result = varyHeaders([])
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle array of undefined', () => {
+			const result = varyHeaders([ undefined ])
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle multiple empty array', () => {
+			const result = varyHeaders([], [])
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle destructure empty array', () => {
+			const result = varyHeaders(...[ ])
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle empty array of empty string', () => {
+			const result = varyHeaders([ '' ])
+			assert.deepEqual(result, {})
+		})
+
+		it('should handle basic value', () => {
+			const result = varyHeaders([ 'foo' ])
+			assert.deepEqual(result, { vary: 'foo' })
+		})
+
+		it('should handle basic multiple values', () => {
+			const result = varyHeaders([ 'foo', 'bar' ])
+			assert.deepEqual(result, { vary: 'foo,bar' })
+		})
+
+		it('should handle basic multiple instances with empty values', () => {
+			const result = varyHeaders([ 'foo', 'bar' ], [ ])
+			assert.deepEqual(result, { vary: 'foo,bar' })
+		})
+
+		it('should handle basic multiple instances of multiple values', () => {
+			const result = varyHeaders([ 'foo', 'bar' ], [ 'biz', 'bang' ])
+			assert.deepEqual(result, { vary: 'foo,bar,biz,bang' })
+		})
+
+		it('should handle basic (duplicates)', () => {
+			const result = varyHeaders([ 'foo', ], [ 'foo' ])
+			assert.deepEqual(result, { vary: 'foo' })
+		})
+
+	})
 
 	describe('mergeHeaders', () => {
 		it('should handle undefined', () => {

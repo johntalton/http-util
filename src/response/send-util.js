@@ -3,7 +3,7 @@ import { compose, pipeline, Readable } from 'node:stream'
 import { ReadableStream } from 'node:stream/web'
 import zlib from 'node:zlib'
 
-import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY, isNonEmptyArray } from '../defs.js'
+import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY, HTTP_HEADER_PREFERENCE_APPLIED, isNonEmptyArray } from '../defs.js'
 import { CacheControl } from '../headers/cache-control.js'
 import { Conditional } from '../headers/conditional.js'
 import { ContentDisposition } from '../headers/content-disposition.js'
@@ -261,9 +261,13 @@ export function send(stream, status, headers, exposedHeaders, customVaryHeaders,
 
 	if(!stream.headersSent) {
 		const custom = customHeaders(meta)
-		const exposed = [ ...exposedHeaders, ...Object.keys(custom) ]
 
 		const { vary: contextVaryHeaders, headers: contextValues } = contextHeaders(context)
+		const exposeVaryHeader = contextVaryHeaders !== undefined
+		const exposedVary = exposeVaryHeader ? [ HTTP_HEADER_PREFERENCE_APPLIED ] : []
+
+		// todo does this need to be de-duplicated (reduce Set.union)
+		const exposed = [ ...exposedHeaders, ...Object.keys(custom), ...exposedVary ]
 
 		stream.respond({
 			...legacyHeaders(false),

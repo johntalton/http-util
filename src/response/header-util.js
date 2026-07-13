@@ -4,6 +4,7 @@ import {
 	COMMON_LIST_HEADER_JOINER_COMMA,
 	COMMON_LIST_VALUE_JOINER_COMMA,
 	CUSTOM_HEADER_PREFIX,
+	EMPTY,
 	HTTP_HEADER_ACCEPT_CLIENT_HINTS,
 	HTTP_HEADER_CLEAR_SITE_DATE,
 	HTTP_HEADER_CONTENT_SECURITY_POLICY,
@@ -64,7 +65,8 @@ const {
 /**
  * @param {Record<string,Array<string>|string|number|undefined>} headers
  */
-function cleanHeaders(headers) {
+export function cleanHeaders(headers) {
+	if(headers === undefined) { return {} }
 	return Object.fromEntries(Object.entries(headers)
 		.filter(([_, value]) => value !== undefined))
 }
@@ -156,17 +158,30 @@ export function contextHeaders(context) {
  * @param {...Array<string>|undefined} headers
  */
 export function varyHeaders(...headers) {
-	const vary = headers.map(header => {
-		if(header === undefined) { return undefined }
-		return header.join(COMMON_LIST_VALUE_JOINER_COMMA)
-	})
-	.filter(header => header !== undefined)
+	// const vary = headers.map(header => {
+	// 	if(header === undefined) { return undefined }
+	// 	if(header.length === 0) { return undefined }
+	// 	return header.join(COMMON_LIST_VALUE_JOINER_COMMA)
+	// })
+	// .filter(header => header !== undefined && header !== EMPTY)
 
+	// if(vary.length === 0) { return {} }
+
+	// return cleanHeaders({
+	// 	[HTTP2_HEADER_VARY]: vary.join(COMMON_LIST_HEADER_JOINER_COMMA)
+	// })
+
+	const result = headers.reduce((acc, header) => {
+		if(header === undefined) { return acc }
+		return acc.union(new Set(header.filter(key => key !== undefined && key !== EMPTY)))
+	}, new Set())
+
+	const vary = result.keys().toArray()
 	if(vary.length === 0) { return {} }
 
-	return cleanHeaders({
-		[HTTP2_HEADER_VARY]: vary.join(COMMON_LIST_HEADER_JOINER_COMMA)
-	})
+	return {
+		[HTTP2_HEADER_VARY]: vary.join(COMMON_LIST_VALUE_JOINER_COMMA)
+	}
 }
 
 /**
