@@ -23,7 +23,8 @@ export const MIME_TYPE_YAML = 'application/yaml'
 export const MIME_TYPE_PROTOBUF = 'application/protobuf'
 export const MIME_TYPE_REPORTING_JSON = 'application/reports+json'
 export const MIME_TYPE_CSP_REPORT = 'application/csp-report'
-
+export const MIME_TYPE_JSON_PATCH = 'application/json-patch+json'
+export const MIME_TYPE_JSON_MERGE_PATCH = 'application/merge-patch+json'
 
 // multipart
 export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
