@@ -15,7 +15,7 @@ describe('Response', () => {
 	describe('preflight', () => {
 		it('should handle basic values', () => {
 			const stream = new MockHttp2Stream()
-			const supportedMethods = [ 'TEST', 'FAKE' ]
+			const supportedMethods = [ 'TEST', 'FAKE', 'QUERY' ]
 			const supportedQueryTypes = [ 'text/sql' ]
 			const acceptRanges = undefined
 
@@ -33,7 +33,7 @@ describe('Response', () => {
 				'Server-Timing': undefined,
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
-				'access-control-expose-headers': 'etag,server',
+				'access-control-expose-headers': 'etag,server,accept-query',
 				'content-type': undefined,
 				server: undefined,
 
@@ -41,7 +41,7 @@ describe('Response', () => {
 				'accept-patch': undefined,
 				'accept-query': 'text/sql',
 				'accept-ranges': undefined,
-				'access-control-allow-methods': 'TEST,FAKE',
+				'access-control-allow-methods': 'TEST,FAKE,QUERY',
 				'access-control-allow-headers': 'if-match,if-none-match,authorization,content-type,range,if-range',
 				'access-control-max-age': '500'
 			})
@@ -226,6 +226,27 @@ describe('Response', () => {
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['access-control-allow-headers'], 'if-match,if-none-match,authorization,content-type,range,if-range,X-Fake')
+
+		})
+
+		it('should drop supported query when method not listed', () => {
+			const stream = new MockHttp2Stream()
+			const supportedMethods = [ 'NOT_QUERY' ]
+			const supportedQueryTypes = [ 'text/plain']
+			const acceptRanges = undefined
+
+			Response.preflight(stream, {
+				supportedMethods,
+				supportedHeaders: [ ],
+				supportedQueryTypes,
+				acceptRanges,
+				supportedTypes: []
+			}, {}, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['access-control-expose-headers'], 'etag,server')
+			assert.equal(stream.sentHeaders['accept-query'], undefined)
+
 
 		})
 
