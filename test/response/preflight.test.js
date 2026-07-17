@@ -21,6 +21,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods,
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: []
@@ -57,6 +58,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods,
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: []
@@ -93,6 +95,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods,
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: 'text/plain'
@@ -112,6 +115,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods,
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: 'text/plain'
@@ -131,6 +135,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods,
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: [ 'text/plain' ]
@@ -150,6 +155,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods,
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: [ 'text/plain', 'application/json' ]
@@ -168,6 +174,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods: [],
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: [ 'text/plain' ]
@@ -187,6 +194,7 @@ describe('Response', () => {
 
 			Response.preflight(stream, {
 				supportedMethods,
+				supportedHeaders: undefined,
 				supportedQueryTypes,
 				acceptRanges,
 				supportedTypes: {
@@ -200,6 +208,25 @@ describe('Response', () => {
 			assert.equal(stream.sentHeaders['accept-post'], 'application/json')
 			assert.equal(stream.sentHeaders['accept-patch'], 'text/plain')
 			assert.equal(stream.sentHeaders['access-control-expose-headers'], 'etag,server,accept-post,accept-patch')
+		})
+
+		it('should add additional supported headers', () => {
+			const stream = new MockHttp2Stream()
+			const supportedMethods = [ 'GET' ]
+			const supportedQueryTypes = undefined
+			const acceptRanges = undefined
+
+			Response.preflight(stream, {
+				supportedMethods,
+				supportedHeaders: [ 'X-Fake' ],
+				supportedQueryTypes,
+				acceptRanges,
+				supportedTypes: []
+			}, {}, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['access-control-allow-headers'], 'if-match,if-none-match,authorization,content-type,range,if-range,X-Fake')
+
 		})
 
 	})

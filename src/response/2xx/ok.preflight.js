@@ -32,13 +32,14 @@ const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {Pick<SendInfo, 'supportedMethods' | 'supportedTypes' | 'supportedQueryTypes' | 'acceptRanges'>} info
+ * @param {Pick<SendInfo, 'supportedMethods' | 'supportedHeaders' | 'supportedTypes' | 'supportedQueryTypes' | 'acceptRanges'>} info
  * @param {SendContext} context
  * @param {Metadata} meta
  */
 export function sendPreflight(stream, info, context, meta) {
 	const {
 		supportedMethods,
+		supportedHeaders,
 		supportedTypes,
 		supportedQueryTypes,
 		acceptRanges
@@ -55,22 +56,34 @@ export function sendPreflight(stream, info, context, meta) {
 	if(supportedTypesRecord.post !== undefined) { exposedHeaders.push(HTTP_HEADER_ACCEPT_POST) }
 	if(supportedTypesRecord.patch !== undefined) { exposedHeaders.push(HTTP_HEADER_ACCEPT_PATCH) }
 
+	const defaultSupportedHeaders = [
+		HTTP2_HEADER_IF_MATCH,
+		HTTP2_HEADER_IF_NONE_MATCH,
+		HTTP2_HEADER_AUTHORIZATION,
+		HTTP2_HEADER_CONTENT_TYPE, // overrides cors safe restriction (for json)
+		HTTP2_HEADER_RANGE, // todo cors safe override not needed
+		HTTP2_HEADER_IF_RANGE,
+	]
+
+	const disallowedHeaders = new Set([
+		//
+	])
+
+	// union to prevent duplicates and clean
+	const uniqueAllowedHeaders = new Set(defaultSupportedHeaders)
+		.union(new Set(supportedHeaders))
+		.difference(new Set(disallowedHeaders))
+	const allowedHeaders = [ ...uniqueAllowedHeaders.keys() ] // todo should toLowercase be called on custom headers
+
 	send_no_body(stream, HTTP_STATUS_OK, {
 			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS]: supportedMethods.join(COMMON_LIST_VALUE_JOINER_COMMA),
-			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: [
-				HTTP2_HEADER_IF_MATCH,
-				HTTP2_HEADER_IF_NONE_MATCH,
-				HTTP2_HEADER_AUTHORIZATION,
-				HTTP2_HEADER_CONTENT_TYPE, // overrides cors safe restriction (for json)
-				HTTP2_HEADER_RANGE, // todo cors safe override not needed
-				HTTP2_HEADER_IF_RANGE
-			].join(COMMON_LIST_VALUE_JOINER_COMMA),
+			[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS]: allowedHeaders.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE]: PREFLIGHT_AGE_SECONDS,
 			// [HTTP_HEADER_ACCEPT_PUT]: supportedTypesRecord.put?.join(COMMON_LIST_VALUE_JOINER_COMMA)
 			[HTTP_HEADER_ACCEPT_POST]: supportedTypesRecord.post?.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP_HEADER_ACCEPT_PATCH]: supportedTypesRecord.patch?.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
-			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA) // todo should empty array return undef
+			[HTTP_HEADER_ACCEPT_QUERY]: supportsQuery ? supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA) : undefined
 			// Access-Control-Allow-Credentials
 		}, exposedHeaders, context, meta)
 }

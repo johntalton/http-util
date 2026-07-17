@@ -81,6 +81,7 @@
 /**
  * @typedef {Object} SendInfo
  * @property {Array<string>} supportedMethods list of methods supported by this route
+ * @property {Array<string>|undefined} supportedHeaders list of additional headers to allow
  * @property {SendSupportedTypes} supportedTypes description of mime-types supported for post/put/patch methods
  * @property {Array<string>|string} acceptableTypes for content negotiation failures
  * @property {AcceptRangeUnits|undefined} acceptRanges
