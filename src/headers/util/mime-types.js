@@ -7,6 +7,7 @@ export const KNOWN_CONTENT_TYPES = [
 export const MIME_TYPE_JPEG = 'image/jpeg'
 export const MIME_TYPE_PNG = 'image/png'
 export const MIME_TYPE_WEBP = 'image/webp'
+export const MIME_TYPE_AVIF = 'image/avif'
 
 // text
 export const MIME_TYPE_TEXT = 'text/plain'
@@ -29,6 +30,10 @@ export const MIME_TYPE_JSON_MERGE_PATCH = 'application/merge-patch+json'
 // multipart
 export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
 export const MIME_TYPE_MULTIPART_RANGE = 'multipart/byteranges'
+export const MIME_TYPE_MULTIPART_RELATED = 'multipart/related'
+export const MIME_TYPE_MULTIPART_MIXED = 'multipart/mixed'
+export const MIME_TYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative'
+
 
 // message
 export const MIME_TYPE_MESSAGE_HTTP = 'message/http'
