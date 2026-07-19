@@ -2,6 +2,7 @@ node_modules/
 coverage/
 .vscode/
 lib/
+structured-field-tests/
 
 .DS_Store
 package-lock.json
