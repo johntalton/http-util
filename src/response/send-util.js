@@ -9,6 +9,7 @@ import { Conditional } from '../headers/conditional.js'
 import { ContentDisposition } from '../headers/content-disposition.js'
 import { ContentRange } from '../headers/content-range.js'
 import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
+import { InternetMessageFormatFixDate } from '../headers/util/imf-fixdate.js'
 import {
 	contextHeaders,
 	coreHeaders,
@@ -22,7 +23,8 @@ import {
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { InputType, BrotliOptions, ZlibOptions, ZstdOptions } from 'node:zlib' */
 /** @import { AcceptRangeUnits, Metadata, SendContext, SendBody } from '../defs.js' */
-/** @import { EtagItem, IMFFixDateInput } from '../headers/conditional.js' */
+/** @import { EtagItem } from '../headers/conditional.js' */
+/** @import { IMFFixDateInput } from '../headers/util/imf-fixdate.js' */
 /** @import { CacheControlOptions } from '../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
 /** @import { DispositionInput } from '../headers/content-disposition.js' */
@@ -220,7 +222,7 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
 			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
-			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified),
+			[HTTP2_HEADER_LAST_MODIFIED]: InternetMessageFormatFixDate.encode(lastModified),
 			[HTTP2_HEADER_AGE]: Number.isInteger(age) ? `${age}` : undefined,
 			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
 			[HTTP2_HEADER_CONTENT_DISPOSITION]: ContentDisposition.encode(contentDisposition),

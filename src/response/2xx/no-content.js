@@ -1,6 +1,7 @@
 import http2 from 'node:http2'
 
 import { Conditional } from '../../headers/conditional.js'
+import { InternetMessageFormatFixDate } from '../../headers/util/imf-fixdate.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
@@ -27,6 +28,6 @@ export function sendNoContent(stream, content, context, meta) {
 
 	send_no_body(stream, HTTP_STATUS_NO_CONTENT, {
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
-			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified)
+			[HTTP2_HEADER_LAST_MODIFIED]: InternetMessageFormatFixDate.encode(lastModified)
 		}, [], context, meta)
 }

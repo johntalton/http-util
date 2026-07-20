@@ -2,6 +2,7 @@ import http2 from 'node:http2'
 
 import { CacheControl } from '../../headers/cache-control.js'
 import { Conditional } from '../../headers/conditional.js'
+import { InternetMessageFormatFixDate } from '../../headers/util/imf-fixdate.js'
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
@@ -40,7 +41,7 @@ export function sendNotModified(stream, content, context, meta) {
 			// todo Content-Location
 			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
 			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
-			[HTTP2_HEADER_LAST_MODIFIED]: Conditional.encodeFixDate(lastModified),
+			[HTTP2_HEADER_LAST_MODIFIED]: InternetMessageFormatFixDate.encode(lastModified),
 			[HTTP2_HEADER_AGE]: Number.isInteger(age) ? `${age}` : undefined
 			// content-range
 			// accept-range

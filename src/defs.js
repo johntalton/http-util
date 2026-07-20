@@ -2,7 +2,8 @@
 /** @import { ReadableStream } from 'node:stream/web' */
 
 /** @import { TimingsInfo } from './headers/server-timing.js' */
-/** @import { EtagItem, IMFFixDateInput } from './headers/conditional.js' */
+/** @import { EtagItem } from './headers/conditional.js' */
+/** @import { IMFFixDateInput } from './headers/util/imf-fixdate.js' */
 /** @import { CacheControlOptions } from './headers/cache-control.js' */
 /** @import { ContentRangeDirective } from './headers/content-range.js' */
 /** @import { RateLimitPolicyInfo, RateLimitInfo } from './headers/rate-limit.js' */

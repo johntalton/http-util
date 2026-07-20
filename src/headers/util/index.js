@@ -2,6 +2,7 @@
 /** biome-ignore-all lint/performance/noReExportAll: entry point */
 export * from './accept-util.js'
 export * from './base32.js'
+export * from './imf-fixdate.js'
 export * from './kvp.js'
 export * from './mime.js'
 export * from './quote.js'

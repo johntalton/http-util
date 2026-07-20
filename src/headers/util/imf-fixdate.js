@@ -1,0 +1,266 @@
+import { Assert } from './assert.js'
+
+/**
+ * @typedef {Object} IMFFixDateItem
+ * @property {typeof DATE_DAYS[number]} dayName
+ * @property {number} day
+ * @property {typeof DATE_MONTHS[number]} month
+ * @property {number} year
+ * @property {number} hour
+ * @property {number} minute
+ * @property {number} second
+ */
+
+/**
+ * @typedef {Object} IMFFixDateItemExtension
+ * @property {Date|undefined} [date]
+ * @property {Temporal.Instant|undefined} [instant]
+ */
+
+/** @typedef {IMFFixDateItem & IMFFixDateItemExtension} IMFFixDate */
+/** @typedef {IMFFixDate|Date|Temporal.Instant|undefined} IMFFixDateInput */
+
+export const FEATURE_TEMPORAL = typeof Temporal !== 'undefined'
+
+/**
+ * @param {IMFFixDate|Date|Temporal.Instant|undefined} reference
+ * @returns {reference is Temporal.Instant}
+ */
+export function isTemporalInstant(reference) {
+	if(!FEATURE_TEMPORAL) { return false }
+	return reference instanceof Temporal.Instant
+}
+
+export const IMF_FIX_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+	timeZone: 'UTC',
+	weekday: 'short',
+	year: 'numeric',
+	month: 'short',
+	day: '2-digit',
+	hour: '2-digit',
+	minute: '2-digit',
+	second: '2-digit',
+	hour12: false
+})
+
+export const DATE_SPACE = ' '
+export const DATE_DAYS = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
+export const DATE_MONTHS = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ]
+export const DATE_SEPARATOR = ','
+export const DATE_TIME_SEPARATOR = ':'
+export const DATE_ZONE = 'GMT'
+
+export const MINIMUM_YEAR = 1900
+export const MAXIMUM_DAY = 31
+
+
+export class FixDate {
+
+	/**
+	 * True if {@link test} is after (exclusive) the {@link reference}
+	 * (compares are seconds precision)
+	 * @param {IMFFixDateInput} reference
+	 * @param {IMFFixDateInput} test
+	 * @returns {boolean}
+	 */
+	static isAfter(reference, test) {
+		if(reference === undefined) { return false }
+		if(test === undefined) { return false }
+
+		if(FEATURE_TEMPORAL) {
+			/** @type {Temporal.RoundingOptions<Temporal.TimeUnit>} */
+			const precision = {
+				smallestUnit: 'second',
+				roundingMode: 'trunc'
+			}
+
+			const referenceInstant = FixDate.toInstant(reference)?.round(precision)
+			const testInstant = FixDate.toInstant(test)?.round(precision)
+
+			if(referenceInstant === undefined) { return false }
+			if(testInstant === undefined) { return false }
+
+			return Temporal.Instant.compare(referenceInstant, testInstant) === -1
+		}
+		/* node:coverage disable */
+		const referenceDate = FixDate.toDate(reference)
+		const testDate = FixDate.toDate(test)
+
+		if(referenceDate === undefined) { return false }
+		if(testDate === undefined) { return false }
+
+		// this effectively rounds to seconds
+		referenceDate.setMilliseconds(0)
+		testDate.setMilliseconds(0)
+
+		return testDate > referenceDate
+		/* node:coverage enable */
+	}
+
+	/**
+	 * @param {IMFFixDateInput} reference
+	 * @returns {Temporal.Instant|undefined}
+	 */
+	static toInstant(reference) {
+		if(!FEATURE_TEMPORAL) { return undefined }
+		if(reference === undefined) { return undefined }
+
+		if(isTemporalInstant(reference)) { return reference }
+		if(reference instanceof Date) { return reference.toTemporalInstant() }
+
+		if(reference.instant !== undefined) { return reference.instant }
+		if(reference.date !== undefined) { return reference.date.toTemporalInstant() }
+
+		const { year, month: monthName, day, hour, minute, second } = reference
+
+		const zeroMonth = DATE_MONTHS.indexOf(monthName)
+		if(zeroMonth === -1) { return undefined }
+		const month = zeroMonth + 1
+
+		const zdt = Temporal.ZonedDateTime.from({
+			year,
+			month,
+			day,
+			hour,
+			minute,
+			second,
+			timeZone: 'UTC'
+		})
+
+		return zdt.toInstant()
+	}
+
+	/**
+	 * @param {IMFFixDateInput} reference
+	 * @returns {Date|undefined}
+	 */
+	static toDate(reference) {
+		if(reference === undefined) { return undefined }
+
+		if(reference instanceof Date) { return reference }
+		if(isTemporalInstant(reference)) { return new Date(reference.epochMilliseconds) }
+
+		if(FEATURE_TEMPORAL && (reference.instant !== undefined)) { return new Date(reference.instant.epochMilliseconds) }
+		if(reference.date !== undefined) { return reference.date }
+
+		const { year, month, day, hour, minute, second } = reference
+		return new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second))
+	}
+}
+
+export class InternetMessageFormatFixDate {
+	/**
+	 * @param {string|undefined} matchHeader
+	 * @returns {IMFFixDate|undefined}
+	 */
+	static parse(matchHeader) {
+		if(matchHeader === undefined) { return undefined }
+		Assert.isString(matchHeader)
+
+		// https://www.rfc-editor.org/rfc/rfc5322.html#section-3.3
+		// https://httpwg.org/specs/rfc9110.html#preferred.date.format
+		// <day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT
+		// day-name "," SP date1 SP time-of-day SP GMT
+
+		if(matchHeader.length !== 29) { return undefined }
+
+		//
+		const spaces = [
+			matchHeader.slice(4, 5),
+			matchHeader.slice(7, 8),
+			matchHeader.slice(11, 12),
+			matchHeader.slice(16, 17),
+			matchHeader.slice(25, 26)
+		]
+		const comma = matchHeader.slice(3, 4)
+		const timeSeparators = [
+			matchHeader.slice(19, 20),
+			matchHeader.slice(22, 23)
+		]
+		const gmt = matchHeader.slice(26)
+
+		//
+		if(comma !== DATE_SEPARATOR) { return undefined }
+		if(gmt !== DATE_ZONE) { return undefined }
+		for(const colon of timeSeparators) {
+			if(colon !== DATE_TIME_SEPARATOR) { return undefined }
+		}
+		for(const space of spaces) {
+			if(space !== DATE_SPACE) { return undefined }
+		}
+
+		//
+		const dayName = matchHeader.slice(0, 3)
+		const day = Number.parseInt(matchHeader.slice(5, 7), 10)
+		const month = matchHeader.slice(8, 11)
+		const year = Number.parseInt(matchHeader.slice(12, 16), 10)
+		const hour = Number.parseInt(matchHeader.slice(17, 19), 10)
+		const minute = Number.parseInt(matchHeader.slice(20, 22), 10)
+		const second = Number.parseInt(matchHeader.slice(23, 25), 10)
+
+		//
+		if(!DATE_DAYS.includes(dayName)) { return undefined }
+		if(!DATE_MONTHS.includes(month)) { return undefined }
+		if(!Number.isInteger(day)) { return undefined }
+		if(!Number.isInteger(year)) { return undefined }
+		if(!Number.isInteger(hour)) { return undefined }
+		if(!Number.isInteger(minute)) { return undefined }
+		if(!Number.isInteger(second)) { return undefined }
+
+		//
+		if(day > MAXIMUM_DAY || day <= 0) { return undefined }
+		if(year < MINIMUM_YEAR) { return undefined }
+		if(hour > 24 || hour < 0) { return undefined }
+		if(minute > 60 || minute < 0) { return undefined }
+		if(second > 60 || second < 0) { return undefined }
+
+		const fixDate = {
+			dayName,
+			day,
+			month,
+			year,
+			hour,
+			minute,
+			second
+		}
+
+		//
+		return {
+			...fixDate,
+			date: FixDate.toDate(fixDate),
+			instant: FixDate.toInstant(fixDate)
+		}
+	}
+
+	/**
+	 * @param {IMFFixDateInput|string|undefined} reference
+	 * @returns {string|undefined}
+	 */
+	static encode(reference) {
+		if(reference === undefined) { return undefined }
+
+		if(typeof reference === 'string') { return reference }
+		// if(reference instanceof String) { return reference } // todo String
+		if(reference instanceof Date) { return reference.toUTCString() }
+		if(isTemporalInstant(reference)) {
+
+			const parts = IMF_FIX_DATE_FORMATTER.formatToParts(reference)
+			const m = new Map(parts.map(p => [ p.type, p.value ]))
+			const weekday = m.get('weekday') ?? 'ERR'
+			const day = m.get('day') ?? '00'
+			const month = m.get('month') ?? '00'
+			const year = m.get('year') ?? '0000'
+			const hour = m.get('hour') ?? '00'
+			const minute = m.get('minute') ?? '00'
+			const second = m.get('second') ?? '00'
+
+			return `${weekday}, ${day} ${month} ${year} ${hour}:${minute}:${second} ${DATE_ZONE}`
+		}
+
+		if(reference.date !== undefined) { return reference.date.toUTCString() }
+
+		const { year, month, day, hour, minute, second } = reference
+		const d = new Date(Date.UTC(year, DATE_MONTHS.indexOf(month), day, hour, minute, second))
+		return d.toUTCString()
+	}
+}
