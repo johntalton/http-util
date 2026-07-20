@@ -1,10 +1,10 @@
-/** biome-ignore-all lint/style/noIncrementDecrement: <explanation> */
-/** biome-ignore-all lint/style/useForOf: <explanation> */
-/** biome-ignore-all lint/suspicious/noBitwiseOperators: <explanation> */
+/** biome-ignore-all lint/style/noIncrementDecrement: slop */
+/** biome-ignore-all lint/style/useForOf: slop */
+/** biome-ignore-all lint/suspicious/noBitwiseOperators: slop */
 
 // biome-ignore lint/security/noSecrets: alphabet
 export const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
-export const DECODE_REPLACE_REGEX = /=+$/u
+export const DECODE_REPLACE_REGEX = /[=]+$/u
 
 export class Base32 {
 	/**
@@ -57,7 +57,7 @@ export class Base32 {
 		}
 
 		const bits = [ ...cleanedInput ]
-			.reduce((acc, val) => acc + vall.toString(2).padStart(5, '0'), '')
+			.reduce((acc, val) => acc + ALPHABET.indexOf(val).toString(2).padStart(5, '0'), '')
 
 
 		let index = 0
