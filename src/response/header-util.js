@@ -13,6 +13,7 @@ import {
 	HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY_REPORT_ONLY,
 	HTTP_HEADER_CROSS_ORIGIN_OPENER_POLICY,
 	HTTP_HEADER_CROSS_ORIGIN_RESOURCE_POLICY,
+	HTTP_HEADER_DEPRECATION,
 	HTTP_HEADER_INTEGRITY_POLICY,
 	HTTP_HEADER_INTEGRITY_POLICY_REPORT_ONLY,
 	HTTP_HEADER_PERMISSIONS_POLICY,
@@ -20,6 +21,7 @@ import {
 	HTTP_HEADER_PREFERENCE_APPLIED,
 	HTTP_HEADER_REFERRER_POLICY,
 	HTTP_HEADER_REPORTING_ENDPOINTS,
+	HTTP_HEADER_SUNSET,
 	normalizeToArray
 } from '../defs.js'
 
@@ -29,6 +31,7 @@ import { ContentSecurityPolicy } from '../headers/content-security-policy.js'
 import { CrossOriginEmbedderPolicy } from '../headers/cross-origin-embedder-policy.js'
 import { CrossOriginOpenerPolicy } from '../headers/cross-origin-opener-policy.js'
 import { CrossOriginResourcePolicy } from '../headers/cross-origin-resource-policy.js'
+import { Deprecation } from '../headers/deprecation.js'
 import { IntegrityPolicy } from '../headers/integrity-policy.js'
 import { Link } from '../headers/link.js'
 import { PermissionsPolicy } from '../headers/permissions-policy.js'
@@ -41,6 +44,7 @@ import {
 	ServerTiming
 } from '../headers/server-timing.js'
 import { StrictTransportSecurity } from '../headers/strict-transport-security.js'
+import { Sunset } from '../headers/sunset.js'
 import { ContentTypeOptions, HTTP_HEADER_CONTENT_TYPE_OPTIONS } from '../headers/x-content-type-options.js'
 import { HTTP_HEADER_XSS_PROTECTION, XSSProtection } from '../headers/x-xss-protection.js'
 
@@ -149,6 +153,8 @@ export function contextHeaders(context) {
 			[HTTP_HEADER_ACCEPT_CLIENT_HINTS]: ClientHints.encode(context.acceptClientHints),
 			[HTTP2_HEADER_LINK]: Link.encode(context.links),
 			[HTTP_HEADER_PREFERENCE_APPLIED]: appliedPreferences,
+			[HTTP_HEADER_SUNSET]: Sunset.encode(context.sunset),
+			[HTTP_HEADER_DEPRECATION]: Deprecation.encode(context.deprecation),
 			...policyHeaders(context.policy)
 		})
 	}

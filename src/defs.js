@@ -113,6 +113,8 @@
  * @property {Array<LinkItem>|LinkItem|undefined} [links]
  * @property {ClientPolicyMap|undefined} [policy]
  * @property {AppliedPreferencesInput|undefined} [appliedPreferences]
+ * @property {IMFFixDateInput|undefined} [sunset]
+ * @property {Date|Temporal.Instant|undefined} [deprecation]
  */
 
 /** @type {''} */
@@ -148,6 +150,9 @@ export const HTTP_HEADER_INTEGRITY_POLICY_REPORT_ONLY = 'integrity-policy-report
 export const HTTP_HEADER_REPORTING_ENDPOINTS = 'reporting-endpoints'
 export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
 export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
+export const HTTP_HEADER_SUNSET = 'sunset'
+export const HTTP_HEADER_DEPRECATION = 'deprecation'
+
 
 //
 export const HTTP_METHOD_QUERY = 'QUERY'
