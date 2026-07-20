@@ -1,53 +1,81 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { StructuredField, InputString } from '@johntalton/http-util/util'
+import {
+	StructuredField,
+	InputString,
+	NativeFormatter,
+	HTTPWGTestFormatter,
+	inputToInputString
+} from '@johntalton/http-util/util'
+
+const options = {
+	format: NativeFormatter
+}
 
 describe('StructuredFiled', () => {
 	describe('parse', () => {
 		it('should handle undefined list', () => {
-			const result = StructuredField.parse(undefined, 'list')
+			const result = StructuredField.parse(undefined, 'list', options)
 			assert.deepEqual(result, [])
 		})
 
 		it('should handle empty string list', () => {
-			const result = StructuredField.parse('', 'list')
+			const result = StructuredField.parse('', 'list', options)
 			assert.deepEqual(result, [])
 		})
 
 		it('should handle undefined dictionary', () => {
-			const result = StructuredField.parse(undefined, 'dictionary')
+			const result = StructuredField.parse(undefined, 'dictionary', options)
 			assert.deepEqual(result, new Map())
 		})
 
 		it('should handle empty string dictionary', () => {
-			const result = StructuredField.parse('', 'dictionary')
+			const result = StructuredField.parse('', 'dictionary', options)
 			assert.deepEqual(result, new Map())
 		})
 
 		it('should handle input type of InputString', () => {
 			const input_string = new InputString('?1')
-			const result = StructuredField.parse(input_string, 'item')
+			const result = StructuredField.parse(input_string, 'item', options)
 			assert.deepEqual(result, { bare_item: true, parameters: new Map() })
+		})
+
+		it('should handle input Array', () => {
+			const result = StructuredField.parse(['a', 'b'], 'list', options)
+			assert.deepEqual(result, [
+				{ bare_item: Symbol.for('a'), parameters: new Map() },
+				{ bare_item: Symbol.for('b'), parameters: new Map() },
+			])
+		})
+
+		it('should handle input Array of mixed type', () => {
+			const encoder = new TextEncoder()
+			const buffer = encoder.encode('?1')
+			const result = StructuredField.parse(['a', buffer], 'list', options)
+			assert.deepEqual(result, [
+				{ bare_item: Symbol.for('a'), parameters: new Map() },
+				{ bare_item: true, parameters: new Map() },
+			])
 		})
 
 		it('should handle input type of InputString (with offset)', () => {
 			const input_string = new InputString('XXX?1', 3)
-			const result = StructuredField.parse(input_string, 'item')
+			const result = StructuredField.parse(input_string, 'item', options)
 			assert.deepEqual(result, { bare_item: true, parameters: new Map() })
 		})
 
 		it('should handle input type of Uint8Array', () => {
 			const encoder = new TextEncoder()
 			const buffer = encoder.encode('?1')
-			const result = StructuredField.parse(buffer, 'item')
+			const result = StructuredField.parse(buffer, 'item', options)
 			assert.deepEqual(result, { bare_item: true, parameters: new Map() })
 		})
 
 		it('should handle input type of ArrayBuffer', () => {
 			const encoder = new TextEncoder()
 			const buffer = encoder.encode('?1')
-			const result = StructuredField.parse(buffer.buffer, 'item')
+			const result = StructuredField.parse(buffer.buffer, 'item', options)
 			assert.deepEqual(result, { bare_item: true, parameters: new Map() })
 		})
 
@@ -66,8 +94,15 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle unknown field type', () => {
-			const result = StructuredField.parse('', 'FAKE')
+			const result = StructuredField.parse('', 'FAKE', options)
 			assert.equal(result, undefined)
+		})
+
+		it('should throw extra content after item', () => {
+			assert.throws(() => StructuredField.parse('42 x', 'item'), {
+				name: 'ParsingError',
+				message: 'trailing input not empty @ position: 3'
+			})
 		})
 
 		it('should throw on dangling comma', () => {
@@ -78,8 +113,15 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle empty inner list', () => {
-			const result = StructuredField.parse('()', 'list')
+			const result = StructuredField.parse('()', 'list', options)
 			assert.deepEqual(result, [{ inner_list: [], parameters: new Map() }])
+		})
+
+		it('should throw list not a comma', () => {
+			assert.throws(() => StructuredField.parse('a? ', 'list'), {
+				name: 'ParsingError',
+				message: 'list expected comma @ position: 2'
+			})
 		})
 
 		it('should throw on dangling comma after inner-list', () => {
@@ -97,27 +139,27 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle simple dictionary', () => {
-			const result = StructuredField.parse('a', 'dictionary')
+			const result = StructuredField.parse('a', 'dictionary', options)
 			assert.deepEqual(result, new Map([['a', { parameters: new Map(), value: true }]]))
 		})
 
 		it('should handle simple dictionary with parameters', () => {
-			const result = StructuredField.parse('a;b=c', 'dictionary')
-			assert.deepEqual(result, new Map([['a', { value: true, parameters: new Map([['b', 'c']]) }]]))
+			const result = StructuredField.parse('a;b=c', 'dictionary', options)
+			assert.deepEqual(result, new Map([['a', { value: true, parameters: new Map([['b', Symbol.for('c')]]) }]]))
 		})
 
 		it('should handle quotes string', () => {
-			const result = StructuredField.parse('"test"', 'item')
+			const result = StructuredField.parse('"test"', 'item', options)
 			assert.deepEqual(result, { bare_item: 'test', parameters: new Map() })
 		})
 
 		it('should handle integer item', () => {
-			const result = StructuredField.parse('42', 'item')
+			const result = StructuredField.parse('42', 'item', options)
 			assert.deepEqual(result, { bare_item: 42, parameters: new Map() })
 		})
 
 		it('should handle decimal item', () => {
-			const result = StructuredField.parse('3.141', 'item')
+			const result = StructuredField.parse('3.141', 'item', options)
 			assert.deepEqual(result, { bare_item: 3.141, parameters: new Map() })
 		})
 
@@ -164,12 +206,12 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle boolean true item', () => {
-			const result = StructuredField.parse('?1', 'item')
+			const result = StructuredField.parse('?1', 'item', options)
 			assert.deepEqual(result, { bare_item: true, parameters: new Map() })
 		})
 
 		it('should handle boolean false item', () => {
-			const result = StructuredField.parse('?0', 'item')
+			const result = StructuredField.parse('?0', 'item', options)
 			assert.deepEqual(result, { bare_item: false, parameters: new Map() })
 		})
 
@@ -181,9 +223,9 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle Date item', () => {
-			const result = StructuredField.parse('@1659578233', 'item')
-			assert.deepEqual(result, { bare_item: 1659578233, parameters: new Map() })
-			const date = Temporal.Instant.fromEpochMilliseconds(result.bare_item * 1000)
+			const result = StructuredField.parse('@1659578233', 'item', options)
+			const date = Temporal.Instant.fromEpochMilliseconds(1659578233 * 1000)
+			assert.deepEqual(result, { bare_item: date, parameters: new Map() })
 			assert.equal(date.toJSON(), '2022-08-04T01:57:13Z')
 		})
 
@@ -191,12 +233,12 @@ describe('StructuredFiled', () => {
 			const str = 'pretend this is binary content.'
 			const encoder = new TextEncoder()
 			const encodedStr = encoder.encode(str)
-			const result = StructuredField.parse(':cHJldGVuZCB0aGlzIGlzIGJpbmFyeSBjb250ZW50Lg==:', 'item')
+			const result = StructuredField.parse(':cHJldGVuZCB0aGlzIGlzIGJpbmFyeSBjb250ZW50Lg==:', 'item', options)
 			assert.deepEqual(result, { bare_item: encodedStr, parameters: new Map() })
 		})
 
 		it('should handle empty byte sequence item', () => {
-			const result = StructuredField.parse('::', 'item')
+			const result = StructuredField.parse('::', 'item', options)
 			assert.deepEqual(result, { bare_item: Uint8Array.from([]), parameters: new Map() })
 		})
 
@@ -208,12 +250,12 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle byte sequence item (bad padding loose mode)', () => {
-			const result = StructuredField.parse(':aGVsbG8:', 'item', { lastChunkHandling: 'loose' })
-			assert.deepEqual(result, { bare_item: Uint8Array.from([ 104, 101, 108, 108, 111 ]), parameters: new Map() })
+			const result = StructuredField.parse(':aGVsbG8:', 'item', { ...options, lastChunkHandling: 'loose' })
+			assert.deepEqual(result, { bare_item: Uint8Array.from([104, 101, 108, 108, 111]), parameters: new Map() })
 		})
 
 		it('should throw on byte sequence (bad padding strict mode))', () => {
-			assert.throws(() => StructuredField.parse(':aGVsbG8:', 'item', { lastChunkHandling: 'strict'}), {
+			assert.throws(() => StructuredField.parse(':aGVsbG8:', 'item', { ...options, lastChunkHandling: 'strict' }), {
 				name: 'ParsingError',
 				message: 'byte sequence invalid encoding @ position: 9',
 				// cause: new SyntaxError('')
@@ -229,17 +271,17 @@ describe('StructuredFiled', () => {
 		// })
 
 		it('should handle display-string item (emoji)', () => {
-			const result = StructuredField.parse('%"%f0%9f%91%a9%f0%9f%8f%bb%e2%80%8d%e2%9d%a4%ef%b8%8f%e2%80%8d%f0%9f%92%8b%e2%80%8d%f0%9f%91%a9%f0%9f%8f%bc"', 'item')
+			const result = StructuredField.parse('%"%f0%9f%91%a9%f0%9f%8f%bb%e2%80%8d%e2%9d%a4%ef%b8%8f%e2%80%8d%f0%9f%92%8b%e2%80%8d%f0%9f%91%a9%f0%9f%8f%bc"', 'item', options)
 			assert.deepEqual(result, { bare_item: '👩🏻‍❤️‍💋‍👩🏼', parameters: new Map() })
 		})
 
 		it('should handle display-string item (text)', () => {
-			const result = StructuredField.parse('%"This is intended for display to %c3%bcsers."', 'item')
+			const result = StructuredField.parse('%"This is intended for display to %c3%bcsers."', 'item', options)
 			assert.deepEqual(result, { bare_item: 'This is intended for display to üsers.', parameters: new Map() })
 		})
 
 		it('should handle display-string item (encoded)', () => {
-			const result = StructuredField.parse(`%"${encodeURIComponent('TEST 1 2 3')}"`, 'item')
+			const result = StructuredField.parse(`%"${encodeURIComponent('TEST 1 2 3')}"`, 'item', options)
 			assert.deepEqual(result, { bare_item: 'TEST 1 2 3', parameters: new Map() })
 		})
 
@@ -259,12 +301,12 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle display-string with inner BOM', () => {
-			const result = StructuredField.parse('%\"BOM: %ef%bb%bf\"', 'item')
+			const result = StructuredField.parse('%\"BOM: %ef%bb%bf\"', 'item', options)
 			assert.deepEqual(result, { bare_item: 'BOM: \uFEFF', parameters: new Map() })
 		})
 
 		it('should handle display-string with starting encoded BOM', () => {
-			const result = StructuredField.parse('%\"%ef%bb%bfBOM\"', 'item')
+			const result = StructuredField.parse('%\"%ef%bb%bfBOM\"', 'item', options)
 			assert.deepEqual(result, { bare_item: 'BOM', parameters: new Map() })
 		})
 
@@ -278,12 +320,12 @@ describe('StructuredFiled', () => {
 		it('should throw on BOM at start of input', () => {
 			const encoder = new TextEncoder()
 			const encoded = encoder.encode('\uFEFF%\"WITH BOM\"')
-			const result = StructuredField.parse(encoded, 'item')
+			const result = StructuredField.parse(encoded, 'item', options)
 			assert.deepEqual(result, { bare_item: 'WITH BOM', parameters: new Map() })
 		})
 
 		it('should handle string item with escape quote', () => {
-			const result = StructuredField.parse(`"A \\"TEST\\" STRING"`, 'item')
+			const result = StructuredField.parse(`"A \\"TEST\\" STRING"`, 'item', options)
 			assert.deepEqual(result, { bare_item: 'A "TEST" STRING', parameters: new Map() })
 		})
 
@@ -316,26 +358,28 @@ describe('StructuredFiled', () => {
 		})
 
 		it('should handle dictionary with value', () => {
-			const result = StructuredField.parse('a=1', 'dictionary')
+			const result = StructuredField.parse('a=1', 'dictionary', options)
 			assert.deepEqual(result, new Map([
-				[ 'a', { bare_item: 1, parameters: new Map()} ]
+				['a', { bare_item: 1, parameters: new Map() }]
 			]))
 		})
 
 		it('should handle dictionary with value (multiple)', () => {
-			const result = StructuredField.parse('a=1, b=2', 'dictionary')
+			const result = StructuredField.parse('a=1, b=2', 'dictionary', options)
 			assert.deepEqual(result, new Map([
-				[ 'a', { bare_item: 1, parameters: new Map()} ],
-				[ 'b', { bare_item: 2, parameters: new Map()} ]
+				['a', { bare_item: 1, parameters: new Map() }],
+				['b', { bare_item: 2, parameters: new Map() }]
 			]))
 		})
 
 		it('should handle simple inner list', () => {
-			const result = StructuredField.parse('(one two)', 'list')
-			assert.deepEqual(result, [{ inner_list: [
-				{ bare_item: 'one', parameters: new Map() },
-				{ bare_item: 'two', parameters: new Map() },
-			], parameters: new Map() }])
+			const result = StructuredField.parse('(one two)', 'list', options)
+			assert.deepEqual(result, [{
+				inner_list: [
+					{ bare_item: Symbol.for('one'), parameters: new Map() },
+					{ bare_item: Symbol.for('two'), parameters: new Map() },
+				], parameters: new Map()
+			}])
 		})
 
 		it('should throw inner list missing close', () => {
@@ -345,5 +389,271 @@ describe('StructuredFiled', () => {
 			})
 		})
 
+		it('should throw date when decimal', () => {
+			assert.throws(() => StructuredField.parse('@3.14', 'list'), {
+				name: 'ParsingError',
+				message: 'date can not be decimal @ position: 5'
+			})
+		})
+
+		it('should throw display string zero byte escape', () => {
+			assert.throws(() => StructuredField.parse('%"%', 'list'), {
+				name: 'ParsingError',
+				message: 'display string missing hex value @ position: 3'
+			})
+		})
+
+		it('should throw display string single byte escape', () => {
+			assert.throws(() => StructuredField.parse('%"%x', 'list'), {
+				name: 'ParsingError',
+				message: 'display string missing hex value @ position: 4'
+			})
+		})
+
+		it('should throw display escape not lowercase (first)', () => {
+			assert.throws(() => StructuredField.parse('%"%Ff"', 'list'), {
+				name: 'ParsingError',
+				message: 'display string escape not lowercase or digit @ position: 5'
+			})
+		})
+
+		it('should throw display escape not lowercase (second)', () => {
+			assert.throws(() => StructuredField.parse('%"%fF"', 'list'), {
+				name: 'ParsingError',
+				message: 'display string escape not lowercase or digit @ position: 5'
+			})
+		})
+
+		it('should throw display string missing start quote', () => {
+			assert.throws(() => StructuredField.parse('%bad', 'list'), {
+				name: 'ParsingError',
+				message: 'display string invalid prefix quote @ position: 1'
+			})
+		})
+
+		it('should handle custom formatter (binary item)', () => {
+			const format = HTTPWGTestFormatter
+			const result = StructuredField.parse(':cHJldGVuZCB0aGlzIGlzIGJpbmFyeSBjb250ZW50Lg==:', 'item', { format })
+			assert.deepEqual(result, [{ "__type": "binary", "value": "OBZGK5DFNZSCA5DINFZSA2LTEBRGS3TBOJ4SAY3PNZ2GK3TUFY======" }, []])
+		})
+
+		it('should handle custom formatter (date item)', () => {
+			const format = HTTPWGTestFormatter
+			const result = StructuredField.parse('@1234', 'item', { format })
+			assert.deepEqual(result, [ { __type: 'date', value: 1234 }, [] ])
+		})
+
+
+		it('should handle custom formatter (dictionary)', () => {
+			const format = HTTPWGTestFormatter
+			const result = StructuredField.parse('a=(1 2), b=3, c=4;aa=bb, d=(5 6);valid', 'dictionary', { format })
+			assert.deepEqual(result, [
+				["a", [[
+					[1, []],
+					[2, []]
+				], []]],
+				["b", [3, []]],
+				["c", [4, [["aa", { "__type": "token", "value": "bb" }]]]],
+				["d", [[
+					[5, []],
+					[6, []]
+				], [["valid", true]]]]
+			])
+		})
+
 	})
+
+	describe('parseList', () => {
+		it('should handle undefined', () => {
+			const inputString = new InputString(undefined)
+			const result = StructuredField.parseList(inputString)
+			assert.deepEqual(result, [])
+		})
+	})
+
+	describe('parseDictionary', () => {
+		it('should handle undefined', () => {
+			const inputString = new InputString(undefined)
+			const result = StructuredField.parseDictionary(inputString)
+			assert.deepEqual(result, new Map())
+		})
+	})
+
+	describe('parseItem', () => {
+		it('should throw on undefined', () => {
+			const inputString = new InputString(undefined)
+			assert.throws(() => StructuredField.parseItem(inputString), {
+				name: 'ParsingError',
+				message: 'item type unrecognized @ position: 0'
+			})
+		})
+
+		it('should throw on bad digit', () => {
+			const inputString = new InputString('-A')
+			assert.throws(() => StructuredField.parseItem(inputString), {
+				name: 'ParsingError',
+				message: 'integer or decimal not a digit @ position: 1'
+			})
+		})
+
+		it('should handle negative-zero', () => {
+			const inputString = new InputString('-0')
+			const result = StructuredField.parseItem(inputString)
+			assert.deepEqual(result, { bare_item: 0, parameters: new Map() })
+		})
+
+		it('should throw missing binary close colon', () => {
+			const inputString = new InputString(':abcdef')
+			assert.throws(() => StructuredField.parseItem(inputString), {
+				name: 'ParsingError',
+				message: 'byte sequence missing colon @ position: 1'
+			})
+		})
+	})
+
+	describe('parseDisplayString', () => {
+		it('should throw if first char not percent', () => {
+			const inputString = new InputString('X')
+			assert.throws(() => StructuredField.parseDisplayString(inputString), {
+				name: 'ParsingError',
+				message: 'display string invalid prefix @ position: 0'
+			})
+		})
+	})
+
+	describe('parseDate', () => {
+		it('should throw if first char not ampersand', () => {
+			const inputString = new InputString('X')
+			assert.throws(() => StructuredField.parseDate(inputString), {
+				name: 'ParsingError',
+				message: 'date invalid prefix @ position: 0'
+			})
+		})
+	})
+
+	describe('parseBoolean', () => {
+		it('should throw if first char not question mark', () => {
+			const inputString = new InputString('X')
+			assert.throws(() => StructuredField.parseBoolean(inputString), {
+				name: 'ParsingError',
+				message: 'boolean invalid prefix @ position: 0'
+			})
+		})
+	})
+
+	describe('parseByteSequence', () => {
+		it('should throw if first char not colon', () => {
+			const inputString = new InputString('X')
+			assert.throws(() => StructuredField.parseByteSequence(inputString), {
+				name: 'ParsingError',
+				message: 'byte sequence invalid prefix @ position: 0'
+			})
+		})
+	})
+
+	describe('parseToken', () => {
+		it('should throw if first char not alpha/asterisk', () => {
+			const inputString = new InputString('!')
+			assert.throws(() => StructuredField.parseToken(inputString), {
+				name: 'ParsingError',
+				message: 'token invalid char @ position: 0'
+			})
+		})
+	})
+
+	describe('parseString', () => {
+		it('should throw if first char not double quote', () => {
+			const inputString = new InputString('X')
+			assert.throws(() => StructuredField.parseString(inputString), {
+				name: 'ParsingError',
+				message: 'string invalid prefix @ position: 0'
+			})
+		})
+	})
+
+	describe('parseKey', () => {
+		it('should throw if first char not lower char or asterisk', () => {
+			const inputString = new InputString('X')
+			assert.throws(() => StructuredField.parseKey(inputString), {
+				name: 'ParsingError',
+				message: 'key invalid char @ position: 0'
+			})
+		})
+	})
+
+	describe('parseInnerList', () => {
+		it('should throw if first char not open parenthesis', () => {
+			const inputString = new InputString('X')
+			assert.throws(() => StructuredField.parseInnerList(inputString), {
+				name: 'ParsingError',
+				message: 'inner-list expected open parentheses @ position: 1'
+			})
+		})
+	})
+
+	describe('inputToInputString', () => {
+		it('should throw on invalid input type', () => {
+			assert.throws(() => inputToInputString(42), {
+				name: 'TypeError',
+				message: 'unknown input type'
+			})
+		})
+	})
+
+	describe('InputString', () => {
+		describe('peek', () => {
+			// it('', () => {
+
+			// })
+		})
+
+		describe('consume', () => {
+			it('should return undefined on undefined', () => {
+				const inputString = new InputString(undefined)
+				const result = inputString.consume()
+				assert.equal(result, undefined)
+			})
+		})
+
+		describe('unConsume', () => {
+			// it('', () => {
+
+			// })
+		})
+
+		describe('discardSP', () => {
+			// it('', () => {
+
+			// })
+		})
+
+		describe('discardOWS', () => {
+			// it('', () => {
+
+			// })
+		})
+
+		describe('isEmpty', () => {
+			// it('', () => {
+
+			// })
+		})
+
+		describe('indexOf', () => {
+			it('should return negative on undefined', () => {
+				const inputString = new InputString(undefined)
+				const result = inputString.indexOf(':)')
+				assert.equal(result, -1)
+			})
+		})
+
+		describe('consumeUntil', () => {
+			it('should return empty on undefined', () => {
+				const inputString = new InputString(undefined)
+				const result = inputString.consumeUntil(42)
+				assert.equal(result, '')
+			})
+		})
+	})
+
 })

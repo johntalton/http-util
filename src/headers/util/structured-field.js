@@ -1,14 +1,43 @@
 /** biome-ignore-all lint/style/noExcessiveLinesPerFile: full parser */
 /** biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: some complexity exists */
 /** biome-ignore-all lint/style/noNestedTernary: used */
+import { NativeFormatter } from './structured-field-formatter.js'
+
 
 /** @typedef {string|ArrayBuffer|Uint8Array|InputString|undefined} ParsingInput */
 /** @typedef {'list'|'dictionary'|'item'} ParsingFieldType */
 
+/** @typedef {'integer'|'decimal'} ParsingNumberType */
+
+/**
+ * @typedef {Object} ParsingFormat
+ * @property {(list: Array<any>, parameters: Map<string, any>) => any} formatInnerList
+ * @property {(dict: Map<string, any>) => any} formatDictionary
+ * @property {(key: string) => any} formatKey
+ * @property {(value: any, parameters: Map<string, any>) => any} formatDictionaryMember
+ * @property {(bare_item: any, parameters: Map<string, any>) => any} formatItem
+ * @property {(parameters: Map<string, any>) => any} formatParameters
+ * @property {(n: number, type: ParsingNumberType) => any} formatNumber
+ * @property {(str: string) => any} formatString
+ * @property {(t: string) => any} formatToken
+ * @property {(buffer: Uint8Array) => any} formatBinary
+ * @property {(b: boolean) => any} formatBoolean
+ * @property {(date: number) => any} formatDate
+ * @property {(str: string) => any} formatDisplayString
+ */
+
 /**
  * @typedef {Object} ParsingOptions
  * @property {'loose' | 'strict' | 'stop-before-partial'} [lastChunkHandling] - base64 processing
+ * @property {ParsingFormat} [format]
 */
+
+export const SF_DEFAULT_FORMATTER = NativeFormatter
+
+export const PARSING_INPUT_JOINER = ', '
+
+export const SF_NUMBER_TYPE_INTEGER = 'integer'
+export const SF_NUMBER_TYPE_DECIMAL = 'decimal'
 
 export const BASE_10 = 10
 export const BASE_16 = 16
@@ -128,6 +157,18 @@ export function isVChar(c) {
 }
 
 /**
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc4648#section-8}
+ * @param {string|undefined} c
+ */
+export function isLowercaseHex(c) {
+	// %x30-39 or %x61-66
+	if(c === undefined) { return false }
+	if(isDigit(c)) { return true }
+	const cc = c.charCodeAt(0)
+	return (cc >= 0x61) && (cc <= 0x66)
+}
+
+/**
  * @param {number} n
  */
 export function isDecimal(n) {
@@ -162,10 +203,10 @@ export const SF_ERROR = {
 	UNRECOGNIZED_TYPE: 'item type unrecognized',
 	KEY_INVALID_CHAR: 'key invalid char',
 	TOKEN_INVALID_CHAR: 'token invalid char',
-	BOOLEAN_INVALID_CHAR: 'invalid boolean prefix',
+	BOOLEAN_INVALID_CHAR: 'boolean invalid prefix',
 	BOOLEAN_INVALID_VALUE: 'invalid boolean value',
-	DATE_INVALID_PREFIX: 'invalid date prefix',
-	DATE_IS_DECIMAL: 'invalid date format',
+	DATE_INVALID_PREFIX: 'date invalid prefix',
+	DATE_IS_DECIMAL: 'date can not be decimal',
 	BYTE_SEQ_INVALID_PREFIX: 'byte sequence invalid prefix',
 	BYTE_SEQ_MISSING_END_COLON: 'byte sequence missing colon',
 	BYTE_SEQ_INVALID_CHAR: 'byte sequence invalid char',
@@ -217,10 +258,24 @@ export class InputString {
 		this.#position = position
 	}
 
+	/**
+	 * @returns {number}
+	 */
 	get position() { return this.#position }
 
+	/**
+	 * @returns {string|undefined}
+	 */
+	get input() { return this.#input?.slice(this.#position) }
+
+	/**
+	 * @returns {string|undefined}
+	 */
 	peek() { return this.#input?.at(this.#position) }
 
+	/**
+	 * @returns {string|undefined}
+	 */
 	consume() {
 		if(this.#input === undefined) { return undefined }
 		if(this.#position >= this.#input.length) { return undefined }
@@ -230,18 +285,30 @@ export class InputString {
 		return c
 	}
 
+	/**
+	 * @returns {void}
+	 */
 	unConsume() {
 		this.#position -= 1
 	}
 
+	/**
+	 * @returns {void}
+	 */
 	discardSP() {
 		while(isSP(this.peek())) { this.consume() }
 	}
 
+	/**
+	 * @returns {void}
+	 */
 	discardOWS() {
 		while(isOWS(this.peek())) { this.consume() }
 	}
 
+	/**
+	 * @returns {boolean}
+	 */
 	isEmpty() {
 		if(this.#input === undefined) { return true }
 		return this.#position >= this.#input.length
@@ -249,6 +316,7 @@ export class InputString {
 
 	/**
 	 * @param {string} search
+	 * @returns {number}
 	 */
 	indexOf(search) {
 		if(this.#input === undefined) { return -1 }
@@ -257,6 +325,7 @@ export class InputString {
 
 	/**
 	 * @param {number} index
+	 * @returns {string}
 	 */
 	consumeUntil(index) {
 		if(this.#input === undefined) { return SF_EMPTY }
@@ -267,18 +336,33 @@ export class InputString {
 }
 
 /**
- * @param {ParsingInput} input
+ * @param {ParsingInput|Array<ParsingInput>} parsingInput
  * @returns {InputString}
  */
-export function inputToInputString(input) {
-	if(input instanceof InputString) { return input }
+export function inputToInputString(parsingInput) {
+	/** @param {ParsingInput} input */
+	function _inputToString(input) {
+		if(input === undefined) { return undefined }
 
-	if((input instanceof ArrayBuffer) || ArrayBuffer.isView(input)) {
-		const decoder = new TextDecoder(UTF_8, { fatal: true, ignoreBOM: false })
-		return new InputString(decoder.decode(input))
+		if(input instanceof InputString) { return input.input }
+
+		if((input instanceof ArrayBuffer) || ArrayBuffer.isView(input)) {
+			const decoder = new TextDecoder(UTF_8, { fatal: true, ignoreBOM: false })
+			return decoder.decode(input)
+		}
+
+		if(typeof input !== 'string') { throw new TypeError('unknown input type') }
+		return input
 	}
 
-	return new InputString(input)
+	if(Array.isArray(parsingInput)) {
+		const result = parsingInput
+			.map(_inputToString)
+			.filter(s => s !== undefined)
+		return new InputString(result.join(PARSING_INPUT_JOINER))
+	}
+
+	return new InputString(_inputToString(parsingInput))
 }
 
 /**
@@ -289,7 +373,7 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#section-4.2}
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-structured-fields}
 	 *
-	 * @param {ParsingInput} input
+	 * @param {ParsingInput|Array<ParsingInput>} input
 	 * @param {ParsingFieldType} field_type
 	 * @param {ParsingOptions} [options]
 	 */
@@ -382,6 +466,8 @@ export class StructuredField {
 	 * @param {ParsingOptions} [options]
 	 */
 	static parseInnerList(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. Consume the first character of input_string; if it is not "(", fail parsing.
 		const first = input_string.consume()
 		if(first !== SF_INNER_LIST_OPEN) { throw new ParsingError(SF_ERROR.INNER_LIST_EXPECTED_OPEN, input_string) }
@@ -405,7 +491,7 @@ export class StructuredField {
 				const parameters = StructuredField.parseParameters(input_string, options)
 
 				// 		3. Return the tuple (inner_list, parameters).
-				return { inner_list, parameters }
+				return formatter.formatInnerList(inner_list, parameters)
 			}
 
 			// 	3. Let item be the result of running Parsing an Item (Section 4.2.3) with input_string.
@@ -431,13 +517,15 @@ export class StructuredField {
 	 * @param {ParsingOptions} [options]
 	 */
 	static parseDictionary(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. Let dictionary be an empty, ordered map.
 		const dictionary = new Map()
 
 		// 2. While input_string is not empty:
 		while(!input_string.isEmpty()) {
 			// 	1. Let this_key be the result of running Parsing a Key (Section 4.2.3.3) with input_string.
-			const key = StructuredField.parseKey(input_string)
+			const key = StructuredField.parseKey(input_string, options)
 			let member
 
 			// 	2. If the first character of input_string is "=":
@@ -458,7 +546,7 @@ export class StructuredField {
 				const parameters = StructuredField.parseParameters(input_string, options)
 
 				// 		3. Let member be the tuple (value, parameters).
-				member = { value, parameters }
+				member = formatter.formatDictionaryMember(value, parameters)
 			}
 
 			// 	4. If dictionary already contains a key this_key (comparing character for character), overwrite its value with member.
@@ -469,7 +557,7 @@ export class StructuredField {
 			input_string.discardOWS()
 
 			// 	7. If input_string is empty, return dictionary.
-			if(input_string.isEmpty()) { return dictionary }
+			if(input_string.isEmpty()) { return formatter.formatDictionary(dictionary) }
 
 			// 	8. Consume the first character of input_string; if it is not ",", fail parsing.
 			const next = input_string.consume()
@@ -483,7 +571,7 @@ export class StructuredField {
 		}
 
 		// 3. No structured data has been found; return dictionary (which is empty).
-		return dictionary
+		return formatter.formatDictionary(dictionary)
 	}
 
 	/**
@@ -494,6 +582,8 @@ export class StructuredField {
 	 * @param {ParsingOptions} [options]
 	 */
 	static parseItem(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. Let bare_item be the result of running Parsing a Bare Item (Section 4.2.3.1) with input_string.
 		const bare_item = StructuredField.parseBareItem(input_string, options)
 
@@ -501,7 +591,7 @@ export class StructuredField {
 		const parameters = StructuredField.parseParameters(input_string, options)
 
 		// 3. Return the tuple (bare_item, parameters).
-		return { bare_item, parameters }
+		return formatter.formatItem(bare_item, parameters)
 	}
 
 	/**
@@ -515,25 +605,25 @@ export class StructuredField {
 		const first = input_string.peek()
 
 		// 1. If the first character of input_string is a "-" or a DIGIT, return the result of running Parsing an Integer or Decimal (Section 4.2.4) with input_string.
-		if(first === SF_DASH || isDigit(first)) { return StructuredField.parseIntegerOrDecimal(input_string) }
+		if(first === SF_DASH || isDigit(first)) { return StructuredField.parseIntegerOrDecimal(input_string, options) }
 
 		// 2. If the first character of input_string is a DQUOTE, return the result of running Parsing a String (Section 4.2.5) with input_string.
-		if(first === SF_DOUBLE_QUOTE) { return StructuredField.parseString(input_string) }
+		if(first === SF_DOUBLE_QUOTE) { return StructuredField.parseString(input_string, options) }
 
 		// 3. If the first character of input_string is an ALPHA or "*", return the result of running Parsing a Token (Section 4.2.6) with input_string.
-		if(first === SF_ASTERISK || isAlpha(first)) { return StructuredField.parseToken(input_string) }
+		if(first === SF_ASTERISK || isAlpha(first)) { return StructuredField.parseToken(input_string, options) }
 
 		// 4. If the first character of input_string is ":", return the result of running Parsing a Byte Sequence (Section 4.2.7) with input_string.
 		if(first === SF_COLON) { return StructuredField.parseByteSequence(input_string, options) }
 
 		// 5. If the first character of input_string is "?", return the result of running Parsing a Boolean (Section 4.2.8) with input_string.
-		if(first === SF_QUESTION_MARK) { return StructuredField.parseBoolean(input_string) }
+		if(first === SF_QUESTION_MARK) { return StructuredField.parseBoolean(input_string, options) }
 
 		// 6. If the first character of input_string is "@", return the result of running Parsing a Date (Section 4.2.9) with input_string.
-		if(first === SF_AMPERSAND) { return StructuredField.parseDate(input_string) }
+		if(first === SF_AMPERSAND) { return StructuredField.parseDate(input_string, options) }
 
 		// 7. If the first character of input_string is "%", return the result of running Parsing a Display String (Section 4.2.10) with input_string.
-		if(first === SF_PERCENT) { return StructuredField.parseDisplayString(input_string) }
+		if(first === SF_PERCENT) { return StructuredField.parseDisplayString(input_string, options) }
 
 		// 8. Otherwise, the item type is unrecognized; fail parsing.
 		throw new ParsingError(SF_ERROR.UNRECOGNIZED_TYPE, input_string)
@@ -547,6 +637,8 @@ export class StructuredField {
 	 * @param {ParsingOptions} [options]
 	 */
 	static parseParameters(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. Let parameters be an empty, ordered map.
 		const parameters = new Map()
 
@@ -563,10 +655,9 @@ export class StructuredField {
 			input_string.discardSP()
 
 			// 	4. Let param_key be the result of running Parsing a Key (Section 4.2.3.3) with input_string.
-			const param_key = StructuredField.parseKey(input_string)
+			const param_key = StructuredField.parseKey(input_string, options)
 
 			// 	5. Let param_value be Boolean true.
-			/** @type {string|number|boolean|Uint8Array|undefined} */
 			let param_value = true
 
 			// 	6. If the first character of input_string is "=":
@@ -585,7 +676,7 @@ export class StructuredField {
 		}
 
 		// 3. Return parameters.
-		return parameters
+		return formatter.formatParameters(parameters)
 	}
 
 	/**
@@ -593,8 +684,11 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-a-key}
 	 *
 	 * @param {InputString} input_string
+	 * @param {ParsingOptions} [options]
 	 */
-	static parseKey(input_string) {
+	static parseKey(input_string, options) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. If the first character of input_string is not lcalpha or "*", fail parsing.
 		const first = input_string.peek()
 		if(!(first === SF_ASTERISK || isLCAlpha(first))) { throw new ParsingError(SF_ERROR.KEY_INVALID_CHAR, input_string) }
@@ -606,7 +700,8 @@ export class StructuredField {
 		while(!input_string.isEmpty()) {
 			// 	1. If the first character of input_string is not one of lcalpha, DIGIT, "_", "-", ".", or "*", return output_string.
 			const next = input_string.peek()
-			if(!(isLCAlpha(next) || isDigit(next) || next === SF_UNDERSCORE || next === SF_DASH || next === SF_PERIOD || next === SF_ASTERISK)) { return output_string }
+			if(!(isLCAlpha(next) || isDigit(next) || next === SF_UNDERSCORE || next === SF_DASH || next === SF_PERIOD || next === SF_ASTERISK)) { return formatter.formatKey(output_string) }
+
 			// 	2. Let char be the result of consuming the first character of input_string.
 			const c = input_string.consume()
 
@@ -615,7 +710,7 @@ export class StructuredField {
 		}
 
 		// 4. Return output_string.
-		return output_string
+		return formatter.formatKey(output_string)
 	}
 
 	/**
@@ -623,10 +718,14 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-an-integer-or-decim}
 	 *
 	 * @param {InputString} input_string
+	 * @param {ParsingOptions} [options]
 	 */
-	static parseIntegerOrDecimal(input_string) {
+	static parseIntegerOrDecimal(input_string, options) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. Let type be "integer".
-		let type = 'integer'
+		/** @type {ParsingNumberType} */
+		let type = SF_NUMBER_TYPE_INTEGER
 
 		// 2. Let sign be 1.
 		let sign = 1
@@ -658,13 +757,13 @@ export class StructuredField {
 				input_number += c
 			}
 			// 	3. Else, if type is "integer" and char is ".":
-			else if(type === 'integer' && c === SF_PERIOD) {
+			else if(type === SF_NUMBER_TYPE_INTEGER && c === SF_PERIOD) {
 				// 		1. If input_number contains more than 12 characters, fail parsing.
 				if(input_number.length > SF_MAX_INPUT_NUMBER_LENGTH) { throw new ParsingError(SF_ERROR.NUMBER_MAX_LENGTH, input_string) }
 
 				// 		2. Otherwise, append char to input_number and set type to "decimal".
 				input_number += c
-				type = 'decimal'
+				type = SF_NUMBER_TYPE_DECIMAL
 			}
 			// 	4. Otherwise, prepend char to input_string, and exit the loop.
 			else {
@@ -673,16 +772,16 @@ export class StructuredField {
 			}
 
 			// 	5. If type is "integer" and input_number contains more than 15 characters, fail parsing.
-			if(type === 'integer' && input_number.length > SF_MAX_INPUT_NUMBER_INTEGER_LENGTH) { throw new ParsingError(SF_ERROR.INTEGER_MAX_LENGTH, input_string) }
+			if(type === SF_NUMBER_TYPE_INTEGER && input_number.length > SF_MAX_INPUT_NUMBER_INTEGER_LENGTH) { throw new ParsingError(SF_ERROR.INTEGER_MAX_LENGTH, input_string) }
 
 			// 	6. If type is "decimal" and input_number contains more than 16 characters, fail parsing.
-			if(type === 'decimal' && input_number.length > SF_MAX_INPUT_NUMBER_DECIMAL_LENGTH) { throw new ParsingError(SF_ERROR.DECIMAL_MAX_LENGTH, input_string) }
+			if(type === SF_NUMBER_TYPE_DECIMAL && input_number.length > SF_MAX_INPUT_NUMBER_DECIMAL_LENGTH) { throw new ParsingError(SF_ERROR.DECIMAL_MAX_LENGTH, input_string) }
 		}
 
-		// 8. If type is "integer":
 		let output_number
 
-		if(type === 'integer') {
+		// 8. If type is "integer":
+		if(type === SF_NUMBER_TYPE_INTEGER) {
 			// 	1. Let output_number be an Integer that is the result of parsing input_number as an integer.
 			output_number = Number.parseInt(input_number, 10)
 		}
@@ -705,7 +804,9 @@ export class StructuredField {
 		output_number *= sign
 
 		// 11. Return output_number.
-		return output_number
+		if(output_number === 0) { output_number = 0 } // handle for -0
+
+		return formatter.formatNumber(output_number, type)
 	}
 
 	/**
@@ -713,8 +814,11 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-a-string}
 	 *
 	 * @param {InputString} input_string
+	 * @param {ParsingOptions} [options]
 	 */
-	static parseString(input_string) {
+	static parseString(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. Let output_string be an empty string.
 		let output_string = SF_EMPTY
 
@@ -746,7 +850,7 @@ export class StructuredField {
 			}
 			// 	3. Else, if char is DQUOTE, return output_string.
 			else if (c === SF_DOUBLE_QUOTE) {
-				return output_string
+				return formatter.formatString(output_string)
 			}
 			// 	4. Else, if char is in the range %x00-1f or %x7f-ff (i.e., it is not in VCHAR or SP), fail parsing.
 			// biome-ignore lint/style/noNegationElse: follow spec
@@ -768,8 +872,11 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-a-token}
 	 *
 	 * @param {InputString} input_string
+	 * @param {ParsingOptions} [options]
 	 */
-	static parseToken(input_string) {
+	static parseToken(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. If the first character of input_string is not ALPHA or "*", fail parsing.
 		const first = input_string.peek()
 		if(!(isAlpha(first) || first === SF_ASTERISK)) { throw new ParsingError(SF_ERROR.TOKEN_INVALID_CHAR, input_string) }
@@ -781,7 +888,7 @@ export class StructuredField {
 		while(!input_string.isEmpty()) {
 			// 	1. If the first character of input_string is not in tchar, ":", or "/", return output_string.
 			const next = input_string.peek()
-			if(!(isTChar(next) || next === SF_COLON || next === SF_FORWARD_SLASH)) { return output_string }
+			if(!(isTChar(next) || next === SF_COLON || next === SF_FORWARD_SLASH)) { return formatter.formatToken(output_string) }
 
 			// 	2. Let char be the result of consuming the first character of input_string.
 			const c = input_string.consume()
@@ -791,7 +898,7 @@ export class StructuredField {
 		}
 
 		// 4. Return output_string.
-		return output_string
+		return formatter.formatToken(output_string)
 	}
 
 	/**
@@ -802,6 +909,8 @@ export class StructuredField {
 	 * @param {ParsingOptions} [options]
 	 */
 	static parseByteSequence(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. If the first character of input_string is not ":", fail parsing.
 		const first = input_string.peek()
 		if(first !== SF_COLON) { throw new ParsingError(SF_ERROR.BYTE_SEQ_INVALID_PREFIX, input_string) }
@@ -825,7 +934,8 @@ export class StructuredField {
 		// 7. Let binary_content be the result of base64-decoding [RFC4648] b64_content, synthesizing padding if necessary (note the requirements about recipient behavior below). If base64 decoding fails, parsing fails.
 		// 8. Return binary_content.
 		try {
-			return Uint8Array.fromBase64(b64_content, { alphabet: 'base64', lastChunkHandling: options?.lastChunkHandling ?? 'strict' })
+			const binary_content = Uint8Array.fromBase64(b64_content, { alphabet: 'base64', lastChunkHandling: options?.lastChunkHandling ?? 'strict' })
+			return formatter.formatBinary(binary_content)
 		}
 		catch(err) {
 			// biome-ignore lint/style/useErrorCause: false positive
@@ -838,8 +948,11 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-a-boolean}
 	 *
 	 * @param {InputString} input_string
+	 * @param {ParsingOptions} [options]
 	 */
-	static parseBoolean(input_string) {
+	static parseBoolean(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. If the first character of input_string is not "?", fail parsing.
 		const first = input_string.peek()
 		if(first !== SF_QUESTION_MARK) { throw new ParsingError(SF_ERROR.BOOLEAN_INVALID_CHAR, input_string) }
@@ -852,13 +965,13 @@ export class StructuredField {
 		// 3. If the first character of input_string matches "1", discard the first character, and return true.
 		if(next === SF_BOOLEAN_ONE) {
 			input_string.consume()
-			return true
+			return formatter.formatBoolean(true)
 		}
 
 		// 4. If the first character of input_string matches "0", discard the first character, and return false.
 		if(next === SF_BOOLEAN_ZERO) {
 			input_string.consume()
-			return false
+			return formatter.formatBoolean(false)
 		}
 
 		// 5. No value has matched; fail parsing.
@@ -870,8 +983,11 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-a-date}
 	 *
 	 * @param {InputString} input_string
+	 * @param {ParsingOptions} [options]
 	 */
-	static parseDate(input_string) {
+	static parseDate(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. If the first character of input_string is not "@", fail parsing.
 		const first = input_string.peek()
 		if(first !== SF_AMPERSAND) { throw new ParsingError(SF_ERROR.DATE_INVALID_PREFIX, input_string) }
@@ -880,13 +996,13 @@ export class StructuredField {
 		input_string.consume()
 
 		// 3. Let output_date be the result of running Parsing an Integer or Decimal (Section 4.2.4) with input_string.
-		const output_date = StructuredField.parseIntegerOrDecimal(input_string)
+		const output_date = StructuredField.parseIntegerOrDecimal(input_string, options)
 
 		// 4. If output_date is a Decimal, fail parsing.
 		if(isDecimal(output_date)) { throw new ParsingError(SF_ERROR.DATE_IS_DECIMAL, input_string) }
 
 		// 5. Return output_date.
-		return output_date
+		return formatter.formatDate(output_date)
 	}
 
 	/**
@@ -894,8 +1010,11 @@ export class StructuredField {
 	 * @see {@link https://www.rfc-editor.org/info/rfc9651/#name-parsing-a-display-string}
 	 *
 	 * @param {InputString} input_string
+	 * @param {ParsingOptions} [options]
 	 */
-	static parseDisplayString(input_string) {
+	static parseDisplayString(input_string, options = {}) {
+		const formatter = options?.format ?? SF_DEFAULT_FORMATTER
+
 		// 1. If the first two characters of input_string are not "%" followed by DQUOTE, fail parsing.
 		// 2. Discard the first two characters of input_string.
 		const first = input_string.peek()
@@ -925,8 +1044,8 @@ export class StructuredField {
 				if(octet_hex1 === undefined || octet_hex2 === undefined) { throw new ParsingError(SF_ERROR.DISPLAY_STRING_MISSING_HEX, input_string) }
 
 				// 		2. If octet_hex contains characters outside the range %x30-39 or %x61-66 (i.e., it is not in 0-9 or lowercase a-f), fail parsing.
-				if(!(isDigit(octet_hex1) || isLCAlpha(octet_hex1))) { throw new ParsingError(SF_ERROR.DISPLAY_STRING_NOT_LOWERCASE, input_string) }
-				if(!(isDigit(octet_hex2) || isLCAlpha(octet_hex2))) { throw new ParsingError(SF_ERROR.DISPLAY_STRING_NOT_LOWERCASE, input_string) }
+				if(!isLowercaseHex(octet_hex1)) { throw new ParsingError(SF_ERROR.DISPLAY_STRING_NOT_LOWERCASE, input_string) }
+				if(!isLowercaseHex(octet_hex2)) { throw new ParsingError(SF_ERROR.DISPLAY_STRING_NOT_LOWERCASE, input_string) }
 
 				// 		3. Let octet be the result of hex decoding octet_hex (Section 8 of [RFC4648]).
 				const octet = Number.parseInt(`${octet_hex1}${octet_hex2}`, BASE_16)
@@ -941,7 +1060,8 @@ export class StructuredField {
 				// 		2. Return unicode_sequence.
 				try {
 					const decoder = new TextDecoder(UTF_8, { fatal: true, ignoreBOM: false })
-					return decoder.decode(Uint8Array.from(byte_array))
+					const unicode_sequence = decoder.decode(Uint8Array.from(byte_array))
+					return formatter.formatDisplayString(unicode_sequence)
 				}
 				catch(err) {
 					// biome-ignore lint/style/useErrorCause: false positive
