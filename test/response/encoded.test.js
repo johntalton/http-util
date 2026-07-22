@@ -33,7 +33,7 @@ describe('Response', () => {
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
 				':status': 200,
-				'Server-Timing': 'encode;dur=0',
+				'Server-Timing': 'encode;desc="no body";dur=0',
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server',
@@ -76,7 +76,7 @@ describe('Response', () => {
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
 				':status': 200,
-				'Server-Timing': 'encode;dur=0',
+				'Server-Timing': 'encode;desc="no body";dur=0',
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server',
@@ -119,7 +119,7 @@ describe('Response', () => {
 			assert.equal(stream.headersSent, true)
 			assert.deepEqual(stream.sentHeaders, {
 				':status': 200,
-				'Server-Timing': 'encode;dur=0',
+				'Server-Timing': 'encode;desc="no body";dur=0',
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server',

@@ -158,7 +158,7 @@ export function lookupEncoder(encoding, listing) {
 export function send_encoded(stream, status, contentType, body, contentDisposition, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta) {
 	// Assert.isString(encoding) if not undefined
 	if(body === undefined) {
-		meta.performance.push({ name: 'encode', duration: 0 })
+		meta.performance.push({ name: 'encode', description: 'no body', duration: 0 })
 		send_bytes(stream, status, contentType, body, contentDisposition, undefined, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
 		return
 	}
@@ -166,6 +166,7 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 	const obj = (typeof body === 'string') ? Buffer.from(body, CHARSET_UTF8) : body
 
 	if((obj instanceof ReadableStream) || (obj instanceof Readable)) {
+		meta.performance.push({ name: 'encode', description: 'stream', duration: 0 })
 		const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding,	 ENCODER_STREAM_MAP)
 		const encodedStream = (encoderFn === undefined) ? obj : encoderFn((obj instanceof ReadableStream) ? Readable.fromWeb(obj) : obj)
 		send_bytes(stream, status, contentType, encodedStream, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
