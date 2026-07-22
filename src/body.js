@@ -4,11 +4,11 @@ import { EMPTY } from './defs.js'
 import {
 	CHARSET_UTF8
 } from './headers/content-type.js'
-import { Multipart } from './headers/multipart.js'
 import {
 	MIME_TYPE_MULTIPART_FORM_DATA,
 	MIME_TYPE_URL_FORM_DATA
 } from './headers/util/mime-types.js'
+import { Multipart } from './response/multipart.js'
 
 export const BYTE_PER_K = 1024
 export const DEFAULT_BYTE_LIMIT = BYTE_PER_K * BYTE_PER_K //

@@ -21,6 +21,8 @@ A wide range of supported header are available.  For incoming header (from clien
 
 Many header require common handling (aka. select from accept-encoding list) in such cases extra methods are provided to accomplish these tasks.
 
+The common Structured Fields are also supported via [StructuredField](./src/headers/structured-field/README.md) `parse` and `encode` methods.
+
 | Header | parse | encode | extras
 |--------|-------|--------|--------
 | accept                        | ✅ |   | compare, select |
@@ -39,6 +41,8 @@ Many header require common handling (aka. select from accept-encoding list) in s
 | content-type                  | ✅    ||
 | cross-origin-embedder-policy  |   | ✅ ||
 | cross-origin-opener-policy    |   | ✅ ||
+| cross-origin-resource-policy  |   | ✅ ||
+| deprecation                   |   | ✅ ||
 | sec-fetch-*                   | ✅ |   ||
 | forwarded                     | ✅ |   | select |
 | integrity-policy              |   | ✅ ||
@@ -51,6 +55,7 @@ Many header require common handling (aka. select from accept-encoding list) in s
 | reporting-endpoints           |   | ✅ ||
 | server-timing                 |   | ✅ ||
 | strict-transport-security     |   | ✅ ||
+| sunset                        |   | ✅ ||
 | www-authenticate              |   | ✅ | basic, bearer |
 | x-content-type-options        |   | ✅ ||
 | x-xss-protection              |   | ✅ ||
@@ -103,7 +108,7 @@ Each function takes a specific set of parameters that are related to the status 
   - [`Preflight`](#) - Response to OPTIONS with CORS headers
   - [`SSE`](#) - SSE header (leave the `stream` open)
   - [`Trace`](#)
-  - [`PartialContent`](#)
+  - [`PartialContent`](#) - with `Multipart` content
   - [`ResetContent`](#)
 
 - 3xx
@@ -168,6 +173,8 @@ The `requestBody` method returns a `fetch`-like response.  Including methods `bl
 The return is a deferred response that does NOT consume the `steam` until calling one of the above methods.
 
 Optional `byteLimit`, `contentLength` and `contentType` can be provided to hint the parser, as well as a `AbortSignal` to abandoned the reader.
+
+`Multipart` class is used when accessing `formData`.
 
 ```js
 import { requestBody } from '@johntalton/http-util/body'

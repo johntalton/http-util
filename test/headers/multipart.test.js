@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import { ReadableStream } from 'node:stream/web'
 
-import { Multipart } from '@johntalton/http-util/headers'
+import { Multipart } from '@johntalton/http-util/response'
 
 import { consumeStreamAsText } from '../consume-stream.js'
 

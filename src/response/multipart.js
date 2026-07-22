@@ -1,13 +1,13 @@
 import { ReadableStream } from 'node:stream/web'
 
 import { EMPTY } from '../defs.js'
-import { ContentDisposition, DISPOSITION_FORM_DATA } from './content-disposition.js'
-import { ContentRange } from './content-range.js'
-import { CHARSET_UTF8 } from './content-type.js'
-import { Assert } from './util/assert.js'
+import { ContentDisposition, DISPOSITION_FORM_DATA } from '../headers/content-disposition.js'
+import { ContentRange } from '../headers/content-range.js'
+import { CHARSET_UTF8 } from '../headers/content-type.js'
+import { Assert } from '../headers/util/assert.js'
 // import { ContentType } from './content-type.js'
 
-/** @import { ContentRangeDirective } from './content-range.js' */
+/** @import { ContentRangeDirective } from '../headers/content-range.js' */
 /** @import { SendBody } from '../defs.js' */
 
 /**
