@@ -91,9 +91,11 @@ export function isLowercaseHex(c) {
 
 /**
  * @see {@link https://tc39.es/ecma262/multipage/indexed-collections.html#standard-base64-alphabet}
- * @param {string} str
+ * @param {string|undefined} str
  */
 export function isBase64Alphabet(str) {
+	if(str === undefined) { return false }
+
 	for(const c of str) {
 		if(!((isAlpha(c)) ||
 				(isDigit(c)) ||

@@ -224,5 +224,51 @@ describe('Structured-Field', () => {
 			})))
 			assert.equal(result, 'a=(42 77;b=:TQ==:)')
 		})
+
+
+		it('should throw on token invalid chars', () => {
+			assert.throws(() => StructuredFieldSerializer.serialize({
+				value: 'BAD@',
+				type: 'token'
+			}), {
+				name: 'SerializingError',
+				message: 'token invalid char'
+			})
+		})
+
+		it('should throw on token invalid chars', () => {
+			assert.throws(() => StructuredFieldSerializer.serialize({
+				value: 'BAD\tSTRING'
+			}), {
+				name: 'SerializingError',
+				message: 'string invalid char'
+			})
+		})
+
   })
+
+	describe('isTypeInteger', () => {})
+
+	describe('isTypeDecimal', () => {})
+
+	describe('isTypeString', () => {})
+
+	describe('isTypeToken', () => {})
+
+	describe('isTypeByteSequence', () => {})
+
+	describe('isTypeBoolean', () => {})
+
+	describe('isTypeDate', () => {})
+
+	describe('isTypeDisplayString', () => {})
+
+
+
+	describe('isBareItem', () => {})
+
+	describe('isItemType', () => {})
+
+	describe('isItemTypeWithParameters', () => {})
+
 })
