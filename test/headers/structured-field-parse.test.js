@@ -1,6 +1,8 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
+import { ifSupports } from '../node-version.js'
+
 import {
 	StructuredFieldParser,
 	InputString,
@@ -225,14 +227,18 @@ describe('StructuredFieldParser', () => {
 			})
 		})
 
-		it('should handle Date item', () => {
+		it('should handle Date item', {
+			skip: !ifSupports('temporal')
+		}, () => {
 			const result = StructuredFieldParser.parse('@1659578233', 'item', options)
 			const date = Temporal.Instant.fromEpochMilliseconds(1659578233 * 1000)
 			assert.deepEqual(result, { bare_item: date, parameters: new Map() })
 			assert.equal(date.toJSON(), '2022-08-04T01:57:13Z')
 		})
 
-		it('should handle byte sequence item', () => {
+		it('should handle byte sequence item', {
+			skip: !ifSupports('toBase64')
+		}, () => {
 			const str = 'pretend this is binary content.'
 			const encoder = new TextEncoder()
 			const encodedStr = encoder.encode(str)
@@ -240,7 +246,9 @@ describe('StructuredFieldParser', () => {
 			assert.deepEqual(result, { bare_item: encodedStr, parameters: new Map() })
 		})
 
-		it('should handle empty byte sequence item', () => {
+		it('should handle empty byte sequence item', {
+			skip: !ifSupports('toBase64')
+		}, () => {
 			const result = StructuredFieldParser.parse('::', 'item', options)
 			assert.deepEqual(result, { bare_item: Uint8Array.from([]), parameters: new Map() })
 		})
@@ -252,7 +260,9 @@ describe('StructuredFieldParser', () => {
 			})
 		})
 
-		it('should handle byte sequence item (bad padding loose mode)', () => {
+		it('should handle byte sequence item (bad padding loose mode)', {
+			skip: ifSupports('toBase64')
+		}, () => {
 			const result = StructuredFieldParser.parse(':aGVsbG8:', 'item', { ...options, lastChunkHandling: 'loose' })
 			assert.deepEqual(result, { bare_item: Uint8Array.from([104, 101, 108, 108, 111]), parameters: new Map() })
 		})
@@ -434,7 +444,9 @@ describe('StructuredFieldParser', () => {
 			})
 		})
 
-		it('should handle custom formatter (binary item)', () => {
+		it('should handle custom formatter (binary item)', {
+			skip: !ifSupports('toBase64')
+		},() => {
 			const format = HTTPWGTestFormatter
 			const result = StructuredFieldParser.parse(':cHJldGVuZCB0aGlzIGlzIGJpbmFyeSBjb250ZW50Lg==:', 'item', { format })
 			assert.deepEqual(result, [{ "__type": "binary", "value": "OBZGK5DFNZSCA5DINFZSA2LTEBRGS3TBOJ4SAY3PNZ2GK3TUFY======" }, []])

@@ -1,6 +1,8 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
+import { ifSupports } from '../node-version.js'
+
 import {
 	DisplayString,
   StructuredFieldSerializer,
@@ -97,18 +99,24 @@ describe('Structured-Field', () => {
 			assert.equal(result, '@0')
 		})
 
-		it('should handle bare item (Temporal)', () => {
+		it('should handle bare item (Temporal)', {
+			skip: !ifSupports('temporal')
+		}, () => {
 			const result = StructuredFieldSerializer.serialize({ value: new Temporal.Instant(0n) })
 			assert.equal(result, '@0')
 		})
 
-		it('should handle bare item (byte sequence Uint8Array)', () => {
+		it('should handle bare item (byte sequence Uint8Array)', {
+			skip: !ifSupports('toBase64')
+		}, () => {
 			const source = [ 1,2,3,4 ]
 			const result = StructuredFieldSerializer.serialize({ value: Uint8Array.from(source) })
 			assert.equal(result, ':AQIDBA==:')
 		})
 
-		it('should handle bare item (byte sequence ArrayBuffer)', () => {
+		it('should handle bare item (byte sequence ArrayBuffer)', {
+			skip: !ifSupports('toBase64')
+		}, () => {
 			const source = [ 1,2,3,4 ]
 			const result = StructuredFieldSerializer.serialize({ value: Uint8Array.from(source).buffer })
 			assert.equal(result, ':AQIDBA==:')
@@ -218,7 +226,9 @@ describe('Structured-Field', () => {
 			assert.equal(result, 'a=(42 77);b=?0')
 		})
 
-		it('should handle dictionary (inner-list with item parameters)', () => {
+		it('should handle dictionary (inner-list with item parameters)', {
+			skip: !ifSupports('toBase64')
+		}, () => {
 			const result = StructuredFieldSerializer.serialize(new Map(Object.entries({
 				a: { value: [ { value: 42 }, { value: 77, parameters: new Map([ [ 'b', Uint8Array.from([ 77 ]) ] ]) } ] }
 			})))

@@ -1,4 +1,5 @@
 import { Base32 } from '../util/base32.js'
+import { FEATURE_TEMPORAL } from './defs.js'
 
 /** @import { NumberType } from './defs.js' */
 
@@ -215,7 +216,11 @@ export class NativeFormatter {
 	 * @param {number} d
 	 */
 	static formatDate(d) {
-		return Temporal.Instant.fromEpochMilliseconds(d * 1000)
+		if(FEATURE_TEMPORAL) {
+			return Temporal.Instant.fromEpochMilliseconds(d * 1000)
+		}
+
+		return new Date(d * 1000)
 	}
 
 	/**

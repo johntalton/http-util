@@ -7,6 +7,9 @@
 /** @typedef {NumberType|'string'|'token'|'boolean'|'binary'|'date'|'displaystring'} BareType */
 
 //
+export const FEATURE_TEMPORAL = typeof Temporal !== 'undefined'
+
+//
 export const SF_NUMBER_TYPE_INTEGER = 'integer'
 export const SF_NUMBER_TYPE_DECIMAL = 'decimal'
 

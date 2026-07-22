@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/style/noExcessiveLinesPerFile: full serializer */
 import {
 	BINARY_ALPHABET,
+	FEATURE_TEMPORAL,
 	isAlpha,
 	isDigit,
 	isLCAlpha,
@@ -164,7 +165,7 @@ export function isTypeBoolean(value, type_hint) {
  */
 export function isTypeDate(value, type_hint) {
 	if(value instanceof Date) { return true }
-	if(value instanceof Temporal.Instant) { return true }
+	if(FEATURE_TEMPORAL && value instanceof Temporal.Instant) { return true }
 	if(type_hint === 'date') { return true }
 	return false
 }

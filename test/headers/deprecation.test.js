@@ -1,6 +1,8 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
+import { ifSupports } from '../node-version.js'
+
 import { Deprecation } from '@johntalton/http-util/headers'
 
 describe('Deprecation', () => {
@@ -10,7 +12,9 @@ describe('Deprecation', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle Temporal Instant', () => {
+		it('should handle Temporal Instant', {
+			skip: !ifSupports('temporal')
+		}, () => {
 			const result = Deprecation.encode(new Temporal.Instant(0n))
 			assert.equal(result, '@0')
 		})

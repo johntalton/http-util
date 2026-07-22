@@ -1,6 +1,8 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
+import { ifSupports } from '../node-version.js'
+
 import { Sunset } from '@johntalton/http-util/headers'
 
 describe('Sunset', () => {
@@ -10,7 +12,9 @@ describe('Sunset', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle Temporal Instant', () => {
+		it('should handle Temporal Instant', {
+			skip: !ifSupports('temporal')
+		}, () => {
 			const result = Sunset.encode(new Temporal.Instant(0n))
 			assert.equal(result, 'Thu, 01 Jan 1970 00:00:00 GMT')
 		})
