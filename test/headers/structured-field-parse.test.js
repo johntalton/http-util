@@ -261,7 +261,7 @@ describe('StructuredFieldParser', () => {
 		})
 
 		it('should handle byte sequence item (bad padding loose mode)', {
-			skip: ifSupports('toBase64')
+			skip: !ifSupports('toBase64')
 		}, () => {
 			const result = StructuredFieldParser.parse(':aGVsbG8:', 'item', { ...options, lastChunkHandling: 'loose' })
 			assert.deepEqual(result, { bare_item: Uint8Array.from([104, 101, 108, 108, 111]), parameters: new Map() })
