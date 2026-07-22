@@ -1,6 +1,23 @@
-import { Base32 } from './base32.js'
+import { Base32 } from '../util/base32.js'
 
-/** @import { ParsingFormat, ParsingNumberType } from './structured-field.js' */
+/** @import { NumberType } from './defs.js' */
+
+/**
+ * @typedef {Object} ParsingFormat
+ * @property {(list: Array<any>, parameters: Map<string, any>) => any} formatInnerList
+ * @property {(dict: Map<string, any>) => any} formatDictionary
+ * @property {(key: string) => any} formatKey
+ * @property {(value: any, parameters: Map<string, any>) => any} formatDictionaryMember
+ * @property {(bare_item: any, parameters: Map<string, any>) => any} formatItem
+ * @property {(parameters: Map<string, any>) => any} formatParameters
+ * @property {(n: number, type: NumberType) => any} formatNumber
+ * @property {(str: string) => any} formatString
+ * @property {(t: string) => any} formatToken
+ * @property {(buffer: Uint8Array) => any} formatBinary
+ * @property {(b: boolean) => any} formatBoolean
+ * @property {(date: number) => any} formatDate
+ * @property {(str: string) => any} formatDisplayString
+ */
 
 /**
  * @see {@link https://github.com/httpwg/structured-field-tests}
@@ -54,7 +71,7 @@ export class HTTPWGTestFormatter {
 
 	/**
 	 * @param {number} n
-	 * @param {ParsingNumberType} _type
+	 * @param {NumberType} _type
 	 */
 	static formatNumber(n, _type) {
 		return n
@@ -160,7 +177,7 @@ export class NativeFormatter {
 
 	/**
 	 * @param {number} n
-	 * @param {ParsingNumberType} _type
+	 * @param {NumberType} _type
 	 */
 	static formatNumber(n, _type) {
 		return n
