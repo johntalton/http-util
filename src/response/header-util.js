@@ -36,6 +36,7 @@ import { IntegrityPolicy } from '../headers/integrity-policy.js'
 import { Link } from '../headers/link.js'
 import { PermissionsPolicy } from '../headers/permissions-policy.js'
 import { AppliedPreferences } from '../headers/preference.js'
+import { HTTP_HEADER_RATE_LIMIT, HTTP_HEADER_RATE_LIMIT_POLICY, RateLimit, RateLimitPolicy } from '../headers/rate-limit.js'
 import { ReferrerPolicy } from '../headers/referrer-policy.js'
 import { ReportingEndpoints } from '../headers/reporting-endpoints.js'
 import {
@@ -155,6 +156,10 @@ export function contextHeaders(context) {
 			[HTTP_HEADER_PREFERENCE_APPLIED]: appliedPreferences,
 			[HTTP_HEADER_SUNSET]: Sunset.encode(context.sunset),
 			[HTTP_HEADER_DEPRECATION]: Deprecation.encode(context.deprecation),
+
+			[HTTP_HEADER_RATE_LIMIT]: RateLimit.encode(context.rateLimitInfo),
+			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(context.rateLimitPolicies),
+
 			...policyHeaders(context.policy)
 		})
 	}
@@ -164,19 +169,6 @@ export function contextHeaders(context) {
  * @param {...Array<string>|undefined} headers
  */
 export function varyHeaders(...headers) {
-	// const vary = headers.map(header => {
-	// 	if(header === undefined) { return undefined }
-	// 	if(header.length === 0) { return undefined }
-	// 	return header.join(COMMON_LIST_VALUE_JOINER_COMMA)
-	// })
-	// .filter(header => header !== undefined && header !== EMPTY)
-
-	// if(vary.length === 0) { return {} }
-
-	// return cleanHeaders({
-	// 	[HTTP2_HEADER_VARY]: vary.join(COMMON_LIST_HEADER_JOINER_COMMA)
-	// })
-
 	const result = headers.reduce((acc, header) => {
 		if(header === undefined) { return acc }
 		return acc.union(new Set(header.filter(key => key !== undefined && key !== EMPTY)))

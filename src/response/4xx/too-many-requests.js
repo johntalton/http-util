@@ -32,7 +32,7 @@ export function sendTooManyRequests(stream, info, context, meta) {
 	send_no_body(stream, HTTP_STATUS_TOO_MANY_REQUESTS, {
 			[HTTP2_HEADER_RETRY_AFTER]: `${limitInfo.resetSeconds}`,
 			[HTTP_HEADER_RATE_LIMIT]: RateLimit.encode(limitInfo),
-			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(...policies)
+			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(policies)
 		},
 		[
 			HTTP2_HEADER_RETRY_AFTER,

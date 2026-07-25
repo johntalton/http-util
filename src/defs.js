@@ -115,6 +115,9 @@
  * @property {AppliedPreferencesInput|undefined} [appliedPreferences]
  * @property {IMFFixDateInput|undefined} [sunset]
  * @property {Date|Temporal.Instant|undefined} [deprecation]
+ *
+ * @property {RateLimitInfo|undefined} [rateLimitInfo]
+ * @property {Array<RateLimitPolicyInfo>|undefined} [rateLimitPolicies]
  */
 
 /** @type {''} */

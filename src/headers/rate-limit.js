@@ -11,7 +11,7 @@ export const HTTP_HEADER_RATE_LIMIT_POLICY = 'RateLimit-Policy'
  * @typedef {Object} RateLimitInfo
  * @property {string} name
  * @property {number} remaining
- * @property {number} resetSeconds
+ * @property {number|undefined} [resetSeconds]
  * @property {string|undefined} [partitionKey]
  */
 
@@ -19,7 +19,6 @@ export const HTTP_HEADER_RATE_LIMIT_POLICY = 'RateLimit-Policy'
  * @typedef {Object} RateLimitPolicyInfo
  * @property {string} name
  * @property {number} quota
- * @property {number} size
  * @property {string} quotaUnits
  * @property {number} windowSeconds
  * @property {string|undefined} [partitionKey]
@@ -62,9 +61,11 @@ export class RateLimit {
 	}
 
 	/**
-	 * @param {RateLimitInfo} limitInfo
+	 * @param {RateLimitInfo|undefined} limitInfo
 	 */
 	static encode(limitInfo) {
+		if(limitInfo === undefined) { return undefined }
+
 		const result = Array.from(RateLimit.#encode(limitInfo))
 		if(result.length === 0) { return undefined }
 		return result.join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON)
@@ -93,12 +94,16 @@ export class RateLimitPolicy {
 	}
 
 	/**
-	 * @param {...RateLimitPolicyInfo} policies
+	 * @param {Array<RateLimitPolicyInfo>|RateLimitPolicyInfo|undefined} policies
+	 * @param {boolean} [asArray = false]
 	 */
-	static encode(...policies) { // todo AsArray
-		if(!isNonEmptyArray(policies)) { return undefined }
+	static encode(policies, asArray = false) {
+		if(policies === undefined) { return undefined }
+		const policiesList = Array.isArray(policies) ? policies : [ policies ]
 
-		const remainingPolicies = policies
+		if(!isNonEmptyArray(policiesList)) { return undefined }
+
+		const remainingPolicies = policiesList
 			.filter(pol => {
 				if(pol === undefined) { return false }
 				if(pol.name === undefined) { return false }
@@ -110,11 +115,10 @@ export class RateLimitPolicy {
 
 		if(remainingPolicies.length === 0) { return undefined }
 
-		return remainingPolicies
-			.map(policy => {
-				const result = Array.from(RateLimitPolicy.#encode(policy))
-				return result.join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON)
-			})
-			.join(COMMON_LIST_HEADER_JOINER_COMMA)
+		const result = remainingPolicies
+			.map(policy => Array.from(RateLimitPolicy.#encode(policy))
+				.join(COMMON_LIST_PARAMETER_JOINER_SEMICOLON))
+
+		return asArray ? result : result.join(COMMON_LIST_HEADER_JOINER_COMMA)
 	}
 }
