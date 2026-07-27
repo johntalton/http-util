@@ -6,6 +6,7 @@ import {
 	RateLimit,
 	RateLimitPolicy
 } from '../../headers/rate-limit.js'
+import { RetryAfter } from '../../headers/retry-after.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
@@ -30,7 +31,7 @@ export function sendTooManyRequests(stream, info, context, meta) {
 	} = info
 
 	send_no_body(stream, HTTP_STATUS_TOO_MANY_REQUESTS, {
-			[HTTP2_HEADER_RETRY_AFTER]: `${limitInfo.resetSeconds}`,
+			[HTTP2_HEADER_RETRY_AFTER]: RetryAfter.encode(limitInfo.resetSeconds),
 			[HTTP_HEADER_RATE_LIMIT]: RateLimit.encode(limitInfo),
 			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(policies)
 		},

@@ -9,6 +9,7 @@ import { Conditional } from '../headers/conditional.js'
 import { ContentDisposition } from '../headers/content-disposition.js'
 import { ContentRange } from '../headers/content-range.js'
 import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
+import { RetryAfter } from '../headers/retry-after.js'
 import { InternetMessageFormatFixDate } from '../headers/util/imf-fixdate.js'
 import {
 	contextHeaders,
@@ -28,6 +29,7 @@ import {
 /** @import { CacheControlOptions } from '../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
 /** @import { DispositionInput } from '../headers/content-disposition.js' */
+/** @import { RetryAfterItem } from '../headers/retry-after.js' */
 
 const {
 	HTTP_STATUS_INTERNAL_SERVER_ERROR,
@@ -66,7 +68,7 @@ export function send_no_body(stream, status, headers, exposedHeaders, context, m
  * @param {ServerHttp2Stream} stream
  * @param {number} status
  * @param {string|undefined} message
- * @param {number|undefined} retryAfter
+ * @param {RetryAfterItem|undefined} retryAfter
  * @param {SendContext} context
  * @param {Metadata} meta
  */
@@ -77,11 +79,13 @@ export function send_error(stream, status, message, retryAfter, context, meta) {
 		message: message ?? 'Error'
 	})
 
-	const exposedHeaders = Number.isInteger(retryAfter) ? [ HTTP2_HEADER_RETRY_AFTER ] : []
+	const retryAfterStr = RetryAfter.encode(retryAfter)
+
+	const exposedHeaders = retryAfterStr === undefined ? [ ] : [ HTTP2_HEADER_RETRY_AFTER ]
 	const customVaryHeaders = undefined
 
 	send(stream, status, {
-		[HTTP2_HEADER_RETRY_AFTER]: Number.isInteger(retryAfter) ? `${retryAfter}` : undefined
+		[HTTP2_HEADER_RETRY_AFTER]: retryAfterStr
 	}, exposedHeaders, customVaryHeaders, CONTENT_TYPE_JSON, obj, context, meta) // todo should this be plain text
 }
 

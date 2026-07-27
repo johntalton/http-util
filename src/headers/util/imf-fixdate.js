@@ -23,7 +23,7 @@ import { Assert } from './assert.js'
 export const FEATURE_TEMPORAL = typeof Temporal !== 'undefined'
 
 /**
- * @param {IMFFixDate|Date|Temporal.Instant|undefined} reference
+ * @param {IMFFixDateInput} reference
  * @returns {reference is Temporal.Instant}
  */
 export function isTemporalInstant(reference) {

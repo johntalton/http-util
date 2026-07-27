@@ -21,6 +21,7 @@
 /** @import { LinkItem } from './headers/link.js'  */
 /** @import { AppliedPreferencesInput } from './headers/preference.js'  */
 /** @import { StrictTransportSecurityOptions } from './headers/strict-transport-security.js' */
+/** @import { RetryAfterItem } from './headers/retry-after.js' */
 
 /**
  * @template T
@@ -89,7 +90,7 @@
  * @property {Array<string>|undefined} supportedQueryTypes mime-types supported for query method
  * @property {RateLimitInfo} limitInfo
  * @property {Array<RateLimitPolicyInfo>} policies
- * @property {number|undefined} retryAfter
+ * @property {RetryAfterItem|undefined} retryAfter
  */
 
 /** @typedef {{ reportOnly?: boolean|undefined }} ReportOnlyPolicy */
