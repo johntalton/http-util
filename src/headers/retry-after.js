@@ -27,11 +27,14 @@ export class RetryAfter {
 
 		if(typeof value === 'number') {
 			if(!Number.isFinite(value)) { return undefined }
+			if(value < 1) { return undefined }
 			return `${Math.round(value)}`
 		}
 
 		if(isTemporalDuration(value)) {
-			return value.total('seconds').toFixed(0)
+			const seconds = value.total('seconds')
+			if(seconds < 1) { return undefined }
+			return seconds.toFixed(0)
 		}
 
 		return InternetMessageFormatFixDate.encode(value)

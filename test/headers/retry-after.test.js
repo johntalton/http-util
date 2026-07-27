@@ -26,6 +26,23 @@ describe('RetryAfter', () => {
 			assert.equal(result, undefined)
 		})
 
+		it('should return undefined for small numbers', () => {
+			const result = RetryAfter.encode(0.1)
+			assert.equal(result, undefined)
+		})
+
+		it('should return undefined for small numbers (zero)', () => {
+			const result = RetryAfter.encode(0)
+			assert.equal(result, undefined)
+		})
+
+		it('should return undefined for small numbers (Temporal.Duration)', {
+			skip: !ifSupports('temporal')
+		}, () => {
+			const result = RetryAfter.encode(Temporal.Duration.from({ milliseconds: 500 }))
+			assert.equal(result, undefined)
+		})
+
 		it('should support Temporal.Duration', {
 			skip: !ifSupports('temporal')
 		}, () => {
