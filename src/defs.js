@@ -119,6 +119,8 @@
  *
  * @property {RateLimitInfo|undefined} [rateLimitInfo]
  * @property {Array<RateLimitPolicyInfo>|undefined} [rateLimitPolicies]
+ *
+ * @property {string|undefined} [serviceWorkerAllowed]
  */
 
 /** @type {''} */
@@ -156,6 +158,8 @@ export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
 export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
 export const HTTP_HEADER_SUNSET = 'sunset'
 export const HTTP_HEADER_DEPRECATION = 'deprecation'
+export const HTTP_HEADER_SERVICE_WORKER = 'service-worker'
+export const HTTP_HEADER_SERVICE_WORKER_ALLOWED = 'service-worker-allowed'
 
 
 //

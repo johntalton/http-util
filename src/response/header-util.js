@@ -21,6 +21,7 @@ import {
 	HTTP_HEADER_PREFERENCE_APPLIED,
 	HTTP_HEADER_REFERRER_POLICY,
 	HTTP_HEADER_REPORTING_ENDPOINTS,
+	HTTP_HEADER_SERVICE_WORKER_ALLOWED,
 	HTTP_HEADER_SUNSET,
 	normalizeToArray
 } from '../defs.js'
@@ -159,6 +160,8 @@ export function contextHeaders(context) {
 
 			[HTTP_HEADER_RATE_LIMIT]: RateLimit.encode(context.rateLimitInfo),
 			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(context.rateLimitPolicies),
+
+			[HTTP_HEADER_SERVICE_WORKER_ALLOWED]: context.serviceWorkerAllowed,
 
 			...policyHeaders(context.policy)
 		})
