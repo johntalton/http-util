@@ -140,7 +140,7 @@ export function isTypeToken(value, type_hint) {
  * @returns {value is ArrayBuffer|ArrayBufferView}
  */
 export function isTypeByteSequence(value, type_hint) {
-	if(ArrayBuffer.isView(value)) { return true}
+	if(ArrayBuffer.isView(value)) { return true }
 	if(value instanceof ArrayBuffer) { return true }
 	if(type_hint === 'binary') { return true }
 	return false
@@ -211,12 +211,12 @@ export function isItemType(item) {
 }
 
 /**
- * @param {any} item
- * @returns {item is ItemTypeWithParameters}
+ * @param {ItemOrInnerListWithParameters} item
+ * @returns {item is InnerListWithParameters}
  */
-export function isItemTypeWithParameters(item) {
+export function isInnerList(item) {
 	if(typeof item !== 'object') { return false }
-	return ('value' in item)
+	return ('value' in item) && Array.isArray(item.value)
 }
 
 
@@ -243,9 +243,11 @@ export class StructuredFieldSerializer {
 		}
 
 		// 4. Else, if the structure is an Item, let output_string be the result of running Serializing an Item (Section 4.1.3) with the structure.
-		if(isItemTypeWithParameters(structure)) {
+		if(isItemType(structure)) {
 			return StructuredFieldSerializer.serializeItem(structure.value, structure.parameters, structure.type)
 		}
+
+		// todo Bare Item encoding is not standard
 		// if(isBareItem(structure, undefined)) { return StructuredFieldSerializer.serializeItem(structure, undefined, undefined) }
 
 		// 5. Else, fail serialization.
@@ -375,17 +377,14 @@ export class StructuredFieldSerializer {
 	static serializeDictionary(dictionary) {
 		// 1. Let output be an empty string.
 		// 2. For each member_key with a value of (member_value, parameters) in input_dictionary:
-		return [ ...dictionary.entries().map(([ member_key, value ]) => {
-			const { value: member_value_or_item, parameters } = value
-			const { value: member_value, type: member_type_hint } = isItemTypeWithParameters(member_value_or_item) ? member_value_or_item : { value: member_value_or_item }
-
+		return [ ...dictionary.entries().map(([ member_key, member_value ]) => {
 			// 1. Append the result of running Serializing a Key (Section 4.1.1.3) with member's member_key to output.
 			let output = StructuredFieldSerializer.serializeKey(member_key)
 
 			// 2. If member_value is Boolean true:
-			if(member_value === true) {
+			if(member_value.value === true) {
 				// 1. Append the result of running Serializing Parameters (Section 4.1.1.2) with parameters to output.
-				output += StructuredFieldSerializer.serializeParameters(parameters)
+				output += StructuredFieldSerializer.serializeParameters(member_value.parameters)
 			}
 			// 3. Otherwise:
 			else {
@@ -393,12 +392,12 @@ export class StructuredFieldSerializer {
 				output += SF_EQUALS
 
 				// 2. If member_value is an array, append the result of running Serializing an Inner List (Section 4.1.1.1) with (member_value, parameters) to output.
-				if(Array.isArray(member_value)) {
-					output += StructuredFieldSerializer.serializeInnerList(member_value, parameters)
+				if(isInnerList(member_value)) {
+					output += StructuredFieldSerializer.serializeInnerList(member_value.value, member_value.parameters)
 				}
 				// 3. Otherwise, append the result of running Serializing an Item (Section 4.1.3) with (member_value, parameters) to output.
 				else {
-					output += StructuredFieldSerializer.serializeItem(member_value, parameters, member_type_hint)
+					output += StructuredFieldSerializer.serializeItem(member_value.value, member_value.parameters, member_value.type)
 				}
 			}
 
