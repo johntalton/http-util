@@ -6,20 +6,14 @@ import { Multipart } from '../multipart.js'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
-/** @import { SendContent, SendContext, Metadata, SendBody, NonEmptyArray } from '../../defs.js' */
-/** @import { ContentRangeDirective } from '../../headers/content-range.js' */
+/** @import { SendContent, SendContext, Metadata, NonEmptyArray } from '../../defs.js' */
+/** @import { MultipartBytePart } from '../multipart.js' */
 
 const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
 /**
- * @typedef {Object} PartialBytes
- * @property {SendBody} obj
- * @property {ContentRangeDirective} range
- */
-
-/**
  * @param {ServerHttp2Stream} stream
- * @param {NonEmptyArray<PartialBytes>|PartialBytes} objs
+ * @param {NonEmptyArray<MultipartBytePart>|MultipartBytePart} objs
  * @param {Omit<SendContent, 'rangeDirective'>} content
  * @param {SendContext} context
  * @param {Metadata} meta

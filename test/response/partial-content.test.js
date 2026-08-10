@@ -6,7 +6,7 @@ import { Response } from '@johntalton/http-util/response/object'
 import { MockHttp2Stream } from '../mock-http2-stream.js'
 import { consumeStreamAsText } from '../consume-stream.js'
 
-/** @import { PartialBytes, NonEmptyArray } from '@johntalton/http-util/response' */
+/** @import { NonEmptyArray, MultipartBytePart } from '@johntalton/http-util/response' */
 
 const DEFAULT_META = {
 	performance: [],
@@ -84,7 +84,7 @@ describe('Response', () => {
 			const age = undefined
 			const cacheControl = {}
 
-			/** @type {PartialBytes} */
+			/** @type {MultipartbytePart} */
 			const obj = {
 				obj: 'TEST',
 				range: {
@@ -93,7 +93,7 @@ describe('Response', () => {
 				}
 			}
 
-			/** @type {[ PartialBytes ]} */
+			/** @type {[ MultipartBytePart ]} */
 			const objs = [obj]
 
 			Response.partialContent(stream, objs, {
@@ -147,7 +147,7 @@ describe('Response', () => {
 			const age = undefined
 			const cacheControl = {}
 
-			/** @type {NonEmptyArray<PartialBytes>} */
+			/** @type {NonEmptyArray<MultipartBytePart>} */
 			const objs = [
 				{
 					obj: 'TEST',
