@@ -160,6 +160,12 @@ export const HTTP_HEADER_SUNSET = 'sunset'
 export const HTTP_HEADER_DEPRECATION = 'deprecation'
 export const HTTP_HEADER_SERVICE_WORKER = 'service-worker'
 export const HTTP_HEADER_SERVICE_WORKER_ALLOWED = 'service-worker-allowed'
+export const HTTP_HEADER_WANT_CONTENT_DIGEST = 'want-content-digest'
+export const HTTP_HEADER_WANT_REPR_DIGEST = 'want-repr-digest'
+export const HTTP_HEADER_WANT_UNENCODED_DIGEST = 'want-unencoded-digest'
+export const HTTP_HEADER_CONTENT_DIGEST = 'content-digest'
+export const HTTP_HEADER_REPR_DIGEST = 'repr-digest'
+export const HTTP_HEADER_UNENCODED_DIGEST = 'unencoded-digest'
 
 
 //

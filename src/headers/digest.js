@@ -1,16 +1,18 @@
 // https://www.rfc-editor.org/info/rfc9530/
 // https://www.ietf.org/archive/id/draft-ietf-httpbis-unencoded-digest-05.html
 
+import { normalizeToArray } from '../defs.js'
 import {
 	SF_FIELD_TYPE_DICTIONARY,
 	StructuredField
 } from './structured-field/index.js'
 
-/** @import { ItemOrInnerListWithParameters } from './structured-field/index.js' */
+/** @import { ItemOrInnerListWithParameters, ItemTypeWithParameters } from './structured-field/index.js' */
 
 /** @typedef {{ bare_item: number, parameters: Map<string, any> }} WantDigestDictionaryItem */
 /** @typedef {Map<string, WantDigestDictionaryItem>} WantDigestDictionary */
 
+/** @typedef {Map<string, number>} WantDigestInput */
 
 /** @typedef {{ algo: string, digest: ArrayBufferView|ArrayBuffer }} DigestItem */
 
@@ -87,6 +89,30 @@ export class WantDigest {
 		const first = sorted.at(0)
 		return first
 	}
+
+	/**
+	 * @param {WantDigestInput|undefined} dictionary
+	 * @returns {string|undefined}
+	 */
+	static encode(dictionary) {
+		if(dictionary === undefined) { return undefined }
+		if(!(dictionary instanceof Map)) { return undefined }
+
+		/** @type {Map<string, ItemTypeWithParameters>} */
+		const structure = new Map(dictionary
+			.entries()
+			.toArray()
+			.map(entry =>
+				[ entry[0], { value: entry[1], type: 'integer' }]
+		))
+
+		try {
+			return StructuredField.encode(structure)
+		}
+		catch {
+			return undefined
+		}
+	}
 }
 
 export const WantReprDigest = WantDigest
@@ -96,16 +122,30 @@ export const WantUnencodedDigest = WantDigest
 
 export class Digest {
 	/**
-	 * @param {DigestItem|undefined} digest
+	 * @param {string|undefined} header
+	 */
+	static parse(header) {
+		if(header === undefined) { return undefined }
+
+		try {
+			return StructuredField.parse(header, SF_FIELD_TYPE_DICTIONARY, { })
+		}
+		catch {
+			return undefined
+		}
+	}
+
+	/**
+	 * @param {Array<DigestItem>|DigestItem|undefined} digest
 	 * @returns {string|undefined}
 	 */
 	static encode(digest) {
 		if(digest === undefined) { return undefined }
 
 		/** @type {Map<string, ItemOrInnerListWithParameters>} */
-		const dictionary = new Map([
-			[ digest.algo, { value: digest.digest, type: 'binary' } ]
-		])
+		const dictionary = new Map(normalizeToArray(digest).map(item => ([
+			item.algo, { value: item.digest, type: 'binary'}
+		])))
 
 		try {
 			return StructuredField.encode(dictionary)

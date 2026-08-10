@@ -120,12 +120,77 @@ describe('WantDigest', () => {
 			assert.deepEqual(result, [ 'sha-256', { bare_item: 10, parameters: new Map() } ])
 		})
 	})
+
+	describe('encode', () => {
+		it('should handle undefined', () => {
+			const result = WantDigest.encode(undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle non Map input', () => {
+			const result = WantDigest.encode(false)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty map', () => {
+			const result = WantDigest.encode(new Map())
+			assert.equal(result, undefined)
+		})
+
+		it('should handle invalid map', () => {
+			const result = WantDigest.encode(new Map([
+				[ '!badKey', 1 ]
+			]))
+			assert.equal(result, undefined)
+		})
+
+		it('should handle basic map', () => {
+			const result = WantDigest.encode(new Map([
+				[ 'md5', 1 ]
+			]))
+			assert.equal(result, 'md5=1')
+		})
+	})
 })
 
 describe('Digest', () => {
+	describe('parse', () => {
+		it('should handle undefined', () => {
+			const result = Digest.parse(undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle undefined', () => {
+			const result = Digest.parse('')
+			assert.deepEqual(result, new Map())
+		})
+
+		it('should handle invalid input', () => {
+			const result = Digest.parse('(TEST)')
+			assert.deepEqual(result, undefined)
+		})
+
+		it('should handle multi values', async () => {
+			const data =  Uint8Array.from([ 42, 77 ])
+			const digest512 = await crypto.subtle.digest('sha-512', data)
+			const digest1 = await crypto.subtle.digest('sha-1', data)
+
+			const result = Digest.parse('sha-512=:zW5lgbChR0Go4ALiq25ySooOvhWUrd/fQ/2ZLkDbE2jiJu5Gef9c0xl4B17ciV/sCf2qtQ9JmlcOJRu9mY/tPg==:, sha-1=:/P0uXjWsRr5PQ0WLFR3lEqwTDGA=:')
+			assert.deepEqual(result, new Map([
+				[ 'sha-1', { bare_item: new Uint8Array(digest1), parameters: new Map() }],
+				[ 'sha-512', { bare_item: new Uint8Array(digest512), parameters: new Map() }]
+			]))
+		})
+	})
+
 	describe('encode', () => {
 		it('should handle undefined', () => {
 			const result = Digest.encode(undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle non Map input', () => {
+			const result = Digest.encode(false)
 			assert.equal(result, undefined)
 		})
 
@@ -146,9 +211,35 @@ describe('Digest', () => {
 			assert.equal(result, 'sha-256=:9S7NTgWsHOP0F32cHtjJrtsDTLqKqPfq9xVP0eFApco=:')
 		})
 
+		it('should handle multiple digests', async () => {
+			const data =  Uint8Array.from([ 42, 77 ])
+			const digest512 = await crypto.subtle.digest('sha-512', data)
+			const digest1 = await crypto.subtle.digest('sha-1', data)
+
+			const result = Digest.encode([
+				{ algo: 'sha-512', digest: digest512 },
+				{ algo: 'sha-1', digest: digest1 }
+			])
+			assert.equal(result, 'sha-512=:zW5lgbChR0Go4ALiq25ySooOvhWUrd/fQ/2ZLkDbE2jiJu5Gef9c0xl4B17ciV/sCf2qtQ9JmlcOJRu9mY/tPg==:, sha-1=:/P0uXjWsRr5PQ0WLFR3lEqwTDGA=:')
+		})
+
 		it('should handle invalid digest', async () => {
 			const result = Digest.encode({
 				algo: 'sha-256', digest: 'not a buffer'
+			})
+			assert.equal(result, undefined)
+		})
+
+		it('should handle undefined digest algo', async () => {
+			const result = Digest.encode({
+				algo: undefined, digest: Uint8Array.from([ ])
+			})
+			assert.equal(result, undefined)
+		})
+
+		it('should handle undefined digest digest', async () => {
+			const result = Digest.encode({
+				algo: 'md5', digest: undefined
 			})
 			assert.equal(result, undefined)
 		})
