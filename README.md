@@ -43,6 +43,8 @@ The common Structured Fields are also supported via [StructuredField](./src/head
 | cross-origin-opener-policy    |   | ✅ ||
 | cross-origin-resource-policy  |   | ✅ ||
 | deprecation                   |   | ✅ ||
+| *-digest                      | ✅ | ✅ ||
+| want-*-digest                 | ✅ | ✅ | select |
 | sec-fetch-*                   | ✅ |   ||
 | forwarded                     | ✅ |   | select |
 | integrity-policy              |   | ✅ ||
@@ -53,6 +55,7 @@ The common Structured Fields are also supported via [StructuredField](./src/head
 | rate-limit / policy           |   | ✅ ||
 | referrer-policy               |   | ✅ ||
 | reporting-endpoints           |   | ✅ ||
+| retry-after                   |   | ✅ ||
 | server-timing                 |   | ✅ ||
 | strict-transport-security     |   | ✅ ||
 | sunset                        |   | ✅ ||
