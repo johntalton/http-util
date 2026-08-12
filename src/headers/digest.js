@@ -16,6 +16,11 @@ import {
 
 /** @typedef {{ algo: string, digest: ArrayBufferView|ArrayBuffer }} DigestItem */
 
+/** @typedef {Map<string, { bare_item: ArrayBuffer|ArrayBufferView }>} DigestDictionary */
+
+/** @typedef {(DigestItem & { auto: false }) | { algo: string, auto: true }} AutoDigestItem */
+
+
 export const DIGEST_ALGORITHM_SHA_256 = 'sha-256'
 export const DIGEST_ALGORITHM_SHA_512 = 'sha-512'
 export const DIGEST_ALGORITHM_MD5_DEPRECATED = 'md5'
@@ -123,6 +128,7 @@ export const WantUnencodedDigest = WantDigest
 export class Digest {
 	/**
 	 * @param {string|undefined} header
+	 * @returns {DigestDictionary|undefined}
 	 */
 	static parse(header) {
 		if(header === undefined) { return undefined }

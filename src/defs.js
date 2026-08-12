@@ -22,6 +22,7 @@
 /** @import { AppliedPreferencesInput } from './headers/preference.js'  */
 /** @import { StrictTransportSecurityOptions } from './headers/strict-transport-security.js' */
 /** @import { RetryAfterItem } from './headers/retry-after.js' */
+/** @import { AutoDigestItem } from './headers/digest.js'  */
 
 /**
  * @template T
@@ -50,6 +51,12 @@
 /** @typedef {NodeJS.TypedArray<ArrayBuffer>} TypedArray */
 /** @typedef {ArrayBuffer | TypedArray | string} SendBodyTypes */
 /** @typedef { SendBodyTypes | ReadableStream<SendBodyTypes> | Readable } SendBody */
+/**
+ * @typedef {Object} SendDigest
+ * @property {Array<AutoDigestItem>|AutoDigestItem|undefined} repr
+ * @property {Array<AutoDigestItem>|AutoDigestItem|undefined} content
+ * @property {Array<AutoDigestItem>|AutoDigestItem|undefined} unencoded
+ */
 
 /**
  * @typedef {Object} SendContent
@@ -62,6 +69,7 @@
  * @property {number|undefined} age
  * @property {CacheControlOptions} cacheControl
  * @property {ContentRangeDirective} rangeDirective
+ * @property {SendDigest|undefined} digest
  */
 
 /**

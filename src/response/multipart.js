@@ -1,10 +1,13 @@
+import http2 from 'node:http2'
 import { ReadableStream } from 'node:stream/web'
 
-import { EMPTY } from '../defs.js'
+import { EMPTY, HTTP_HEADER_CONTENT_DIGEST } from '../defs.js'
 import { ContentDisposition, DISPOSITION_FORM_DATA } from '../headers/content-disposition.js'
 import { ContentRange } from '../headers/content-range.js'
 import { CHARSET_UTF8 } from '../headers/content-type.js'
+// import { ContentDigest } from '../headers/digest.js'
 import { Assert } from '../headers/util/assert.js'
+
 // import { ContentType } from './content-type.js'
 
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
@@ -16,15 +19,22 @@ import { Assert } from '../headers/util/assert.js'
  * @property {ContentRangeDirective} range
  */
 
+const {
+	HTTP2_HEADER_CONTENT_DISPOSITION,
+	HTTP2_HEADER_CONTENT_RANGE,
+	HTTP2_HEADER_CONTENT_TYPE,
+} = http2.constants
+
 export const BOUNDARY_MARK = '--'
 export const MULTIPART_SEPARATOR = '\r\n'
 
 export const HEADER_SEPARATOR = ':'
 
 export const MULTIPART_HEADER = {
-	CONTENT_DISPOSITION: 'content-disposition',
-	CONTENT_TYPE: 'content-type',
-	CONTENT_RANGE: 'content-range'
+	CONTENT_DISPOSITION: HTTP2_HEADER_CONTENT_DISPOSITION,
+	CONTENT_TYPE: HTTP2_HEADER_CONTENT_TYPE,
+	CONTENT_RANGE: HTTP2_HEADER_CONTENT_RANGE,
+	CONTENT_DIGEST: HTTP_HEADER_CONTENT_DIGEST
 }
 
 export const MULTIPART_STATE = {
@@ -163,6 +173,7 @@ export class Multipart {
 					controller.enqueue(encoder.encode(`${boundaryBegin}${MULTIPART_SEPARATOR}`))
 					controller.enqueue(encoder.encode(`${MULTIPART_HEADER.CONTENT_TYPE}: ${contentType}${MULTIPART_SEPARATOR}`))
 					controller.enqueue(encoder.encode(`${MULTIPART_HEADER.CONTENT_RANGE}: ${ContentRange.encode({ ...part.range, size: contentLength })}${MULTIPART_SEPARATOR}`))
+					// controller.enqueue(encoder.encode(`${MULTIPART_HEADER.CONTENT_DIGEST}: ${ContentDigest.encode()}${MULTIPART_SEPARATOR}`))
 					controller.enqueue(encoder.encode(MULTIPART_SEPARATOR))
 
 					if(part.obj instanceof ReadableStream) {

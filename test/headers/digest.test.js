@@ -80,6 +80,7 @@ describe('WantDigest', () => {
 
 		it('should handle non-array supported', () => {
 			const dictionary = new Map()
+			// @ts-ignore
 			const result = WantDigest.selectItemFrom(dictionary, 42)
 			assert.deepEqual(result, undefined)
 		})
@@ -128,6 +129,7 @@ describe('WantDigest', () => {
 		})
 
 		it('should handle non Map input', () => {
+			// @ts-ignore
 			const result = WantDigest.encode(false)
 			assert.equal(result, undefined)
 		})
@@ -190,6 +192,7 @@ describe('Digest', () => {
 		})
 
 		it('should handle non Map input', () => {
+			// @ts-ignore
 			const result = Digest.encode(false)
 			assert.equal(result, undefined)
 		})
@@ -224,6 +227,7 @@ describe('Digest', () => {
 		})
 
 		it('should handle invalid digest', async () => {
+			// @ts-ignore
 			const result = Digest.encode({
 				algo: 'sha-256', digest: 'not a buffer'
 			})
@@ -231,6 +235,7 @@ describe('Digest', () => {
 		})
 
 		it('should handle undefined digest algo', async () => {
+			// @ts-ignore
 			const result = Digest.encode({
 				algo: undefined, digest: Uint8Array.from([ ])
 			})
@@ -238,6 +243,7 @@ describe('Digest', () => {
 		})
 
 		it('should handle undefined digest digest', async () => {
+			// @ts-ignore
 			const result = Digest.encode({
 				algo: 'md5', digest: undefined
 			})
