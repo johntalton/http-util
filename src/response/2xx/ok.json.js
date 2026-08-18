@@ -23,7 +23,8 @@ export function sendJSON(stream, obj, content, info, context, meta) {
 		etag,
 		lastModified,
 		age,
-		cacheControl
+		cacheControl,
+		digest
 	} = content
 
 	const {
@@ -33,5 +34,5 @@ export function sendJSON(stream, obj, content, info, context, meta) {
 	if(stream.closed) { return }
 
 	const json = JSON.stringify(obj)
-	send_encoded(stream, HTTP_STATUS_OK, CONTENT_TYPE_JSON, json, contentDisposition, encoding, etag, lastModified, age, cacheControl, undefined, supportedQueryTypes, context, meta)
+	send_encoded(stream, HTTP_STATUS_OK, CONTENT_TYPE_JSON, json, contentDisposition, encoding, etag, lastModified, age, cacheControl, undefined, supportedQueryTypes, digest, context, meta)
 }

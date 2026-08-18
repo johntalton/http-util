@@ -23,6 +23,7 @@ describe('Response', () => {
 			const age = undefined
 			const cacheControl = {}
 			const acceptRanges = undefined
+			const digest = undefined
 			const obj = 'TEST'
 			Response.bytes(stream, obj, {
 				contentDisposition,
@@ -31,7 +32,8 @@ describe('Response', () => {
 				etag,
 				lastModified,
 				age,
-				cacheControl
+				cacheControl,
+				digest
 			}, {
 				acceptRanges
 			}, {}, structuredClone(DEFAULT_META))

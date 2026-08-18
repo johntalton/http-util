@@ -4,10 +4,12 @@ import zlib from 'node:zlib'
 import { ReadableStream } from 'node:stream/web'
 import { Readable, compose } from 'node:stream'
 
-import { send, send_bytes, send_no_body, send_error, send_encoded } from '@johntalton/http-util/response'
+import { send, send_bytes, send_no_body, send_error, send_encoded, calculateDigests } from '@johntalton/http-util/response'
 
 import { consumeStreamAsText } from '../consume-stream.js'
 import { MockHttp2Stream } from '../mock-http2-stream.js'
+
+/** @import { AutoDigestItem } from '@johntalton/http-util/headers' */
 
 const DEFAULT_META = {
 	performance: [],
@@ -78,7 +80,8 @@ describe('send_util', () => {
 			const body = undefined
 			const encoding = 'br'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -92,7 +95,8 @@ describe('send_util', () => {
 			const body = 'A STRING'
 			const encoding = undefined
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], undefined)
@@ -107,7 +111,8 @@ describe('send_util', () => {
 			const body = 'A STRING'
 			const encoding = 'identity'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -122,7 +127,8 @@ describe('send_util', () => {
 			const body = 'A STRING'
 			const encoding = 'br'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -139,7 +145,8 @@ describe('send_util', () => {
 			const body = Buffer.from('A Buffer', 'utf-8')
 			const encoding = 'br'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -157,7 +164,8 @@ describe('send_util', () => {
 			const body = encoder.encode('An ArrayBuffer').buffer
 			const encoding = 'br'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -175,7 +183,8 @@ describe('send_util', () => {
 			const body = encoder.encode('A Uint8Array')
 			const encoding = 'zstd'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'zstd')
@@ -192,7 +201,8 @@ describe('send_util', () => {
 			const body = ReadableStream.from('A ReadableStream<string>')
 			const encoding = 'identity'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -207,7 +217,8 @@ describe('send_util', () => {
 			const body = ReadableStream.from([ Buffer.from('A ReadableStream<Buffer>') ])
 			const encoding = 'identity'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -222,7 +233,8 @@ describe('send_util', () => {
 			const body = ReadableStream.from('ReadableStream<encoded string>')
 			const encoding = 'zstd'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'zstd')
@@ -239,7 +251,8 @@ describe('send_util', () => {
 			const body = ReadableStream.from([ Buffer.from('ReadableStream<encoded Buffer>') ])
 			const encoding = 'gzip'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'gzip')
@@ -256,7 +269,8 @@ describe('send_util', () => {
 			const body = Readable.from('Readable string')
 			const encoding = 'identity'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'identity')
@@ -271,7 +285,8 @@ describe('send_util', () => {
 			const body = Readable.from('Readable brotli string')
 			const encoding = 'br'
 			const contentDisposition = undefined
-			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_encoded(stream, 200, undefined, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-encoding'], 'br')
@@ -281,6 +296,30 @@ describe('send_util', () => {
 
 			assert.deepEqual(result, 'Readable brotli string')
 		})
+
+		it('should send from example', () => {
+			const stream = new MockHttp2Stream()
+			const body = 'hello world'
+			const encoding = 'gzip'
+			const contentType = 'text/plain'
+			const contentDisposition = undefined
+			const digest = undefined
+			send_encoded(stream, 200, contentType, body, contentDisposition, encoding, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.equal(stream.sentHeaders['content-encoding'], 'gzip')
+			assert.equal(stream.sentHeaders['content-type'], 'text/plain')
+			assert.equal(stream.sentHeaders['content-length'], undefined) // 31
+
+			const result = stream.read()
+			assert.equal(result.length, 31)
+
+			result[9] = 0xff // wash out OS byte
+
+			const expected = Buffer.from(Uint8Array.fromHex('1F 8B 08 00 00 00 00 00 02 FF CB 48 CD C9 C9 57 28 CF 2F CA 49 01 00 85 11 4A 0D 0B 00 00 00'.replaceAll(' ', '')))
+			assert.deepEqual(result, expected)
+
+		})
 	})
 
 	describe('send_bytes', () => {
@@ -289,7 +328,8 @@ describe('send_util', () => {
 			const body = 'TEST'
 			const contentLength = NaN
 			const contentDisposition = undefined
-			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-length'], undefined)
@@ -300,7 +340,8 @@ describe('send_util', () => {
 			const body = 'TEST'
 			const contentLength = body.length
 			const contentDisposition = undefined
-			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, contentLength, undefined, undefined, undefined, undefined, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-length'], '4')
@@ -311,7 +352,8 @@ describe('send_util', () => {
 			const body = 'TEST'
 			const supportedQueryTypes = [ 'text/plain', 'application/json' ]
 			const contentDisposition = undefined
-			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, supportedQueryTypes, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, supportedQueryTypes, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['content-length'], undefined)
@@ -323,7 +365,8 @@ describe('send_util', () => {
 			const body = 'TEST'
 			const age = 42
 			const contentDisposition = undefined
-			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, undefined, undefined, undefined, undefined, age, undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
+			const digest = undefined
+			send_bytes(stream, 200, 'application/json', body, contentDisposition, undefined, undefined, undefined, undefined, undefined, age, undefined, undefined, undefined, digest, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
 			assert.equal(stream.sentHeaders['age'], '42')
@@ -334,7 +377,8 @@ describe('send_util', () => {
 		it('should return without sending if stream is undefined', () => {
 			const stream = undefined
 			assert.doesNotThrow(() => {
-				send(stream, 200, {}, [], undefined, undefined, {}, structuredClone(DEFAULT_META))
+				// @ts-ignore
+				send(stream, 200, {}, [], undefined, undefined, undefined, {}, structuredClone(DEFAULT_META))
 			})
 		})
 
@@ -343,7 +387,7 @@ describe('send_util', () => {
 			stream.close('induced')
 
 			const obj = 'NEVER SENT'
-			send(stream, 200, {}, [], undefined, obj, {}, structuredClone(DEFAULT_META))
+			send(stream, 200, {}, [], undefined, undefined, obj, {}, structuredClone(DEFAULT_META))
 			assert.deepEqual(stream.sentHeaders, {})
 			assert.equal(stream.closed, true)
 
@@ -359,12 +403,59 @@ describe('send_util', () => {
 
 			send(stream, 200, {}, [], undefined, undefined, obj, {}, structuredClone(DEFAULT_META))
 
-			// todo what can we assert to make sure that happend
+			// todo what can we assert to make sure that this happened
 			//  does the source stream get closed? or aborted?
 			// assert.equal(stream.aborted, true)
 			// assert.equal(stream.closed, true)
 
 		})
+
+	})
+
+	describe('lookupEncoder', () => {
+
+	})
+
+	describe('calculateDigests', () => {
+		it('should handle undefined item', () => {
+			const result = calculateDigests(undefined, undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle undefined item', () => {
+			/** @type {AutoDigestItem} */
+			const digestItem = { algo: 'md5', auto: true }
+
+			const result = calculateDigests(digestItem, undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle skip empty list', () => {
+			/** @type {Array<AutoDigestItem>} */
+			const digestItems = []
+
+			const result = calculateDigests(digestItems, 'TEST')
+			assert.equal(result, undefined)
+		})
+
+		it('should handle pass though existing digests', () => {
+			/** @type {AutoDigestItem} */
+			const digestItem =
+				{ algo: 'md5', digest: Uint8Array.from([ ]), auto: false }
+
+			const result = calculateDigests(digestItem, 'TEST')
+			assert.deepEqual(result, [{ algo: 'md5', digest: Uint8Array.from([ ]), auto: false }])
+		})
+
+		it('should handle skip invalid digest algo', () => {
+			/** @type {AutoDigestItem} */
+			const digestItem =
+				{ algo: 'FAKE', auto: true }
+
+			const result = calculateDigests(digestItem, 'TEST')
+			assert.deepEqual(result, [])
+		})
+
 
 	})
 })

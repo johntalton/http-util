@@ -27,7 +27,8 @@ export function sendPartialContent(stream, objs, content, context, meta) {
 		etag,
 		lastModified,
 		age,
-		cacheControl
+		cacheControl,
+		digest
 	} = content
 
 	const acceptRanges = RANGE_UNITS_BYTES
@@ -55,6 +56,7 @@ export function sendPartialContent(stream, objs, content, context, meta) {
 			cacheControl,
 			acceptRanges,
 			supportedQueryTypes,
+			digest,
 			context,
 			meta)
 
@@ -63,5 +65,5 @@ export function sendPartialContent(stream, objs, content, context, meta) {
 
 	// single range, send as regular object
 	const obj = Array.isArray(objs) ? objs[0] : objs
-	send_bytes(stream, HTTP_STATUS_PARTIAL_CONTENT, contentType, obj.obj, contentDisposition, obj.range, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
+	send_bytes(stream, HTTP_STATUS_PARTIAL_CONTENT, contentType, obj.obj, contentDisposition, obj.range, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta)
 }

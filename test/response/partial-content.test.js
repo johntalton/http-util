@@ -26,6 +26,7 @@ describe('Response', () => {
 			const lastModified = undefined
 			const age = undefined
 			const cacheControl = {}
+			const digest = undefined
 			const obj = {
 				obj: 'TEST',
 				range: {
@@ -41,7 +42,8 @@ describe('Response', () => {
 				etag,
 				lastModified,
 				age,
-				cacheControl
+				cacheControl,
+				digest
 			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
@@ -83,8 +85,9 @@ describe('Response', () => {
 			const lastModified = undefined
 			const age = undefined
 			const cacheControl = {}
+			const digest = undefined
 
-			/** @type {MultipartbytePart} */
+			/** @type {MultipartBytePart} */
 			const obj = {
 				obj: 'TEST',
 				range: {
@@ -104,7 +107,8 @@ describe('Response', () => {
 				etag,
 				lastModified,
 				age,
-				cacheControl
+				cacheControl,
+				digest
 			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)
@@ -146,6 +150,7 @@ describe('Response', () => {
 			const lastModified = undefined
 			const age = undefined
 			const cacheControl = {}
+			const digest = undefined
 
 			/** @type {NonEmptyArray<MultipartBytePart>} */
 			const objs = [
@@ -173,7 +178,8 @@ describe('Response', () => {
 				etag,
 				lastModified,
 				age,
-				cacheControl
+				cacheControl,
+				digest
 			}, {}, structuredClone(DEFAULT_META))
 
 			assert.equal(stream.headersSent, true)

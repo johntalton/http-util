@@ -12,11 +12,13 @@ import { Assert } from '../headers/util/assert.js'
 
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
 /** @import { SendBody } from '../defs.js' */
+/** @import { AutoDigestItem } from '../headers/digest.js'  */
 
 /**
  * @typedef {Object} MultipartBytePart
  * @property {SendBody} obj
  * @property {ContentRangeDirective} range
+ * @property {Array<AutoDigestItem>|AutoDigestItem} [contentDigest]
  */
 
 const {

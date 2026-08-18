@@ -22,6 +22,7 @@ describe('Response', () => {
 			const age = undefined
 			const cacheControl = {}
 			const supportedQueryTypes = undefined
+			const digest = undefined
 			const obj = { test: true, param: 42 }
 			Response.json(stream, obj, {
 				contentDisposition,
@@ -29,7 +30,8 @@ describe('Response', () => {
 				etag,
 				lastModified,
 				age,
-				cacheControl
+				cacheControl,
+				digest
 			}, {
 				supportedQueryTypes
 			}, {}, structuredClone(DEFAULT_META))
@@ -75,6 +77,7 @@ describe('Response', () => {
 			const age = undefined
 			const cacheControl = {}
 			const supportedQueryTypes = undefined
+			const digest = undefined
 			const obj = { test: true, param: 42 }
 			Response.json(stream, obj, {
 				contentDisposition,
@@ -82,7 +85,8 @@ describe('Response', () => {
 				etag,
 				lastModified,
 				age,
-				cacheControl
+				cacheControl,
+				digest
 			}, {
 				supportedQueryTypes
 			}, {}, structuredClone(DEFAULT_META))

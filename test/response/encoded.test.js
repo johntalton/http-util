@@ -25,7 +25,8 @@ describe('Response', () => {
 				age: undefined,
 				etag: undefined,
 				lastModified: undefined,
-				cacheControl: {}
+				cacheControl: {},
+				digest: undefined
 			}, {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
@@ -68,7 +69,8 @@ describe('Response', () => {
 				age: undefined,
 				etag: undefined,
 				lastModified: undefined,
-				cacheControl: {}
+				cacheControl: {},
+				digest: undefined
 			}, {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
@@ -111,7 +113,8 @@ describe('Response', () => {
 				age: undefined,
 				etag: undefined,
 				lastModified: undefined,
-				cacheControl: {}
+				cacheControl: {},
+				digest: undefined
 			}, {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
@@ -154,7 +157,8 @@ describe('Response', () => {
 				age: undefined,
 				etag: undefined,
 				lastModified: undefined,
-				cacheControl: {}
+				cacheControl: {},
+				digest: undefined
 			}, {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))
@@ -196,7 +200,8 @@ describe('Response', () => {
 				age: undefined,
 				etag: undefined,
 				lastModified: undefined,
-				cacheControl: {}
+				cacheControl: {},
+				digest: undefined
 			}, {
 				supportedQueryTypes: undefined
 			}, {}, structuredClone(DEFAULT_META))

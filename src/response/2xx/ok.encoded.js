@@ -23,12 +23,13 @@ export function sendEncoded(stream, obj, content, info, context, meta) {
 		etag,
 		lastModified,
 		age,
-		cacheControl
+		cacheControl,
+		digest
 	} = content
 	const {
 		supportedQueryTypes
 	} = info
 
 	const acceptRanges = undefined
-	send_encoded(stream, HTTP_STATUS_OK, contentType, obj, contentDisposition, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
+	send_encoded(stream, HTTP_STATUS_OK, contentType, obj, contentDisposition, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta)
 }

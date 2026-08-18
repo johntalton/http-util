@@ -1,9 +1,17 @@
+/** biome-ignore-all lint/style/noExcessiveLinesPerFile: workhorse */
+import { createHash } from 'node:crypto'
 import http2 from 'node:http2'
 import { compose, pipeline, Readable } from 'node:stream'
 import { ReadableStream } from 'node:stream/web'
 import zlib from 'node:zlib'
 
-import { COMMON_LIST_VALUE_JOINER_COMMA, HTTP_HEADER_ACCEPT_QUERY, HTTP_HEADER_PREFERENCE_APPLIED, isNonEmptyArray } from '../defs.js'
+import {
+	COMMON_LIST_VALUE_JOINER_COMMA,
+	HTTP_HEADER_ACCEPT_QUERY,
+	HTTP_HEADER_PREFERENCE_APPLIED,
+	isNonEmptyArray,
+	normalizeToArray
+} from '../defs.js'
 import { CacheControl } from '../headers/cache-control.js'
 import { Conditional } from '../headers/conditional.js'
 import { ContentDisposition } from '../headers/content-disposition.js'
@@ -23,13 +31,14 @@ import {
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { InputType, BrotliOptions, ZlibOptions, ZstdOptions } from 'node:zlib' */
-/** @import { AcceptRangeUnits, Metadata, SendContext, SendBody } from '../defs.js' */
+/** @import { AcceptRangeUnits, Metadata, SendContext, SendBodyTypes, SendBody, SendDigest } from '../defs.js' */
 /** @import { EtagItem } from '../headers/conditional.js' */
 /** @import { IMFFixDateInput } from '../headers/util/imf-fixdate.js' */
 /** @import { CacheControlOptions } from '../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
 /** @import { DispositionInput } from '../headers/content-disposition.js' */
 /** @import { RetryAfterItem } from '../headers/retry-after.js' */
+/** @import { AutoDigestItem } from '../headers/digest.js' */
 
 const {
 	HTTP_STATUS_INTERNAL_SERVER_ERROR,
@@ -94,7 +103,7 @@ export function send_error(stream, status, message, retryAfter, context, meta) {
 /** @type {Map<string, EncoderFun>} */
 export const ENCODER_MAP = new Map([
 	[ 'br', data => zlib.brotliCompressSync(data) ],
-	[ 'gzip', data => zlib.gzipSync(data) ],
+	[ 'gzip', data => zlib.gzipSync(data, { level: 9, strategy: 0 }) ],
 	[ 'deflate', data => zlib.deflateSync(data) ],
 	[ 'zstd', data => zlib.zstdCompressSync(data) ]
 ])
@@ -144,6 +153,38 @@ export function lookupEncoder(encoding, listing) {
 }
 
 /**
+ * @param {Array<AutoDigestItem>|AutoDigestItem|undefined} digestItem
+ * @param {SendBodyTypes|undefined} obj
+ * @returns {Array<AutoDigestItem>|undefined}
+ */
+export function calculateDigests(digestItem, obj) {
+	if(digestItem === undefined) { return undefined }
+	if(obj === undefined) { return undefined }
+
+	const digestList = normalizeToArray(digestItem)
+	if(!isNonEmptyArray(digestList)) { return undefined }
+
+	const content = (obj instanceof ArrayBuffer) ? new Uint8Array(obj) : obj
+
+	return digestList.map(ud => {
+		const { algo, auto } = ud
+		if(auto) {
+			try {
+				const hasher = createHash(algo)
+				hasher.update(content)
+				return { algo, digest: hasher.digest(), auto: false }
+			}
+			catch {
+				return undefined
+			}
+		}
+
+		return { algo, digest: ud.digest, auto: false }
+	})
+	.filter(entry => entry !== undefined)
+}
+
+/**
  * @param {ServerHttp2Stream} stream
  * @param {number} status
  * @param {string|undefined} contentType
@@ -156,14 +197,15 @@ export function lookupEncoder(encoding, listing) {
  * @param {CacheControlOptions|undefined} cacheControl
  * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
+ * @param {SendDigest|undefined} digest
  * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send_encoded(stream, status, contentType, body, contentDisposition, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta) {
+export function send_encoded(stream, status, contentType, body, contentDisposition, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta) {
 	// Assert.isString(encoding) if not undefined
 	if(body === undefined) {
 		meta.performance.push({ name: 'encode', description: 'no body', duration: 0 })
-		send_bytes(stream, status, contentType, body, contentDisposition, undefined, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
+		send_bytes(stream, status, contentType, body, contentDisposition, undefined, undefined, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta)
 		return
 	}
 
@@ -173,8 +215,23 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 		meta.performance.push({ name: 'encode', description: 'stream', duration: 0 })
 		const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding,	 ENCODER_STREAM_MAP)
 		const encodedStream = (encoderFn === undefined) ? obj : encoderFn((obj instanceof ReadableStream) ? Readable.fromWeb(obj) : obj)
-		send_bytes(stream, status, contentType, encodedStream, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
+		send_bytes(stream, status, contentType, encodedStream, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta)
 		return
+	}
+
+	// digest = {
+	// 	unencoded: [ { algo: 'sha384', auto: true }, { algo: 'sha-1', auto: true } ],
+	// 	content: [ { algo: 'sha-256', auto: true } ],
+	// 	repr: [ { algo: 'sha-256', auto: true } ],
+	// }
+
+	const unencodedDigestStart = performance.now()
+	const unencodedDigests = calculateDigests(digest?.unencoded, obj)
+	const unencodedDigestEnd = performance.now()
+	if(unencodedDigests !== undefined) {
+		meta.performance.push(
+			{ name: 'digest-unencoded', duration: unencodedDigestEnd - unencodedDigestStart }
+		)
 	}
 
 	const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding, ENCODER_MAP)
@@ -186,7 +243,36 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
 
-	send_bytes(stream, status, contentType, encodedData, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta)
+
+	const reprDigestStart = performance.now()
+	const reprDigests = calculateDigests(digest?.repr, obj)
+	const reprDigestEnd = performance.now()
+	if(reprDigests !== undefined) {
+		meta.performance.push(
+			{ name: 'digest-repr', duration: reprDigestEnd - reprDigestStart }
+		)
+	}
+
+	const contentDigestStart = performance.now()
+	const contentDigests = calculateDigests(digest?.content, obj)
+	const contentDigestEnd = performance.now()
+	if(contentDigests !== undefined) {
+		meta.performance.push(
+			{ name: 'digest-content', duration: contentDigestEnd - contentDigestStart }
+		)
+	}
+
+	/** @type {SendDigest} */
+	const actualDigest = {
+		repr: reprDigests,
+		content: contentDigests,
+		unencoded: unencodedDigests
+	}
+	console.log(actualDigest)
+
+
+
+	send_bytes(stream, status, contentType, encodedData, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta)
 }
 
 /**
@@ -204,10 +290,11 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
  * @param {CacheControlOptions|undefined} cacheControl
  * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
+ * @param {SendDigest|undefined} digest
  * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send_bytes(stream, status, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, context, meta) {
+export function send_bytes(stream, status, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta) {
 	// todo Assert.isString(encoding) if not undefined
 	const contentLen = Number.isInteger(contentLength) ? `${contentLength}` : undefined
 	const supportsQuery = isNonEmptyArray(supportedQueryTypes)
@@ -284,8 +371,13 @@ export function send(stream, status, headers, exposedHeaders, customVaryHeaders,
 			...performanceHeaders(meta),
 			...headers,
 			...custom
-		})
+		}, { waitForTrailers: false })
 	}
+
+	// stream.on('wantTrailers', () => {
+	// 	console.log('---sendTrailers')
+	// 	stream.sendTrailers({})
+	// })
 
 	if(stream.writable && body !== undefined) {
 		if(body instanceof ReadableStream || body instanceof Readable) {

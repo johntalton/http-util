@@ -23,7 +23,8 @@ export function sendBytes(stream, obj, content, info, context, meta) {
 		etag,
 		lastModified,
 		age,
-		cacheControl
+		cacheControl,
+		digest
 	} = content
 
 	const { acceptRanges } = info
@@ -31,5 +32,5 @@ export function sendBytes(stream, obj, content, info, context, meta) {
 	const range = undefined
 	const encoding = undefined
 
-	send_bytes(stream, HTTP_STATUS_OK, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryType, context, meta)
+	send_bytes(stream, HTTP_STATUS_OK, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryType, digest, context, meta)
 }
