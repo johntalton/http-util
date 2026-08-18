@@ -9,7 +9,7 @@ import {
 
 /** @import { ItemOrInnerListWithParameters, ItemTypeWithParameters } from './structured-field/index.js' */
 
-/** @typedef {{ bare_item: number, parameters: Map<string, any> }} WantDigestDictionaryItem */
+/** @typedef {{ preference: number, parameters: Map<string, any> }} WantDigestDictionaryItem */
 /** @typedef {Map<string, WantDigestDictionaryItem>} WantDigestDictionary */
 
 /** @typedef {Map<string, number>} WantDigestInput */
@@ -20,6 +20,7 @@ import {
 
 /** @typedef {(DigestItem & { auto: false }) | { algo: string, auto: true }} AutoDigestItem */
 
+/** @typedef {WantDigestDictionaryItem & { algo: string }} SelectedDigestResult */
 
 export const DIGEST_ALGORITHM_SHA_256 = 'sha-256'
 export const DIGEST_ALGORITHM_SHA_512 = 'sha-512'
@@ -42,22 +43,34 @@ export const KNOWN_DIGEST_ALGORITHMS = [
 	DIGEST_ALGORITHM_CRC_32_C_DEPRECATED
 ]
 
+export const DIGEST_PREFERENCE_MIN = 0
+export const DIGEST_PREFERENCE_MAX = 10
+export const DIGEST_PREFERENCE_NOT_ACCEPTABLE = 0
+
 export class WantDigest {
 	/**
 	 * @param {Map<string, any>} dictionary
 	 * @returns {WantDigestDictionary}
 	 */
 	static #validated(dictionary) {
-		return new Map(dictionary.entries().filter(entry => {
-			const [ _, value ] = entry
-			const { bare_item } = value
-			if(bare_item === undefined) { return false }
-			if(!Number.isInteger(bare_item)) { return false }
-			if(bare_item < 0) { return false }
-			if(bare_item > 10) { return false }
+		return new Map(dictionary.entries()
+			.filter(entry => {
+				const [ _, value ] = entry
+				const { bare_item } = value
+				if(bare_item === undefined) { return false }
+				if(!Number.isInteger(bare_item)) { return false }
+				if(bare_item < DIGEST_PREFERENCE_MIN) { return false }
+				if(bare_item > DIGEST_PREFERENCE_MAX) { return false }
 
-			return true
-		}))
+				return true
+			})
+			.map(entry => {
+				const [ key, value ] = entry
+				return [ key, {
+					preference: value.bare_item,
+					parameters: value.parameters } ]
+			})
+		)
 	}
 
 	/**
@@ -79,20 +92,18 @@ export class WantDigest {
 	/**
 	 * @param {WantDigestDictionary|undefined} dictionary
 	 * @param {Array<string>} supportedAlgorithms
-	 * @returns {[ string, WantDigestDictionaryItem ]|undefined}
+	 * @returns {Array<SelectedDigestResult>|undefined}
 	 */
-	static selectItemFrom(dictionary, supportedAlgorithms) {
+	static selectItemsFrom(dictionary, supportedAlgorithms) {
 		if(dictionary === undefined) { return undefined }
 		if(!Array.isArray(supportedAlgorithms)) { return undefined }
 		if(supportedAlgorithms.length === 0) { return undefined }
 
-		const sorted = dictionary.entries()
+		return dictionary.entries()
 			.toArray()
-			.toSorted((a, b) => b[1].bare_item - a[1].bare_item)
-			.filter(entry => supportedAlgorithms.includes(entry[0]) && entry[1].bare_item !== 0)
-
-		const first = sorted.at(0)
-		return first
+			.toSorted((a, b) => b[1].preference - a[1].preference)
+			.filter(entry => supportedAlgorithms.includes(entry[0]) && entry[1].preference !== DIGEST_PREFERENCE_NOT_ACCEPTABLE)
+			.map(entry => ({ algo: entry[0], preference: entry[1].preference, parameters: entry[1].parameters }))
 	}
 
 	/**

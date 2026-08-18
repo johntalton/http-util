@@ -8,7 +8,10 @@ import zlib from 'node:zlib'
 import {
 	COMMON_LIST_VALUE_JOINER_COMMA,
 	HTTP_HEADER_ACCEPT_QUERY,
+	HTTP_HEADER_CONTENT_DIGEST,
 	HTTP_HEADER_PREFERENCE_APPLIED,
+	HTTP_HEADER_REPR_DIGEST,
+	HTTP_HEADER_UNENCODED_DIGEST,
 	isNonEmptyArray,
 	normalizeToArray
 } from '../defs.js'
@@ -17,9 +20,11 @@ import { Conditional } from '../headers/conditional.js'
 import { ContentDisposition } from '../headers/content-disposition.js'
 import { ContentRange } from '../headers/content-range.js'
 import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
+import { ContentDigest, ReprDigest, UnencodedDigest } from '../headers/digest.js'
 import { RetryAfter } from '../headers/retry-after.js'
 import { InternetMessageFormatFixDate } from '../headers/util/imf-fixdate.js'
 import {
+	cleanHeaders,
 	contextHeaders,
 	coreHeaders,
 	customHeaders,
@@ -168,17 +173,21 @@ export function calculateDigests(digestItem, obj) {
 
 	return digestList.map(ud => {
 		const { algo, auto } = ud
-		if(auto) {
+		if(algo === undefined) { return undefined }
+
+		if(auto === true) {
 			try {
 				const hasher = createHash(algo)
 				hasher.update(content)
 				return { algo, digest: hasher.digest(), auto: false }
 			}
 			catch {
+				// console.log(e) // Digest method not supported
 				return undefined
 			}
 		}
 
+		if(ud.digest === undefined) { return undefined }
 		return { algo, digest: ud.digest, auto: false }
 	})
 	.filter(entry => entry !== undefined)
@@ -219,12 +228,6 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 		return
 	}
 
-	// digest = {
-	// 	unencoded: [ { algo: 'sha384', auto: true }, { algo: 'sha-1', auto: true } ],
-	// 	content: [ { algo: 'sha-256', auto: true } ],
-	// 	repr: [ { algo: 'sha-256', auto: true } ],
-	// }
-
 	const unencodedDigestStart = performance.now()
 	const unencodedDigests = calculateDigests(digest?.unencoded, obj)
 	const unencodedDigestEnd = performance.now()
@@ -245,7 +248,7 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 
 
 	const reprDigestStart = performance.now()
-	const reprDigests = calculateDigests(digest?.repr, obj)
+	const reprDigests = calculateDigests(digest?.repr, encodedData)
 	const reprDigestEnd = performance.now()
 	if(reprDigests !== undefined) {
 		meta.performance.push(
@@ -254,7 +257,7 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 	}
 
 	const contentDigestStart = performance.now()
-	const contentDigests = calculateDigests(digest?.content, obj)
+	const contentDigests = calculateDigests(digest?.content, encodedData)
 	const contentDigestEnd = performance.now()
 	if(contentDigests !== undefined) {
 		meta.performance.push(
@@ -268,11 +271,9 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 		content: contentDigests,
 		unencoded: unencodedDigests
 	}
-	console.log(actualDigest)
+	// console.log(actualDigest)
 
-
-
-	send_bytes(stream, status, contentType, encodedData, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta)
+	send_bytes(stream, status, contentType, encodedData, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, actualDigest, context, meta)
 }
 
 /**
@@ -320,7 +321,12 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
 			[HTTP2_HEADER_CONTENT_DISPOSITION]: ContentDisposition.encode(contentDisposition),
 			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
 			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
-			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA)
+			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA),
+			...cleanHeaders({
+				[HTTP_HEADER_CONTENT_DIGEST]: ContentDigest.encode(digest?.content),
+				[HTTP_HEADER_REPR_DIGEST]: ReprDigest.encode(digest?.repr),
+				[HTTP_HEADER_UNENCODED_DIGEST]: UnencodedDigest.encode(digest?.unencoded)
+			})
 		}, exposedHeaders, customVaryHeaders, contentType, obj, context, meta)
 }
 
