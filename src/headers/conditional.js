@@ -106,6 +106,25 @@ export class ETag {
 			etag
 		}
 	}
+
+	/**
+	 * @param {EtagItem} itemA
+	 * @param {EtagItem} itemB
+	 */
+	static compareWeak(itemA, itemB) {
+		if(itemA.any || itemB.any) { return true }
+		return itemA.etag === itemB.etag
+	}
+
+	/**
+	 * @param {EtagItem} itemA
+	 * @param {EtagItem} itemB
+	 */
+	static compareStrong(itemA, itemB) {
+		if(itemA.any || itemB.any) { return true }
+		if(itemA.weak || itemB.weak) { return false }
+		return itemA.etag === itemB.etag
+	}
 }
 
 export class Conditional {
@@ -146,10 +165,11 @@ export class Conditional {
 	 */
 	static hasAny(etagItemList) {
 		if(etagItemList === undefined) { return false }
-		return etagItemList?.some(item => item.any)
+		return etagItemList.some(item => item.any)
 	}
 
 	/**
+	 * @deprecated Assume Weak Comparison and uses string etag
 	 * @param {Array<EtagItem>|undefined} etagItemList
 	 * @param {string|undefined} etag
 	 * @returns {boolean}
@@ -161,5 +181,20 @@ export class Conditional {
 		Assert.isString(etag)
 
 		return etagItemList.some(item => item.etag === etag)
+	}
+
+	/**
+	 * @param {Array<EtagItem>|undefined} etagItemList
+	 * @param {EtagItem|undefined} etagItem
+	 * @param {boolean} strong
+	 * @returns {boolean}
+	 */
+	static hasEtagItem(etagItemList, etagItem, strong) {
+		if(etagItemList === undefined) { return false }
+		if(etagItem === undefined) { return false }
+
+		const compare = strong ? ETag.compareStrong : ETag.compareWeak
+
+		return etagItemList.some(ei => compare(ei, etagItem))
 	}
 }

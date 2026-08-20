@@ -98,6 +98,80 @@ describe('ETag', () => {
 			assert.deepEqual(result, { any: true, weak: false, etag: '*' })
 		})
 	})
+
+	describe('compareWeak', () => {
+		it('should handle Any', () => {
+			const result = ETag.compareWeak(ETag.any(), ETag.any())
+			assert.equal(result, true)
+		})
+
+		it('should handle W1 Any', () => {
+			const result = ETag.compareWeak(ETag.weak('1'), ETag.any())
+			assert.equal(result, true)
+		})
+
+		it('should handle 1 Any', () => {
+			const result = ETag.compareWeak(ETag.strong('1'), ETag.any())
+			assert.equal(result, true)
+		})
+
+		it('should handle W1 W1', () => {
+			const result = ETag.compareWeak(ETag.weak('1'), ETag.weak('1'))
+			assert.equal(result, true)
+		})
+
+		it('should handle W1 W2', () => {
+			const result = ETag.compareWeak(ETag.weak('1'), ETag.weak('2'))
+			assert.equal(result, false)
+		})
+
+		it('should handle W1 1', () => {
+			const result = ETag.compareWeak(ETag.weak('1'), ETag.strong('1'))
+			assert.equal(result, true)
+		})
+
+		it('should handle 1 1', () => {
+			const result = ETag.compareWeak(ETag.strong('1'), ETag.strong('1'))
+			assert.equal(result, true)
+		})
+	})
+
+	describe('compareStrong', () => {
+		it('should handle Any', () => {
+			const result = ETag.compareStrong(ETag.any(), ETag.any())
+			assert.equal(result, true)
+		})
+
+		it('should handle W1 Any', () => {
+			const result = ETag.compareStrong(ETag.weak('1'), ETag.any())
+			assert.equal(result, true)
+		})
+
+		it('should handle 1 Any', () => {
+			const result = ETag.compareStrong(ETag.strong('1'), ETag.any())
+			assert.equal(result, true)
+		})
+
+		it('should handle W1 W1', () => {
+			const result = ETag.compareStrong(ETag.weak('1'), ETag.weak('1'))
+			assert.equal(result, false)
+		})
+
+		it('should handle W1 W2', () => {
+			const result = ETag.compareStrong(ETag.weak('1'), ETag.weak('2'))
+			assert.equal(result, false)
+		})
+
+		it('should handle W1 1', () => {
+			const result = ETag.compareStrong(ETag.weak('1'), ETag.strong('1'))
+			assert.equal(result, false)
+		})
+
+		it('should handle 1 1', () => {
+			const result = ETag.compareStrong(ETag.strong('1'), ETag.strong('1'))
+			assert.equal(result, true)
+		})
+	})
 })
 
 describe('Conditional', () => {
@@ -240,5 +314,46 @@ describe('Conditional', () => {
 			], 'TESTING')
 			assert.equal(result, true)
 		})
+	})
+
+	describe('hasEtagItem', () => {
+		it('should handle undefined list', () => {
+			const result = Conditional.hasEtagItem(undefined, undefined)
+			assert.equal(result, false)
+		})
+
+		it('should handle undefined etag', () => {
+			const result = Conditional.hasEtagItem([], undefined)
+			assert.equal(result, false)
+		})
+
+		it('should handle strong match strong strong', () => {
+			const result = Conditional.hasEtagItem([
+				ETag.strong('TEST')
+			], ETag.strong('TEST'), true)
+			assert.equal(result, true)
+		})
+
+		it('should handle weak match strong strong', () => {
+			const result = Conditional.hasEtagItem([
+				ETag.strong('TEST')
+			], ETag.strong('TEST'), false)
+			assert.equal(result, true)
+		})
+
+		it('should handle strong no-match weak weak', () => {
+			const result = Conditional.hasEtagItem([
+				ETag.weak('TEST')
+			], ETag.weak('TEST'), true)
+			assert.equal(result, false)
+		})
+
+		it('should handle weak no-match weak different weak', () => {
+			const result = Conditional.hasEtagItem([
+				ETag.weak('TEST')
+			], ETag.weak('OTHER'), false)
+			assert.equal(result, false)
+		})
+
 	})
 })
