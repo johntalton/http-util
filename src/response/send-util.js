@@ -172,14 +172,14 @@ export function calculateDigests(digestItem, obj) {
 	const content = (obj instanceof ArrayBuffer) ? new Uint8Array(obj) : obj
 
 	return digestList.map(ud => {
-		const { algo, auto } = ud
+		const { algo, digest } = ud
 		if(algo === undefined) { return undefined }
 
-		if(auto === true) {
+		if(digest === undefined) {
 			try {
 				const hasher = createHash(algo)
 				hasher.update(content)
-				return { algo, digest: hasher.digest(), auto: false }
+				return { algo, digest: hasher.digest()}
 			}
 			catch {
 				// console.log(e) // Digest method not supported
@@ -188,7 +188,7 @@ export function calculateDigests(digestItem, obj) {
 		}
 
 		if(ud.digest === undefined) { return undefined }
-		return { algo, digest: ud.digest, auto: false }
+		return { algo, digest: ud.digest }
 	})
 	.filter(entry => entry !== undefined)
 }
@@ -377,7 +377,7 @@ export function send(stream, status, headers, exposedHeaders, customVaryHeaders,
 			...performanceHeaders(meta),
 			...headers,
 			...custom
-		}, { waitForTrailers: false })
+		}, { waitForTrailers: false })
 	}
 
 	// stream.on('wantTrailers', () => {

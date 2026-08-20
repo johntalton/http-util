@@ -9,16 +9,21 @@ import {
 
 /** @import { ItemOrInnerListWithParameters, ItemTypeWithParameters } from './structured-field/index.js' */
 
+/**
+ * @template T
+ * @template {keyof T} K
+ * @typedef {Omit<T, K> & Partial<Pick<T, K>>} MakeOptional
+ */
+
 /** @typedef {{ preference: number, parameters: Map<string, any> }} WantDigestDictionaryItem */
 /** @typedef {Map<string, WantDigestDictionaryItem>} WantDigestDictionary */
 
 /** @typedef {Map<string, number>} WantDigestInput */
 
 /** @typedef {{ algo: string, digest: ArrayBufferView|ArrayBuffer }} DigestItem */
+/** @typedef {MakeOptional<DigestItem, 'digest'>} AutoDigestItem */
 
 /** @typedef {Map<string, { bare_item: ArrayBuffer|ArrayBufferView }>} DigestDictionary */
-
-/** @typedef {(DigestItem & { auto: false }) | { algo: string, auto: true }} AutoDigestItem */
 
 /** @typedef {WantDigestDictionaryItem & { algo: string }} SelectedDigestResult */
 
@@ -46,6 +51,14 @@ export const KNOWN_DIGEST_ALGORITHMS = [
 export const DIGEST_PREFERENCE_MIN = 0
 export const DIGEST_PREFERENCE_MAX = 10
 export const DIGEST_PREFERENCE_NOT_ACCEPTABLE = 0
+
+/**
+ * @param {AutoDigestItem|DigestItem} autoOrDigestItem
+ * @returns {autoOrDigestItem is DigestItem}
+ */
+export function isDigestItem(autoOrDigestItem) {
+	return autoOrDigestItem.digest !== undefined
+}
 
 export class WantDigest {
 	/**
@@ -153,16 +166,18 @@ export class Digest {
 	}
 
 	/**
-	 * @param {Array<DigestItem>|DigestItem|undefined} digest
+	 * @param {Array<AutoDigestItem>|AutoDigestItem|undefined} digest
 	 * @returns {string|undefined}
 	 */
 	static encode(digest) {
 		if(digest === undefined) { return undefined }
 
 		/** @type {Map<string, ItemOrInnerListWithParameters>} */
-		const dictionary = new Map(normalizeToArray(digest).map(item => ([
-			item.algo, { value: item.digest, type: 'binary'}
-		])))
+		const dictionary = new Map(normalizeToArray(digest)
+			.filter(isDigestItem)
+			.map(item => ([
+				item.algo, { value: item.digest, type: 'binary'}
+			])))
 
 		try {
 			return StructuredField.encode(dictionary)

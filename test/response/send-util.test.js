@@ -424,7 +424,7 @@ describe('send_util', () => {
 
 		it('should handle undefined item', () => {
 			/** @type {AutoDigestItem} */
-			const digestItem = { algo: 'md5', auto: true }
+			const digestItem = { algo: 'md5' }
 
 			const result = calculateDigests(digestItem, undefined)
 			assert.equal(result, undefined)
@@ -441,16 +441,16 @@ describe('send_util', () => {
 		it('should handle pass though existing digests', () => {
 			/** @type {AutoDigestItem} */
 			const digestItem =
-				{ algo: 'md5', digest: Uint8Array.from([ ]), auto: false }
+				{ algo: 'md5', digest: Uint8Array.from([ ]) }
 
 			const result = calculateDigests(digestItem, 'TEST')
-			assert.deepEqual(result, [{ algo: 'md5', digest: Uint8Array.from([ ]), auto: false }])
+			assert.deepEqual(result, [{ algo: 'md5', digest: Uint8Array.from([ ]) }])
 		})
 
 		it('should handle skip invalid digest algo', () => {
 			/** @type {AutoDigestItem} */
 			const digestItem =
-				{ algo: 'FAKE', auto: true }
+				{ algo: 'FAKE'}
 
 			const result = calculateDigests(digestItem, 'TEST')
 			assert.deepEqual(result, [])
@@ -459,12 +459,12 @@ describe('send_util', () => {
 		it('should handle processing digest', () => {
 			/** @type {AutoDigestItem} */
 			const digestItem =
-				{ algo: 'md5', auto: true }
+				{ algo: 'md5'}
 
 			const expectedMd5 = Buffer.from(Uint8Array.fromHex('03 3b d9 4b 11 68 d7 e4 f0 d6 44 c3 c9 5e 35 bf'.replaceAll(' ', '')))
 
 			const result = calculateDigests(digestItem, 'TEST')
-			assert.deepEqual(result, [{ algo: 'md5', digest: expectedMd5, auto: false }])
+			assert.deepEqual(result, [{ algo: 'md5', digest: expectedMd5 }])
 		})
 	})
 })
