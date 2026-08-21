@@ -13,10 +13,10 @@ describe('AcceptEncoding', () => {
 		it('should parse well-known', () => {
 			const result = AcceptEncoding.parse('gzip, deflate, br, zstd')
 			assert.deepEqual(result, [
-				{ name: 'gzip' },
-				{ name: 'deflate' },
-				{ name: 'br' },
-				{ name: 'zstd' }
+				{ name: 'gzip', quality: 1 },
+				{ name: 'deflate', quality: 1 },
+				{ name: 'br', quality: 1 },
+				{ name: 'zstd', quality: 1 }
 			])
 		})
 
@@ -70,7 +70,8 @@ describe('AcceptEncoding', () => {
 
 		it('should handle array of name undefined', () => {
 			const result = AcceptEncoding.selectItemFrom([ {
-				name: '*'
+				name: '*',
+				quality: 1
 			// @ts-ignore
 			}], [ undefined ])
 			assert.equal(result, undefined)
@@ -78,28 +79,31 @@ describe('AcceptEncoding', () => {
 
 		it('should handle undefined supported', () => {
 			const result = AcceptEncoding.selectItemFrom([ {
-				name: 'FAKE'
+				name: 'FAKE',
+				quality: 1
 			// @ts-ignore
 			} ], undefined)
 			assert.equal(result, undefined)
 		})
 
 		it('should handle empty supported', () => {
-			const result = AcceptEncoding.selectItemFrom([ { name: 'gzip' }, { name: 'zstd'} ], [])
+			const result = AcceptEncoding.selectItemFrom([ { name: 'gzip', quality: 1 }, { name: 'zstd', quality: 1 } ], [])
 			assert.equal(result, undefined)
 		})
 
 		it('should handle selecting first', () => {
 			const result = AcceptEncoding.selectItemFrom([
 				{
-					name: 'gzip'
+					name: 'gzip',
+					quality: 1
 				},
 				{
-					name: 'zstd'
+					name: 'zstd',
+					quality: 1
 				}
 			],
 			[ 'gzip', 'zstd' ])
-			assert.deepEqual(result, { name: 'gzip' })
+			assert.deepEqual(result, { name: 'gzip', quality: 1 })
 		})
 
 		it('should handle selecting with quality', () => {
@@ -136,7 +140,7 @@ describe('AcceptEncoding', () => {
 					quality: .1
 				}
 			], [ 'fake' ])
-			assert.deepEqual(result, { name: 'fake' })
+			assert.deepEqual(result, { name: 'fake', quality: 0.1 })
 		})
 
 		it('should handle selecting any', () => {
@@ -146,17 +150,17 @@ describe('AcceptEncoding', () => {
 					quality: 0.1
 				}
 			], [ 'gzip', 'deflate' ])
-			assert.deepEqual(result, { name: 'gzip' })
+			assert.deepEqual(result, { name: 'gzip', quality: 0.1 })
 		})
 
 		it('should handle client preferences over server', () => {
 			const result = AcceptEncoding.selectItemFrom([
-				{ name: 'gzip' },
-				{ name: 'deflate' },
-				{ name: 'br' },
-				{ name: 'zstd' }
+				{ name: 'gzip', quality: 1 },
+				{ name: 'deflate', quality: 1 },
+				{ name: 'br', quality: 1 },
+				{ name: 'zstd', quality: 1 }
 			], [ 'br', 'gzip' ])
-			assert.deepEqual(result, { name: 'gzip' })
+			assert.deepEqual(result, { name: 'gzip', quality: 1 })
 		})
 	})
 

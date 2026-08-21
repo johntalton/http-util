@@ -8,7 +8,8 @@ const ITEM_JSON = {
 	mimetype: 'application/json',
 	type: 'application',
 	subtype: 'json',
-	parameters: new Map([[ 'charset', 'utf-8' ]])
+	parameters: new Map([[ 'charset', 'utf-8' ]]),
+	quality: 1
 }
 
 const ITEM_JSON_WITHOUT_CHARSET = {
@@ -16,7 +17,8 @@ const ITEM_JSON_WITHOUT_CHARSET = {
 	mimetype: 'application/json',
 	type: 'application',
 	subtype: 'json',
-	parameters: new Map([])
+	parameters: new Map([]),
+	quality: 1
 }
 
 const ITEM_PLAIN = {
@@ -24,7 +26,8 @@ const ITEM_PLAIN = {
 	mimetype: 'text/plain',
 	type: 'text',
 	subtype: 'plain',
-	parameters: new Map([[ 'charset', 'utf-8' ]])
+	parameters: new Map([[ 'charset', 'utf-8' ]]),
+	quality: 1
 }
 
 const ITEM_APPLICATION_ANY = {
@@ -32,7 +35,8 @@ const ITEM_APPLICATION_ANY = {
 	mimetype: 'application/*',
 	type: 'application',
 	subtype: '*',
-	parameters: new Map([])
+	parameters: new Map([]),
+	quality: 1
 }
 
 const ITEM_ANY = {
@@ -40,7 +44,8 @@ const ITEM_ANY = {
 	mimetype: '*/*',
 	type: '*',
 	subtype: '*',
-	parameters: new Map([])
+	parameters: new Map([]),
+	quality: 1
 }
 
 describe('Accept', () => {
@@ -53,7 +58,7 @@ describe('Accept', () => {
 			assert.equal(result, 1)
 		})
 
-		it('should return negative when second item ist lower quality', () => {
+		it('should return negative when second item is lower quality', () => {
 			const first = { ...ITEM_PLAIN, quality: 0.5 }
 			const second = { ...ITEM_PLAIN, quality: 0.1 }
 
@@ -105,6 +110,11 @@ describe('Accept', () => {
 	describe('parse', () => {
 		it('should handle undefined', () => {
 			const result = Accept.parse(undefined)
+			assert.deepEqual(result, [])
+		})
+
+		it('should handle empty string', () => {
+			const result = Accept.parse('')
 			assert.deepEqual(result, [])
 		})
 
@@ -179,6 +189,11 @@ describe('Accept', () => {
 		it('should handle empty array (accepts)', () => {
 			const result = Accept.selectItemFrom([], [])
 			assert.equal(result, undefined)
+		})
+
+		it('should handle empty array (accepts with supported)', () => {
+			const result = Accept.selectItemFrom([], [ 'application/xml'  ])
+			assert.deepEqual(result, undefined)
 		})
 
 		it('should handle undefined (supported)', () => {
@@ -282,7 +297,8 @@ describe('Accept', () => {
 				mimetype: 'application/xml',
 				type: 'application',
 				subtype: 'xml',
-				parameters: new Map()
+				parameters: new Map(),
+				quality: 1
 			})
 		})
 
@@ -293,8 +309,21 @@ describe('Accept', () => {
 				mimetype: '*/*',
 				type: '*',
 				subtype: '*',
-				parameters: new Map()
+				parameters: new Map(),
+				quality: 1
 			})
+		})
+
+		it('should handle not-acceptable types', () => {
+			const jsonItem0 = { ...ITEM_JSON_WITHOUT_CHARSET, quality: 0 }
+			const result = Accept.selectItemFrom([ jsonItem0, ITEM_PLAIN ], [ 'application/json' ])
+			assert.deepEqual(result, undefined)
+		})
+
+		it('should handle not-acceptable types (not any)', () => {
+			const anyItem0 = { ...ITEM_ANY, quality: 0 }
+			const result = Accept.selectItemFrom([ anyItem0 ], [ 'application/xml', 'application/json' ])
+			assert.deepEqual(result, undefined)
 		})
 	})
 

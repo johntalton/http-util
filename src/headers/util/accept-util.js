@@ -8,11 +8,14 @@ export const SEPARATOR = {
 }
 
 export const DEFAULT_QUALITY_STRING = '1'
+export const DEFAULT_QUALITY = 1
+
+export const NOT_ACCEPTABLE_QUALITY = 0
 
 /**
  * @typedef {Object} AcceptStyleItem
  * @property {string} name
- * @property {number|undefined} [quality]
+ * @property {number} quality
  * @property {Map<string, string>|undefined} [parameters]
  */
 

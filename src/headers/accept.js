@@ -1,5 +1,5 @@
 import { isNonEmptyArray } from '../defs.js'
-import { parseAcceptStyleHeader } from './util/accept-util.js'
+import { DEFAULT_QUALITY, NOT_ACCEPTABLE_QUALITY, parseAcceptStyleHeader } from './util/accept-util.js'
 import { MIME_ANY, Mime } from './util/mime.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
@@ -11,8 +11,6 @@ export const WELL_KNOWN = new Map([
 	[ '*/*', [ { name: '*/*', quality: 1 } ] ],
 	[ 'application/json', [ { name: 'application/json', quality: 1 } ] ]
 ])
-
-export const UNSPECIFIED_QUALITY = 1
 
 export class Accept {
 	/**
@@ -31,8 +29,8 @@ export class Accept {
 		}
 
 		// B - A descending order
-		const qualityB = b.quality ?? UNSPECIFIED_QUALITY
-		const qualityA = a.quality ?? UNSPECIFIED_QUALITY
+		const qualityB = b.quality ?? DEFAULT_QUALITY
+		const qualityA = a.quality ?? DEFAULT_QUALITY
 		return Math.sign(qualityB - qualityA)
 	}
 
@@ -64,7 +62,8 @@ export class Accept {
 	 * @returns {AcceptItem | undefined}
 	 */
 	static selectItemFrom(accepts, supportedTypes) {
-		if(!isNonEmptyArray(accepts)) { return undefined }
+		if(accepts === undefined) { return undefined }
+		if(!Array.isArray(accepts)) { return undefined }
 		if(!isNonEmptyArray(supportedTypes)) { return undefined }
 
 		const supportedMimeTypes = supportedTypes
@@ -75,7 +74,13 @@ export class Accept {
 
 		if(supportedMimeTypes.length === 0) { return undefined }
 
+		if(accepts.length === 0) {
+			// todo default to any when empty
+		}
+
 		const matches = accepts.map(accept => {
+			if(accept.quality === NOT_ACCEPTABLE_QUALITY) { return undefined }
+
 			const matchSupportedMimeTypes = supportedMimeTypes.filter(mt => Mime.matches(accept, mt))
 			const best = matchSupportedMimeTypes.at(0)
 			if(best === undefined) { return undefined }

@@ -74,7 +74,7 @@ describe('AcceptLanguage', () => {
 
 		it('should select first when any', () => {
 			const result = AcceptLanguage.selectItemFrom(AcceptLanguage.parse('*'), [ 'foo', 'bar' ])
-			assert.deepEqual(result, { name: 'foo' })
+			assert.deepEqual(result, { name: 'foo', quality: 1, parameters: new Map() })
 		})
 	})
 })

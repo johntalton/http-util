@@ -1,14 +1,14 @@
 import { COMMON_WILDCARD_ANY_ASTERISK, isNonEmptyArray } from '../defs.js'
-import { parseAcceptStyleHeader } from './util/accept-util.js'
+import { DEFAULT_QUALITY, NOT_ACCEPTABLE_QUALITY, parseAcceptStyleHeader } from './util/accept-util.js'
 
 /** @import { AcceptStyleItem } from './util/accept-util.js' */
 
 export const ENCODING_ANY = COMMON_WILDCARD_ANY_ASTERISK
 
 export const WELL_KNOWN_ENCODINGS = new Map([
-	[ 'gzip, deflate, br, zstd', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' }, { name: 'zstd' } ] ],
-	[ 'gzip, deflate, br', [ { name: 'gzip' }, { name: 'deflate' }, { name: 'br' } ] ],
-	[ 'gzip, deflate', [ { name: 'gzip' }, { name: 'deflate' } ] ]
+	[ 'gzip, deflate, br, zstd', [ { name: 'gzip', quality: DEFAULT_QUALITY }, { name: 'deflate', quality: DEFAULT_QUALITY }, { name: 'br', quality: DEFAULT_QUALITY }, { name: 'zstd', quality: DEFAULT_QUALITY } ] ],
+	[ 'gzip, deflate, br', [ { name: 'gzip', quality: DEFAULT_QUALITY }, { name: 'deflate', quality: DEFAULT_QUALITY }, { name: 'br', quality: DEFAULT_QUALITY } ] ],
+	[ 'gzip, deflate', [ { name: 'gzip', quality: DEFAULT_QUALITY }, { name: 'deflate', quality: DEFAULT_QUALITY } ] ]
 ])
 
 export class AcceptEncoding {
@@ -25,22 +25,31 @@ export class AcceptEncoding {
 	 * @returns {AcceptStyleItem | undefined}
 	 */
 	static selectItemFrom(acceptEncodings, supportedTypes) {
-		if(!isNonEmptyArray(acceptEncodings)) { return undefined }
+		if(acceptEncodings === undefined) { return undefined }
+		if(!Array.isArray(acceptEncodings)) { return undefined }
 		if(!isNonEmptyArray(supportedTypes)) { return undefined }
+
+		if(acceptEncodings.length === 0) {
+			// todo default to any when empty
+		}
 
 		for(const acceptEncoding of acceptEncodings) {
 			if(acceptEncoding === undefined) { continue }
-			const { name } = acceptEncoding
+			const { name, quality } = acceptEncoding
+
+			if(quality === NOT_ACCEPTABLE_QUALITY) { continue }
+
 			if(supportedTypes.includes(name)) {
 				return acceptEncoding
 			 }
 		}
 
 		//
-		if(acceptEncodings.some(item => item?.name === ENCODING_ANY)) {
+		const anyItem = acceptEncodings.find(item => item?.name === ENCODING_ANY && item?.quality !== NOT_ACCEPTABLE_QUALITY)
+		if(anyItem !== undefined) {
 			const [ name ] = supportedTypes
 			if(name === undefined) { return undefined }
-			return { name } // todo include any quality and parameters
+			return { ...anyItem, name }
 		}
 
 		return undefined
