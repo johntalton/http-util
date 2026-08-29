@@ -38,11 +38,13 @@ The common Structured Fields are also supported via [StructuredField](./src/head
 | content-disposition           | ✅ | ✅ ||
 | content-range                 |    | ✅ ||
 | content-security-policy       |   | ✅ ||
-| content-type                  | ✅    ||
+| content-type                  | ✅ |   ||
 | cross-origin-embedder-policy  |   | ✅ ||
 | cross-origin-opener-policy    |   | ✅ ||
 | cross-origin-resource-policy  |   | ✅ ||
 | deprecation                   |   | ✅ ||
+| dictionary (available / id)   | ✅ | ||
+| dictionary (use as)           |   | ✅ ||
 | *-digest                      | ✅ | ✅ ||
 | want-*-digest                 | ✅ | ✅ | select |
 | sec-fetch-*                   | ✅ |   ||

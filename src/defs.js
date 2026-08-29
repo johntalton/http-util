@@ -174,6 +174,10 @@ export const HTTP_HEADER_WANT_UNENCODED_DIGEST = 'want-unencoded-digest'
 export const HTTP_HEADER_CONTENT_DIGEST = 'content-digest'
 export const HTTP_HEADER_REPR_DIGEST = 'repr-digest'
 export const HTTP_HEADER_UNENCODED_DIGEST = 'unencoded-digest'
+export const HTTP_HEADER_USE_AS_DICTIONARY = 'use-as-dictionary'
+export const HTTP_HEADER_AVAILABLE_DICTIONARY = 'available-dictionary'
+export const HTTP_HEADER_DICTIONARY_ID = 'dictionary-id'
+
 
 
 //
