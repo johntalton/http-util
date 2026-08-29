@@ -16,6 +16,15 @@ export const USE_AS_DICTIONARY_ITEM_TYPE = 'type'
 
 export const USE_AS_DICTIONARY_DEFAULT_TYPE = 'raw'
 
+/**
+ * @param {any} pattern
+ * @returns {pattern is URLPattern}
+ */
+export function isURLPattern(pattern) {
+	if(typeof URLPattern === 'undefined') { return false }
+	return (pattern instanceof URLPattern)
+}
+
 export class UseAsDictionary {
 	/**
 	 * @param {UseAsDictionaryItem|undefined} item
@@ -25,30 +34,31 @@ export class UseAsDictionary {
 		if(item === undefined) { return undefined }
 		if(item.match === undefined) { return undefined }
 
+		const structure = new Map()
+
+		if(isURLPattern(item.match)) {
+			//
+			if(item.match.hasRegExpGroups) { return undefined }
+
+			const pattern = `${item.match.pathname}` // todo should include other parts
+			structure.set(USE_AS_DICTIONARY_ITEM_MATCH, { value: pattern })
+		}
+		else {
+			structure.set(USE_AS_DICTIONARY_ITEM_MATCH, { value: item.match })
+		}
+
+		if(item.matchDest !== undefined) {
+			const matchDestList = normalizeToArray(item.matchDest)
+				.map(dest => ({ value: dest }))
+			structure.set(USE_AS_DICTIONARY_ITEM_MATCH_DEST, { value: matchDestList })
+		}
+
+		if(item.id !== undefined) { structure.set(USE_AS_DICTIONARY_ITEM_ID, { value: item.id }) }
+		if(item.type !== undefined) { structure.set(USE_AS_DICTIONARY_ITEM_TYPE, { value: item.type, type: 'token' }) }
+
+		//throw new Error(JSON.stringify([ ...structure.entries() ]))
+
 		try {
-			const structure = new Map()
-
-			if(item.match instanceof URLPattern) {
-				//
-				if(item.match.hasRegExpGroups) { return undefined }
-
-				const pattern = `${item.match.pathname}` // todo should include other parts
-				structure.set(USE_AS_DICTIONARY_ITEM_MATCH, { value: pattern })
-			}
-			else {
-				structure.set(USE_AS_DICTIONARY_ITEM_MATCH, { value: item.match })
-			}
-
-			if(item.matchDest !== undefined) {
-				const matchDestList = normalizeToArray(item.matchDest)
-					.map(dest => ({ value: dest }))
-				structure.set(USE_AS_DICTIONARY_ITEM_MATCH_DEST, { value: matchDestList })
-			}
-
-			if(item.id !== undefined) { structure.set(USE_AS_DICTIONARY_ITEM_ID, { value: item.id }) }
-			if(item.type !== undefined) { structure.set(USE_AS_DICTIONARY_ITEM_TYPE, { value: item.type, type: 'token' }) }
-
-
 			return StructuredField.encode(structure)
 		}
 		catch {

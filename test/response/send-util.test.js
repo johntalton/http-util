@@ -6,6 +6,8 @@ import { Readable, compose } from 'node:stream'
 
 import { send, send_bytes, send_no_body, send_error, send_encoded, calculateDigests } from '@johntalton/http-util/response'
 
+import { ifSupports } from '../node-version.js'
+
 import { consumeStreamAsText } from '../consume-stream.js'
 import { MockHttp2Stream } from '../mock-http2-stream.js'
 
@@ -297,7 +299,9 @@ describe('send_util', () => {
 			assert.deepEqual(result, 'Readable brotli string')
 		})
 
-		it('should send from example', () => {
+		it('should send from example', {
+			skip: !ifSupports('fromHex')
+		}, () => {
 			const stream = new MockHttp2Stream()
 			const body = 'hello world'
 			const encoding = 'gzip'
@@ -456,7 +460,9 @@ describe('send_util', () => {
 			assert.deepEqual(result, [])
 		})
 
-		it('should handle processing digest', () => {
+		it('should handle processing digest', {
+			skip: !ifSupports('fromHex')
+		}, () => {
 			/** @type {AutoDigestItem} */
 			const digestItem =
 				{ algo: 'md5'}

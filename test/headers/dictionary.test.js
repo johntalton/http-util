@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
+import { ifSupports } from '../node-version.js'
+
 import { UseAsDictionary, AvailableDictionary, DictionaryID } from '@johntalton/http-util/headers'
 
 describe('UseAsDictionary', () => {
@@ -22,21 +24,27 @@ describe('UseAsDictionary', () => {
 			assert.equal(result, 'match="/d%C3%BCsseldorf"')
 		})
 
-		it('should handle simple match pattern', () => {
+		it('should handle simple match pattern', {
+					skip: !ifSupports('urlPattern')
+			}, () => {
 			const result = UseAsDictionary.encode({
 				match: new URLPattern({ pathname: '/product/*' })
 			})
 			assert.equal(result, 'match="/product/*"')
 		})
 
-		it('should reject simple match pattern with regex', () => {
+		it('should reject simple match pattern with regex', {
+			skip: !ifSupports('urlPattern')
+		}, () => {
 			const result = UseAsDictionary.encode({
 				match: new URLPattern({ pathname: '/blog/(\\d+)' })
 			})
 			assert.equal(result, undefined)
 		})
 
-		it('should handle simple match pattern with dest', () => {
+		it('should handle simple match pattern with dest', {
+			skip: !ifSupports('urlPattern')
+		}, () => {
 			const result = UseAsDictionary.encode({
 				match: new URLPattern({ pathname: '/product/*' }),
 				matchDest: 'document'
@@ -44,7 +52,9 @@ describe('UseAsDictionary', () => {
 			assert.equal(result, 'match="/product/*", match-dest=("document")')
 		})
 
-		it('should handle simple match pattern with id', () => {
+		it('should handle simple match pattern with id', {
+			skip: !ifSupports('urlPattern')
+		}, () => {
 			const result = UseAsDictionary.encode({
 				match: new URLPattern({ pathname: '/app/*/main.js' }),
 				id: 'dictionary-12345'
@@ -80,7 +90,9 @@ describe('AvailableDictionary', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle basic header', () => {
+		it('should handle basic header', {
+			skip: !ifSupports('toBase64')
+		}, () => {
 			const result = AvailableDictionary.parse(':pZGm1Av0IEBKARczz7exkNYsZb8LzaMrV7J32a2fFG4=:')
 			assert.ok(result instanceof Uint8Array)
 			assert.ok(ArrayBuffer.isView(result))
