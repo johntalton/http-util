@@ -179,7 +179,9 @@ describe('Digest', () => {
 			assert.deepEqual(result, undefined)
 		})
 
-		it('should handle multi values', async () => {
+		it('should handle multi values', {
+			skip: !ifSupports('fromBase64')
+		}, async () => {
 			const data =  Uint8Array.from([ 42, 77 ])
 			const digest512 = await crypto.subtle.digest('sha-512', data)
 			const digest1 = await crypto.subtle.digest('sha-1', data)
