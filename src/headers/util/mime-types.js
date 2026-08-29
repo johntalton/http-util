@@ -28,11 +28,14 @@ export const MIME_TYPE_JSON_PATCH = 'application/json-patch+json'
 export const MIME_TYPE_JSON_MERGE_PATCH = 'application/merge-patch+json'
 
 // multipart
-export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
-export const MIME_TYPE_MULTIPART_RANGE = 'multipart/byteranges'
-export const MIME_TYPE_MULTIPART_RELATED = 'multipart/related'
-export const MIME_TYPE_MULTIPART_MIXED = 'multipart/mixed'
-export const MIME_TYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative'
+export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data' // RFC1867
+export const MIME_TYPE_MULTIPART_RANGE = 'multipart/byteranges' // RFC2068
+export const MIME_TYPE_MULTIPART_RELATED = 'multipart/related' // RFC2112 https://www.rfc-editor.org/info/rfc2387/
+export const MIME_TYPE_MULTIPART_MIXED = 'multipart/mixed' // RFC1521
+export const MIME_TYPE_MULTIPART_ALTERNATIVE = 'multipart/alternative' // RFC1521
+export const MIME_TYPE_MULTIPART_DIGEST = 'multipart/digest' // RFC1521
+export const MIME_TYPE_MULTIPART_PARALLEL = 'multipart/parallel' // RFC1521
+export const MIME_TYPE_MULTIPART_REPORT = 'multipart/report' // RFC1892
 
 
 // message
