@@ -45,9 +45,14 @@ export class AcceptEncoding {
 		}
 
 		//
+		const allowedSupportedType = supportedTypes
+			.filter(st => !acceptEncodings
+				.some(item => item?.name === st && item?.quality === NOT_ACCEPTABLE_QUALITY))
+
+		//
 		const anyItem = acceptEncodings.find(item => item?.name === ENCODING_ANY && item?.quality !== NOT_ACCEPTABLE_QUALITY)
 		if(anyItem !== undefined) {
-			const [ name ] = supportedTypes
+			const [ name ] = allowedSupportedType
 			if(name === undefined) { return undefined }
 			return { ...anyItem, name }
 		}
