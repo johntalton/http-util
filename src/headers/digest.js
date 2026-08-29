@@ -176,7 +176,7 @@ export class Digest {
 		const dictionary = new Map(normalizeToArray(digest)
 			.filter(isDigestItem)
 			.map(item => ([
-				item.algo, { value: item.digest, type: 'binary'}
+				item.algo, { value: item.digest, type: 'binary' }
 			])))
 
 		try {

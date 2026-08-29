@@ -3,6 +3,8 @@ import { describe, it } from 'node:test'
 
 import crypto from 'crypto'
 
+import { ifSupports } from '../node-version.js'
+
 import { WantDigest, Digest } from '@johntalton/http-util/headers'
 
 describe('WantDigest', () => {
@@ -202,14 +204,18 @@ describe('Digest', () => {
 			assert.equal(result, undefined)
 		})
 
-		it('should handle basic empty', () => {
+		it('should handle basic empty', {
+			skip: !ifSupports('toBase64')
+		}, () => {
 			const result = Digest.encode({
 				algo: 'md5', digest: Uint8Array.from([ ])
 			})
 			assert.equal(result, 'md5=::')
 		})
 
-		it('should handle basic from digest', async () => {
+		it('should handle basic from digest', {
+			skip: !ifSupports('toBase64')
+		}, async () => {
 			const data =  Uint8Array.from([ 42, 77 ])
 			const digest = await crypto.subtle.digest('sha-256', data)
 
@@ -219,7 +225,9 @@ describe('Digest', () => {
 			assert.equal(result, 'sha-256=:9S7NTgWsHOP0F32cHtjJrtsDTLqKqPfq9xVP0eFApco=:')
 		})
 
-		it('should handle multiple digests', async () => {
+		it('should handle multiple digests', {
+			skip: !ifSupports('toBase64')
+		}, async () => {
 			const data =  Uint8Array.from([ 42, 77 ])
 			const digest512 = await crypto.subtle.digest('sha-512', data)
 			const digest1 = await crypto.subtle.digest('sha-1', data)
