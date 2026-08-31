@@ -7,12 +7,15 @@ import { SF_FIELD_TYPE_ITEM, StructuredField } from './structured-field/index.js
  * @property {string|Array<string>|undefined} [matchDest]
  * @property {string|undefined} [id]
  * @property {string|undefined} [type]
+ * @property {number|undefined} [ttl]
  */
 
 export const USE_AS_DICTIONARY_ITEM_MATCH = 'match'
 export const USE_AS_DICTIONARY_ITEM_MATCH_DEST = 'match-dest'
 export const USE_AS_DICTIONARY_ITEM_ID = 'id'
 export const USE_AS_DICTIONARY_ITEM_TYPE = 'type'
+export const USE_AS_DICTIONARY_ITEM_TTL = 'ttl'
+
 
 export const USE_AS_DICTIONARY_DEFAULT_TYPE = 'raw'
 
@@ -56,7 +59,7 @@ export class UseAsDictionary {
 		if(item.id !== undefined) { structure.set(USE_AS_DICTIONARY_ITEM_ID, { value: item.id }) }
 		if(item.type !== undefined) { structure.set(USE_AS_DICTIONARY_ITEM_TYPE, { value: item.type, type: 'token' }) }
 
-		//throw new Error(JSON.stringify([ ...structure.entries() ]))
+		if(item.ttl !== undefined && Number.isInteger(item.ttl)) { structure.set(USE_AS_DICTIONARY_ITEM_TTL, { value: item.ttl }) }
 
 		try {
 			return StructuredField.encode(structure)
