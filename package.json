@@ -28,7 +28,7 @@
     "_build": "tsc -p jsconfig.json --noEmit",
     "lint": "biome check",
     "test": "node --test test/**/*.test.js",
-    "coverage": "c8 --src src --check-coverage --statements 95 --branches 95 --functions 95 --lines 95 -r lcovonly -r text node --test test/**/*.test.js"
+    "coverage": "c8 --src src --check-coverage --statements 99 --branches 95 --functions 95 --lines 99 -r lcovonly -r text node --test test/**/*.test.js"
   },
   "repository": {
     "url": "https://github.com/johntalton/http-util"

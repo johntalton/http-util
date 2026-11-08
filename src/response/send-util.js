@@ -1,17 +1,12 @@
 /** biome-ignore-all lint/style/noExcessiveLinesPerFile: workhorse */
 import { createHash } from 'node:crypto'
-import http2 from 'node:http2'
 import { compose, pipeline, Readable } from 'node:stream'
 import { ReadableStream } from 'node:stream/web'
 import zlib from 'node:zlib'
 
+// import { CompressionDictionaryBrotli } from '../compression-dictionary-transport.js'
 import {
 	COMMON_LIST_VALUE_JOINER_COMMA,
-	HTTP_HEADER_ACCEPT_QUERY,
-	HTTP_HEADER_CONTENT_DIGEST,
-	HTTP_HEADER_PREFERENCE_APPLIED,
-	HTTP_HEADER_REPR_DIGEST,
-	HTTP_HEADER_UNENCODED_DIGEST,
 	isNonEmptyArray,
 	normalizeToArray
 } from '../defs.js'
@@ -23,6 +18,31 @@ import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
 import { ContentDigest, ReprDigest, UnencodedDigest } from '../headers/digest.js'
 import { RetryAfter } from '../headers/retry-after.js'
 import { InternetMessageFormatFixDate } from '../headers/util/imf-fixdate.js'
+import {
+	HTTP_HEADER_ACCEPT,
+	HTTP_HEADER_ACCEPT_ENCODING,
+	HTTP_HEADER_ACCEPT_QUERY,
+	HTTP_HEADER_ACCEPT_RANGES,
+	HTTP_HEADER_AGE,
+	HTTP_HEADER_CACHE_CONTROL,
+	HTTP_HEADER_CONTENT_DIGEST,
+	HTTP_HEADER_CONTENT_DISPOSITION,
+	HTTP_HEADER_CONTENT_ENCODING,
+	HTTP_HEADER_CONTENT_LENGTH,
+	HTTP_HEADER_CONTENT_RANGE,
+	HTTP_HEADER_ETAG,
+	HTTP_HEADER_LAST_MODIFIED,
+	HTTP_HEADER_PREFERENCE_APPLIED,
+	HTTP_HEADER_RANGE,
+	HTTP_HEADER_REPR_DIGEST,
+	HTTP_HEADER_RETRY_AFTER,
+	HTTP_HEADER_UNENCODED_DIGEST
+} from '../headers.js'
+import {
+	HTTP_STATUS_INTERNAL_SERVER_ERROR,
+	HTTP_STATUS_NOT_FOUND,
+	HTTP_STATUS_UNAUTHORIZED
+} from '../status.js'
 import {
 	cleanHeaders,
 	contextHeaders,
@@ -44,28 +64,6 @@ import {
 /** @import { DispositionInput } from '../headers/content-disposition.js' */
 /** @import { RetryAfterItem } from '../headers/retry-after.js' */
 /** @import { AutoDigestItem } from '../headers/digest.js' */
-
-const {
-	HTTP_STATUS_INTERNAL_SERVER_ERROR,
-	HTTP_STATUS_NOT_FOUND,
-	HTTP_STATUS_UNAUTHORIZED
-} = http2.constants
-
-const {
-	HTTP2_HEADER_CONTENT_ENCODING,
-	HTTP2_HEADER_CACHE_CONTROL,
-	HTTP2_HEADER_ETAG,
-	HTTP2_HEADER_LAST_MODIFIED,
-	HTTP2_HEADER_AGE,
-	HTTP2_HEADER_ACCEPT_RANGES,
-	HTTP2_HEADER_CONTENT_RANGE,
-	HTTP2_HEADER_CONTENT_LENGTH,
-	HTTP2_HEADER_CONTENT_DISPOSITION,
-	HTTP2_HEADER_ACCEPT,
-	HTTP2_HEADER_ACCEPT_ENCODING,
-	HTTP2_HEADER_RETRY_AFTER,
-	HTTP2_HEADER_RANGE
-} = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -96,11 +94,11 @@ export function send_error(stream, status, message, retryAfter, context, meta) {
 
 	const retryAfterStr = RetryAfter.encode(retryAfter)
 
-	const exposedHeaders = retryAfterStr === undefined ? [ ] : [ HTTP2_HEADER_RETRY_AFTER ]
+	const exposedHeaders = retryAfterStr === undefined ? [ ] : [ HTTP_HEADER_RETRY_AFTER ]
 	const customVaryHeaders = undefined
 
 	send(stream, status, {
-		[HTTP2_HEADER_RETRY_AFTER]: retryAfterStr
+		[HTTP_HEADER_RETRY_AFTER]: retryAfterStr
 	}, exposedHeaders, customVaryHeaders, CONTENT_TYPE_JSON, obj, context, meta) // todo should this be plain text
 }
 
@@ -136,7 +134,10 @@ export const ENCODER_STREAM_MAP = new Map([
 	[ 'gzip', stream => compose(stream, zlib.createGzip(ENCODER_STREAM_GZIP_OPTIONS)) ],
 	[ 'deflate', stream => compose(stream, zlib.createDeflate(ENCODER_STREAM_DEFLATE_OPTIONS)) ],
 	[ 'zstd', stream => compose(stream, zlib.createZstdCompress(ENCODER_STREAM_ZSTD_OPTIONS)) ],
-	// [ 'dcb', stream => stream ],
+	// [ 'dcb', stream => compose(
+	// 		stream,
+	// 		CompressionDictionaryBrotli.build(undefined, new Uint8Array(32))
+	// 	) ],
 	// [ 'dcz', stream => stream ]
 ])
 
@@ -229,6 +230,7 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 		meta.performance.push({ name: 'encode', description: 'stream', duration: 0 })
 		const { encoderFn, encoding: actualEncoding } = lookupEncoder(encoding,	 ENCODER_STREAM_MAP)
 		const encodedStream = (encoderFn === undefined) ? obj : encoderFn((obj instanceof ReadableStream) ? Readable.fromWeb(obj) : obj)
+		//console.log('sending encoded stream', actualEncoding)
 		send_bytes(stream, status, contentType, encodedStream, contentDisposition, undefined, undefined, actualEncoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryTypes, digest, context, meta)
 		return
 	}
@@ -250,7 +252,6 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
 	meta.performance.push(
 		{ name: 'encode', duration: encodeEnd - encodeStart }
 	)
-
 
 	const reprDigestStart = performance.now()
 	const reprDigests = calculateDigests(digest?.repr, encodedData)
@@ -306,27 +307,27 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
 	const supportsQuery = isNonEmptyArray(supportedQueryTypes)
 
 	const exposedHeaders = []
-	if(age !== undefined) { exposedHeaders.push(HTTP2_HEADER_AGE) }
-	if(acceptRanges !== undefined) { exposedHeaders.push(HTTP2_HEADER_ACCEPT_RANGES) }
-	if(range !== undefined) { exposedHeaders.push(HTTP2_HEADER_CONTENT_RANGE) }
+	if(age !== undefined) { exposedHeaders.push(HTTP_HEADER_AGE) }
+	if(acceptRanges !== undefined) { exposedHeaders.push(HTTP_HEADER_ACCEPT_RANGES) }
+	if(range !== undefined) { exposedHeaders.push(HTTP_HEADER_CONTENT_RANGE) }
 	if(supportsQuery) { exposedHeaders.push(HTTP_HEADER_ACCEPT_QUERY) }
 
-	const customVaryHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
-	if(range !== undefined) { customVaryHeaders.push(HTTP2_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
+	const customVaryHeaders = [ HTTP_HEADER_ACCEPT, HTTP_HEADER_ACCEPT_ENCODING ]
+	if(range !== undefined) { customVaryHeaders.push(HTTP_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
 	// todo add to Vary "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site"
 	// todo add to Vary "Origin"
 	// todo add to Vary "Available-Dictionary" if dcb, dcz encoding used
 
 	send(stream, status, {
-			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
-			[HTTP2_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
-			[HTTP2_HEADER_ETAG]: Conditional.encodeEtag(etag),
-			[HTTP2_HEADER_LAST_MODIFIED]: InternetMessageFormatFixDate.encode(lastModified),
-			[HTTP2_HEADER_AGE]: Number.isInteger(age) ? `${age}` : undefined,
-			[HTTP2_HEADER_CONTENT_LENGTH]: contentLen,
-			[HTTP2_HEADER_CONTENT_DISPOSITION]: ContentDisposition.encode(contentDisposition),
-			[HTTP2_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
-			[HTTP2_HEADER_ACCEPT_RANGES]: acceptRanges,
+			[HTTP_HEADER_CONTENT_ENCODING]: encoding,
+			[HTTP_HEADER_CACHE_CONTROL]: CacheControl.encode(cacheControl),
+			[HTTP_HEADER_ETAG]: Conditional.encodeEtag(etag),
+			[HTTP_HEADER_LAST_MODIFIED]: InternetMessageFormatFixDate.encode(lastModified),
+			[HTTP_HEADER_AGE]: Number.isInteger(age) ? `${age}` : undefined,
+			[HTTP_HEADER_CONTENT_LENGTH]: contentLen,
+			[HTTP_HEADER_CONTENT_DISPOSITION]: ContentDisposition.encode(contentDisposition),
+			[HTTP_HEADER_CONTENT_RANGE]: ContentRange.encode(range),
+			[HTTP_HEADER_ACCEPT_RANGES]: acceptRanges,
 			[HTTP_HEADER_ACCEPT_QUERY]: supportedQueryTypes?.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			...cleanHeaders({
 				[HTTP_HEADER_CONTENT_DIGEST]: ContentDigest.encode(digest?.content),

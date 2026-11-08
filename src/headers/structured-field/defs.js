@@ -104,7 +104,6 @@ export function isVChar(c) {
 	return (cc >= 0x21) && (cc <= 0x7E)
 }
 
-
 /**
  * @see {@link https://www.rfc-editor.org/info/rfc5234#appendix-B.1}
  * @param {string|undefined} c
@@ -123,7 +122,6 @@ export function isAlpha(c) {
 	const cc = c.charCodeAt(0)
 	return ((cc >= 0x41) && (cc <= 0x5A)) || ((cc >= 0x61) && (cc <= 0x7A))
 }
-
 
 /**
  * @see {@link https://www.rfc-editor.org/info/rfc9110#section-5.6.2}

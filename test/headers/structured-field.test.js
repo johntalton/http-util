@@ -27,13 +27,11 @@ describe('StructuredField', () => {
 		})
 	})
 
-
 	describe('isDecimal', () => {
 		it('should handle undefined', () => {
 			const result = isDecimal(undefined)
 			assert.equal(result, false)
 		})
-
 
 	})
 
@@ -43,7 +41,6 @@ describe('StructuredField', () => {
 			assert.equal(result, false)
 		})
 
-
 	})
 
 	describe('isDigit', () => {
@@ -51,7 +48,6 @@ describe('StructuredField', () => {
 			const result = isDigit(undefined)
 			assert.equal(result, false)
 		})
-
 
 	})
 
@@ -65,7 +61,6 @@ describe('StructuredField', () => {
 			assert.equal(result, false)
 		})
 
-
 	})
 
 	describe('isSP', () => {
@@ -73,7 +68,6 @@ describe('StructuredField', () => {
 			const result = isSP(undefined)
 			assert.equal(result, false)
 		})
-
 
 	})
 
@@ -83,7 +77,6 @@ describe('StructuredField', () => {
 			assert.equal(result, false)
 		})
 
-
 	})
 
 	describe('isTChar', () => {
@@ -91,7 +84,6 @@ describe('StructuredField', () => {
 			const result = isTChar(undefined)
 			assert.equal(result, false)
 		})
-
 
 	})
 

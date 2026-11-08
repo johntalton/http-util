@@ -27,7 +27,6 @@ import { isQuoted, stripQuotes } from './util/quote.js'
 
 /** @typedef {WeakEtagItem | NotWeakEtagItem | AnyEtagItem } EtagItem */
 
-
 export const CONDITION_ETAG_SEPARATOR = ','
 export const CONDITION_ETAG_ANY = COMMON_WILDCARD_ANY_ASTERISK
 export const CONDITION_ETAG_WEAK_PREFIX = 'W/'
@@ -35,8 +34,6 @@ export const ETAG_QUOTE = '"'
 
 /** @type {AnyEtagItem} */
 export const ANY_ETAG_ITEM = { any: true, weak: false, etag: CONDITION_ETAG_ANY }
-
-
 
 export class ETag {
 	/**

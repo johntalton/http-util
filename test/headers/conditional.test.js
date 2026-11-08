@@ -3,7 +3,6 @@ import { describe, it } from 'node:test'
 
 import { Conditional, ETag } from '@johntalton/http-util/headers'
 
-
 describe('ETag', () => {
 	describe('isValid', () => {
 		it('should handle undefined', () => {
@@ -318,12 +317,12 @@ describe('Conditional', () => {
 
 	describe('hasEtagItem', () => {
 		it('should handle undefined list', () => {
-			const result = Conditional.hasEtagItem(undefined, undefined)
+			const result = Conditional.hasEtagItem(undefined, undefined, true)
 			assert.equal(result, false)
 		})
 
 		it('should handle undefined etag', () => {
-			const result = Conditional.hasEtagItem([], undefined)
+			const result = Conditional.hasEtagItem([], undefined, true)
 			assert.equal(result, false)
 		})
 

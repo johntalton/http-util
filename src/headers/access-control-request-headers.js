@@ -1,7 +1,6 @@
 import { EMPTY } from "../defs.js"
 import { Assert } from "./util/assert.js"
 
-
 export const ACCESS_CONTROL_REQUEST_HEADER_SEPARATOR = ','
 
 export class AccessControlRequestHeaders {

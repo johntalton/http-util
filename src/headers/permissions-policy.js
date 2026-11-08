@@ -133,8 +133,21 @@ export class PermissionsPolicy {
 	}
 
 	/**
+	 * @overload
+	 * @param {Array<PermissionsPolicyItem>|PermissionsPolicyItem|undefined} policies
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {Array<PermissionsPolicyItem>|PermissionsPolicyItem|undefined} policies
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
+	/**
 	 * @param {Array<PermissionsPolicyItem>|PermissionsPolicyItem|undefined} policies
 	 * @param {boolean} [asArray=false]
+	 * @returns {Array<string>|string|undefined}
 	 */
 	static encode(policies, asArray = false) {
 		if(policies === undefined) { return undefined }

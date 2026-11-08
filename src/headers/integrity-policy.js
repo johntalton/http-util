@@ -77,8 +77,21 @@ export class IntegrityPolicy {
 	}
 
 	/**
+	 * @overload
+	 * @param {IntegrityPolicyInput|undefined} policies
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {IntegrityPolicyInput|undefined} policies
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
+	/**
 	 * @param {IntegrityPolicyInput|undefined} policies
 	 * @param {boolean} [asArray=false]
+	 * @returns {Array<string>|string|undefined}
 	 */
 	static encode(policies, asArray = false) {
 		if(policies === undefined) { return undefined }

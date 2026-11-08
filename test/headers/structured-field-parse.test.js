@@ -458,7 +458,6 @@ describe('StructuredFieldParser', () => {
 			assert.deepEqual(result, [ { __type: 'date', value: 1234 }, [] ])
 		})
 
-
 		it('should handle custom formatter (dictionary)', () => {
 			const format = HTTPWGTestFormatter
 			const result = StructuredFieldParser.parse('a=(1 2), b=3, c=4;aa=bb, d=(5 6);valid', 'dictionary', { format })
@@ -671,7 +670,6 @@ describe('StructuredFieldParser', () => {
 		})
 	})
 
-
 	describe('isOWS', () => {
 		it('should handle undefined', () => {
 			const result = isOWS(undefined)
@@ -688,7 +686,6 @@ describe('StructuredFieldParser', () => {
 			assert.equal(result, true)
 		})
 
-
 	})
 
 	describe('isLowercaseHex', () => {
@@ -696,7 +693,6 @@ describe('StructuredFieldParser', () => {
 			const result = isLowercaseHex(undefined)
 			assert.equal(result, false)
 		})
-
 
 	})
 
@@ -706,8 +702,6 @@ describe('StructuredFieldParser', () => {
 			assert.equal(result, false)
 		})
 
-
 	})
-
 
 })

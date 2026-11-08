@@ -96,8 +96,21 @@ export class Challenge {
 	// }
 
 	/**
+	 * @overload
+	 * @param {Array<ChallengeItem>|undefined} challenges
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {Array<ChallengeItem>|undefined} challenges
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
+	/**
 	 * @param {Array<ChallengeItem> | ChallengeItem | undefined} challenges
 	 * @param {boolean} [asArray = false]
+	 * @returns {Array<string>|string|undefined}
 	 */
 	static encode(challenges, asArray = false) {
 		if(!Array.isArray(challenges)) { return Challenge.#encode(challenges) }
@@ -111,6 +124,7 @@ export class Challenge {
 
 	/**
 	 * @param {ChallengeItem | undefined} challenge
+	 * @returns {string|undefined}
 	 */
 	static #encode(challenge) {
 		if(challenge === undefined) { return undefined }

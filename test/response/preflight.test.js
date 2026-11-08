@@ -247,7 +247,6 @@ describe('Response', () => {
 			assert.equal(stream.sentHeaders['access-control-expose-headers'], 'etag,server')
 			assert.equal(stream.sentHeaders['accept-query'], undefined)
 
-
 		})
 
 	})

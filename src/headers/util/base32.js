@@ -59,7 +59,6 @@ export class Base32 {
 		const bits = [ ...cleanedInput ]
 			.reduce((acc, val) => acc + ALPHABET.indexOf(val).toString(2).padStart(5, '0'), '')
 
-
 		let index = 0
 		for (let i = 0; i + 8 <= bits.length; i += 8) {
 			output[index++] = Number.parseInt(bits.slice(i, i + 8), 2)

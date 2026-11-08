@@ -91,8 +91,21 @@ export class RateLimitPolicy {
 	}
 
 	/**
+	 * @overload
+	 * @param {Array<RateLimitPolicyInfo>|RateLimitPolicyInfo|undefined} policies
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {Array<RateLimitPolicyInfo>|RateLimitPolicyInfo|undefined} policies
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
+	/**
 	 * @param {Array<RateLimitPolicyInfo>|RateLimitPolicyInfo|undefined} policies
 	 * @param {boolean} [asArray = false]
+	 * @returns {Array<string>|string|undefined}
 	 */
 	static encode(policies, asArray = false) {
 		if(policies === undefined) { return undefined }

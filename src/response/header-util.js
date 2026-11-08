@@ -71,8 +71,6 @@ import {
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { ClientPolicyMap, SendContext, Metadata, SendSupportedTypes, SendSupportedTypesNormalizedRecord } from '../defs.js' */
 
-
-
 /**
  * @param {Record<string,Array<string>|string|number|undefined>} headers
  */

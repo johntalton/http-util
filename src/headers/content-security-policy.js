@@ -33,7 +33,6 @@ import {
 /** @typedef {`sha256-${string}`|`sha384-${string}`|`sha512-${string}`} CSPHashSource */
 /** @typedef {string & { readonly __brand: unique symbol }} CSPHostSource */
 
-
 /** @typedef {Extract<CSPSourceExpression, 'self'>| CSPSchemeSource | CSPHostSource} CSPFetchCommonSource */
 /** @typedef {CSPSourceExpression | CSPHostSource | CSPSchemeSource | CSPNonceSource | CSPHashSource} CSPFetchAllSources */
 /** @typedef {Extract<CSPSourceExpression, 'unsafe-hashes'|'unsafe-inline'|'report-sample'>} CSPFetchScriptAttr */
@@ -62,7 +61,6 @@ import {
  * @property {Array<CSPFetchCommonSource> | CSPFetchCommonSource | undefined} [workerSrc]
  */
 
-
 /** @typedef {Extract<CSPSourceExpression, 'self'>| CSPSchemeSource | CSPHostSource} CSPDocumentBaseURI */
 
 /** @typedef {
@@ -88,7 +86,6 @@ import {
  * @property {Array<CSPSandbox> | CSPSandbox | boolean | undefined} [sandbox]
  */
 
-
 /** @typedef {Extract<CSPSourceExpression, 'self'>| CSPSchemeSource | CSPHostSource} CSPNavigationCommon */
 
 /**
@@ -96,7 +93,6 @@ import {
  * @property {Array<CSPNavigationCommon> | CSPNavigationCommon | CSPNoneSource | undefined} [frameAncestors]
  * @property {Array<CSPNavigationCommon> | CSPNavigationCommon | CSPNoneSource | undefined} [formAction]
  */
-
 
 /** @typedef {string & { readonly __brand: unique symbol }} CSPOtherPolicyName */
 /** @typedef {'script'} CSPOtherRequiredTrustedTypesForValues */
@@ -113,7 +109,6 @@ import {
  * @property {CSPOtherTrustedTypesObject | Array<CSPOtherPolicyName> | CSPOtherPolicyName | CSPNoneSource | boolean | undefined} [trustedTypes]
  * @property {boolean | undefined} [upgradeInsecureRequests]
  */
-
 
 /**
  * @typedef {Object} CSPReportingPolicy
@@ -192,11 +187,9 @@ export const CSP_DIRECTIVE_OTHER_UPGRADE_INSECURE_REQUESTS = 'upgrade-insecure-r
 } CSPOtherDirective
  */
 
-
 export const CSP_DIRECTIVE_REPORTING_REPORT_TO = 'report-to'
 
 /** @typedef {CSP_DIRECTIVE_REPORTING_REPORT_TO} CSPReportingDirective */
-
 
 //
 export const CSP_SOURCE_NONE = 'none'
@@ -440,7 +433,6 @@ export function processReporting(prefix, item) {
 	return `${prefix} ${item}`
 }
 
-
 export class ContentSecurityPolicy {
 	/**
 	 * @param {string|undefined} host
@@ -500,7 +492,6 @@ export class ContentSecurityPolicy {
 			}
 		}
 	}
-
 
 	/**
 	 * @param {CSPNavigationPolicy} policy
@@ -573,6 +564,18 @@ export class ContentSecurityPolicy {
 		}
 	}
 
+	/**
+	 * @overload
+	 * @param {Array<CSPPolicy>|CSPPolicy|undefined} policies
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {Array<CSPPolicy>|CSPPolicy|undefined} policies
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
 	/**
 	 * @param {Array<CSPPolicy>|CSPPolicy|undefined} policies
 	 * @param {boolean} [asArray = false]

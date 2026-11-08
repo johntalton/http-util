@@ -3,7 +3,6 @@ import { COMMON_LIST_HEADER_JOINER_COMMA } from '../defs.js'
 export const SERVER_TIMING_KEY_DURATION = 'dur' // common in milliseconds
 export const SERVER_TIMING_KEY_DESCRIPTION = 'desc'
 
-
 export const SERVER_TIMING_SEPARATOR = {
 	METRIC: ',',
 	PARAMETER: ';',
@@ -19,8 +18,21 @@ export const SERVER_TIMING_SEPARATOR = {
 
 export class ServerTiming {
 	/**
+	 * @overload
+	 * @param {Array<TimingsInfo>|undefined} timings
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {Array<TimingsInfo>|undefined} timings
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
+	/**
 	 * @param {Array<TimingsInfo>|undefined} timings
 	 * @param {boolean} [asArray = false]
+	 * @returns {Array<string>|string|undefined}
 	 */
 	static encode(timings, asArray = false) {
 		if(timings === undefined) { return undefined }

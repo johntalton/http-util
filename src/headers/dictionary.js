@@ -16,7 +16,6 @@ export const USE_AS_DICTIONARY_ITEM_ID = 'id'
 export const USE_AS_DICTIONARY_ITEM_TYPE = 'type'
 export const USE_AS_DICTIONARY_ITEM_TTL = 'ttl'
 
-
 export const USE_AS_DICTIONARY_DEFAULT_TYPE = 'raw'
 
 /**

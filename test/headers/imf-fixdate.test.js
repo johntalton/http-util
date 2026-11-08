@@ -19,7 +19,6 @@ const EXAMPLE_IMF_EARLY = { dayName: '', year: 2000, month: 'Mar', day: 15, hour
 const EXAMPLE_IMF_MIDDLE = { dayName: '', year: 2001, month: 'Jan', day: 1, hour: 0, minute: 0, second: 0 }
 const EXAMPLE_IMF_LATE = { dayName: '', year: 2020, month: 'Feb', day: 1, hour: 0, minute: 0, second: 0 }
 
-
 const EXAMPLE_IMF_INSTANT_EARLY = { ...EXAMPLE_IMF_EARLY, instant: EXAMPLE_TEMPORAL_EARLY }
 const EXAMPLE_IMF_INSTANT_MIDDLE = { ...EXAMPLE_IMF_MIDDLE, instant: EXAMPLE_TEMPORAL_MIDDLE }
 const EXAMPLE_IMF_INSTANT_LATE = { ...EXAMPLE_IMF_LATE, instant: EXAMPLE_TEMPORAL_LATE }

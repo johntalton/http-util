@@ -154,7 +154,6 @@ describe('Preferences', () => {
 			})
 		})
 
-
 		it('should handle case-insensitive keys', () => {
 			const result = Preferences.parse('RETURN="Minimal"')
 			assert.deepEqual(result, {

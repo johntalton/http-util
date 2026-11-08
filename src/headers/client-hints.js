@@ -93,11 +93,22 @@ export const CLIENT_HINT_TRUE = '?1'
 export const CLIENT_HINT_FALSE = '?0'
 
 export class ClientHints {
-
+	/**
+	 * @overload
+	 * @param {Array<ClientHintsDirective>|undefined} hints
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {Array<ClientHintsDirective>|undefined} hints
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
 	/**
 	 * @param {Array<ClientHintsDirective>|undefined} hints
 	 * @param {boolean} [asArray = false]
-	 * @returns {string[]|string|undefined}
+	 * @returns {Array<string>|string|undefined}
 	 */
 	static encode(hints, asArray = false) {
 		if(hints === undefined) { return undefined }

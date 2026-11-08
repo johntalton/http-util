@@ -5,7 +5,6 @@ import { send_no_body } from '../send-util.js'
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, Metadata } from '../../defs.js' */
 
-
 /**
  * @param {ServerHttp2Stream} stream
  * @param {URL|string} location

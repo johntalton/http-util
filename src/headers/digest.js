@@ -36,7 +36,6 @@ export const DIGEST_ALGORITHM_UNIXCKSUM_DEPRECATED = 'unixcksum'
 export const DIGEST_ALGORITHM_ADLER_32_DEPRECATED = 'adler'
 export const DIGEST_ALGORITHM_CRC_32_C_DEPRECATED = 'crc32c'
 
-
 export const KNOWN_DIGEST_ALGORITHMS = [
 	DIGEST_ALGORITHM_SHA_256,
 	DIGEST_ALGORITHM_SHA_512,
@@ -147,7 +146,6 @@ export class WantDigest {
 export const WantReprDigest = WantDigest
 export const WantContentDigest = WantDigest
 export const WantUnencodedDigest = WantDigest
-
 
 export class Digest {
 	/**

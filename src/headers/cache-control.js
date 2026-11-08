@@ -53,6 +53,18 @@ export class CacheControl {
 	}
 
 	/**
+	 * @overload
+	 * @param {CacheControlOptions|undefined} options
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {CacheControlOptions|undefined} options
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
+	/**
 	 * @param {CacheControlOptions|undefined} options
 	 * @param {boolean} [asArray = false]
 	 * @returns {Array<string>|string|undefined}

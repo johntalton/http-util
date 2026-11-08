@@ -235,7 +235,6 @@ describe('Structured-Field', () => {
 			assert.equal(result, 'a=(42 77;b=:TQ==:)')
 		})
 
-
 		it('should throw on token invalid chars', () => {
 			assert.throws(() => StructuredFieldSerializer.serialize({
 				value: 'BAD@',
@@ -272,8 +271,6 @@ describe('Structured-Field', () => {
 	describe('isTypeDate', () => {})
 
 	describe('isTypeDisplayString', () => {})
-
-
 
 	describe('isBareItem', () => {})
 

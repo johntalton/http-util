@@ -37,6 +37,5 @@ export const MIME_TYPE_MULTIPART_DIGEST = 'multipart/digest' // RFC1521
 export const MIME_TYPE_MULTIPART_PARALLEL = 'multipart/parallel' // RFC1521
 export const MIME_TYPE_MULTIPART_REPORT = 'multipart/report' // RFC1892
 
-
 // message
 export const MIME_TYPE_MESSAGE_HTTP = 'message/http'

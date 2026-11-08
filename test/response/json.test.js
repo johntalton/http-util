@@ -58,7 +58,6 @@ describe('Response', () => {
 			assert.deepEqual(stream.sentHeaders['etag'], undefined)
 			assert.deepEqual(stream.sentHeaders['vary'], 'accept,accept-encoding')
 
-
 			const encoder = new TextEncoder()
 
 			const result = stream.read()

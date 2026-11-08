@@ -170,7 +170,6 @@ export function isTypeDate(value, type_hint) {
 	return false
 }
 
-
 /**
  * @param {BareItemType} value
  * @param {BareType|undefined} type_hint
@@ -218,7 +217,6 @@ export function isInnerList(item) {
 	if(typeof item !== 'object') { return false }
 	return ('value' in item) && Array.isArray(item.value)
 }
-
 
 export class StructuredFieldSerializer {
 	/**

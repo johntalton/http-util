@@ -54,8 +54,21 @@ export class Link {
 	}
 
 	/**
+	 * @overload
+	 * @param {Array<LinkItem>|LinkItem|undefined} links
+	 * @param {true} asArray
+	 * @returns {Array<string>|undefined}
+	 */
+	/**
+	 * @overload
+	 * @param {Array<LinkItem>|LinkItem|undefined} links
+	 * @param {false} [asArray]
+	 * @returns {string|undefined}
+	 */
+	/**
 	 * @param {Array<LinkItem>|LinkItem|undefined} links
 	 * @param {boolean} [asArray = false]
+	 * @returns {Array<string>|string|undefined}
 	 */
 	static encode(links, asArray = false) {
 		const linkAry = normalizeToArray(links)
