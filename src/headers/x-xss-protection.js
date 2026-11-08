@@ -1,6 +1,4 @@
 
-export const HTTP_HEADER_XSS_PROTECTION = 'x-xss-protection'
-
 export class XSSProtection {
 	/**
 	 * @param {boolean} [enable]

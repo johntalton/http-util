@@ -1,12 +1,9 @@
-import http2 from 'node:http2'
-
 import { CONTENT_TYPE_JSON } from '../../headers/content-type.js'
+import { HTTP_STATUS_OK } from '../../status.js'
 import { send_encoded } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContent, SendInfo, SendContext, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

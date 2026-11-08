@@ -1,11 +1,8 @@
-import http2 from 'node:http2'
-
+import { HTTP_STATUS_INSUFFICIENT_STORAGE } from '../../status.js'
 import { send_error } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_INSUFFICIENT_STORAGE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

@@ -51,7 +51,7 @@ export function parseAcceptStyleHeader(header, wellKnown) {
 				}
 			})
 			.filter(entry => entry !== undefined)
-			.sort((entryA, entryB) => {
+			.sort((entryA, entryB) => { // in-place
 				// B - A descending order
 				return entryB.quality - entryA.quality
 			})

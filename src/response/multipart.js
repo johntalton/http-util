@@ -1,12 +1,17 @@
-import http2 from 'node:http2'
 import { ReadableStream } from 'node:stream/web'
 
-import { EMPTY, HTTP_HEADER_CONTENT_DIGEST } from '../defs.js'
+import { EMPTY } from '../defs.js'
 import { ContentDisposition, DISPOSITION_FORM_DATA } from '../headers/content-disposition.js'
 import { ContentRange } from '../headers/content-range.js'
 import { CHARSET_UTF8 } from '../headers/content-type.js'
 // import { ContentDigest } from '../headers/digest.js'
 import { Assert } from '../headers/util/assert.js'
+import {
+	HTTP_HEADER_CONTENT_DIGEST,
+	HTTP_HEADER_CONTENT_DISPOSITION,
+	HTTP_HEADER_CONTENT_RANGE,
+	HTTP_HEADER_CONTENT_TYPE,
+} from '../headers.js'
 
 // import { ContentType } from './content-type.js'
 
@@ -21,21 +26,15 @@ import { Assert } from '../headers/util/assert.js'
  * @property {Array<AutoDigestItem>|AutoDigestItem} [contentDigest]
  */
 
-const {
-	HTTP2_HEADER_CONTENT_DISPOSITION,
-	HTTP2_HEADER_CONTENT_RANGE,
-	HTTP2_HEADER_CONTENT_TYPE,
-} = http2.constants
-
 export const BOUNDARY_MARK = '--'
 export const MULTIPART_SEPARATOR = '\r\n'
 
 export const HEADER_SEPARATOR = ':'
 
 export const MULTIPART_HEADER = {
-	CONTENT_DISPOSITION: HTTP2_HEADER_CONTENT_DISPOSITION,
-	CONTENT_TYPE: HTTP2_HEADER_CONTENT_TYPE,
-	CONTENT_RANGE: HTTP2_HEADER_CONTENT_RANGE,
+	CONTENT_DISPOSITION: HTTP_HEADER_CONTENT_DISPOSITION,
+	CONTENT_TYPE: HTTP_HEADER_CONTENT_TYPE,
+	CONTENT_RANGE: HTTP_HEADER_CONTENT_RANGE,
 	CONTENT_DIGEST: HTTP_HEADER_CONTENT_DIGEST
 }
 

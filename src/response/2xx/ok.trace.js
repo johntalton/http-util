@@ -1,13 +1,10 @@
-import http2 from 'node:http2'
-
 import { CONTENT_TYPE_MESSAGE_HTTP } from '../../headers/content-type.js'
+import { HTTP_STATUS_OK } from '../../status.js'
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { IncomingHttpHeaders } from 'node:http2' */
 /** @import { SendContext, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_OK } = http2.constants
 
 const LINE_ENDING = '\n'
 const PSEUDO_HEADER_PREFIX = ':'

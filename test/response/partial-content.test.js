@@ -66,7 +66,7 @@ describe('Response', () => {
 				'last-modified': undefined,
 				age: undefined,
 				etag: undefined,
-				vary: 'accept,accept-encoding'
+				vary: 'accept,accept-encoding,range'
 			})
 
 			const encoder = new TextEncoder()
@@ -131,7 +131,7 @@ describe('Response', () => {
 				'last-modified': undefined,
 				age: undefined,
 				etag: undefined,
-				vary: 'accept,accept-encoding'
+				vary: 'accept,accept-encoding,range'
 			})
 
 			const encoder = new TextEncoder()

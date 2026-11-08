@@ -1,11 +1,8 @@
-import http2 from 'node:http2'
-
+import { HTTP_STATUS_RESET_CONTENT } from '../../status.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_RESET_CONTENT } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

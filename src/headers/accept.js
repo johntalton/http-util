@@ -53,7 +53,7 @@ export class Accept {
 				}
 			})
 			.filter(entry => entry !== undefined)
-			.sort(Accept.compare)
+			.sort(Accept.compare) // in-place
 	}
 
 	/**

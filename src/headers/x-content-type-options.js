@@ -1,4 +1,4 @@
-export const HTTP_HEADER_CONTENT_TYPE_OPTIONS = 'x-content-type-options'
+
 
 export const CONTENT_TYPE_OPTIONS_NOSNIFF = 'nosniff'
 

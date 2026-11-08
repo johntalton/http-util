@@ -1,18 +1,15 @@
-import http2 from 'node:http2'
-
+import { COMMON_LIST_VALUE_JOINER_COMMA } from '../../defs.js'
 import {
-	COMMON_LIST_VALUE_JOINER_COMMA,
 	HTTP_HEADER_ACCEPT_PATCH,
 	HTTP_HEADER_ACCEPT_POST,
 	HTTP_HEADER_ACCEPT_QUERY
-} from '../../defs.js'
+} from '../../headers.js'
+import { HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE } from '../../status.js'
 import { coerceSupportedTypes } from '../header-util.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, SendInfo, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

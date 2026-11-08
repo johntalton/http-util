@@ -1,12 +1,9 @@
-import http2 from 'node:http2'
-
 import { CONTENT_TYPE_TEXT } from '../../headers/content-type.js'
+import { HTTP_STATUS_BAD_REQUEST } from '../../status.js'
 import { send } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_BAD_REQUEST } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

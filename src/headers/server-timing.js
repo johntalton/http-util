@@ -3,8 +3,6 @@ import { COMMON_LIST_HEADER_JOINER_COMMA } from '../defs.js'
 export const SERVER_TIMING_KEY_DURATION = 'dur' // common in milliseconds
 export const SERVER_TIMING_KEY_DESCRIPTION = 'desc'
 
-export const HTTP_HEADER_SERVER_TIMING = 'Server-Timing'
-export const HTTP_HEADER_TIMING_ALLOW_ORIGIN = 'Timing-Allow-Origin'
 
 export const SERVER_TIMING_SEPARATOR = {
 	METRIC: ',',

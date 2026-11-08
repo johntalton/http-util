@@ -1,31 +1,10 @@
-import http2 from 'node:http2'
-
 import {
 	COMMON_LIST_HEADER_JOINER_COMMA,
 	COMMON_LIST_VALUE_JOINER_COMMA,
 	CUSTOM_HEADER_PREFIX,
 	EMPTY,
-	HTTP_HEADER_ACCEPT_CLIENT_HINTS,
-	HTTP_HEADER_CLEAR_SITE_DATE,
-	HTTP_HEADER_CONTENT_SECURITY_POLICY,
-	HTTP_HEADER_CONTENT_SECURITY_POLICY_REPORT_ONLY,
-	HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY,
-	HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY_REPORT_ONLY,
-	HTTP_HEADER_CROSS_ORIGIN_OPENER_POLICY,
-	HTTP_HEADER_CROSS_ORIGIN_RESOURCE_POLICY,
-	HTTP_HEADER_DEPRECATION,
-	HTTP_HEADER_INTEGRITY_POLICY,
-	HTTP_HEADER_INTEGRITY_POLICY_REPORT_ONLY,
-	HTTP_HEADER_PERMISSIONS_POLICY,
-	HTTP_HEADER_PERMISSIONS_POLICY_REPORT_ONLY,
-	HTTP_HEADER_PREFERENCE_APPLIED,
-	HTTP_HEADER_REFERRER_POLICY,
-	HTTP_HEADER_REPORTING_ENDPOINTS,
-	HTTP_HEADER_SERVICE_WORKER_ALLOWED,
-	HTTP_HEADER_SUNSET,
 	normalizeToArray
 } from '../defs.js'
-
 import { SiteData } from '../headers/clear-site-data.js'
 import { ClientHints } from '../headers/client-hints.js'
 import { ContentSecurityPolicy } from '../headers/content-security-policy.js'
@@ -33,40 +12,66 @@ import { CrossOriginEmbedderPolicy } from '../headers/cross-origin-embedder-poli
 import { CrossOriginOpenerPolicy } from '../headers/cross-origin-opener-policy.js'
 import { CrossOriginResourcePolicy } from '../headers/cross-origin-resource-policy.js'
 import { Deprecation } from '../headers/deprecation.js'
+import { UseAsDictionary } from '../headers/dictionary.js'
 import { IntegrityPolicy } from '../headers/integrity-policy.js'
 import { Link } from '../headers/link.js'
 import { PermissionsPolicy } from '../headers/permissions-policy.js'
 import { AppliedPreferences } from '../headers/preference.js'
-import { HTTP_HEADER_RATE_LIMIT, HTTP_HEADER_RATE_LIMIT_POLICY, RateLimit, RateLimitPolicy } from '../headers/rate-limit.js'
+import { RateLimit, RateLimitPolicy } from '../headers/rate-limit.js'
 import { ReferrerPolicy } from '../headers/referrer-policy.js'
 import { ReportingEndpoints } from '../headers/reporting-endpoints.js'
-import {
-	HTTP_HEADER_SERVER_TIMING,
-	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
-	ServerTiming
-} from '../headers/server-timing.js'
+import { ServerTiming } from '../headers/server-timing.js'
 import { StrictTransportSecurity } from '../headers/strict-transport-security.js'
 import { Sunset } from '../headers/sunset.js'
-import { ContentTypeOptions, HTTP_HEADER_CONTENT_TYPE_OPTIONS } from '../headers/x-content-type-options.js'
-import { HTTP_HEADER_XSS_PROTECTION, XSSProtection } from '../headers/x-xss-protection.js'
+import { ContentTypeOptions } from '../headers/x-content-type-options.js'
+import { XSSProtection } from '../headers/x-xss-protection.js'
+import {
+	HTTP_HEADER_ACCEPT_CLIENT_HINTS,
+	HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
+	HTTP_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
+	HTTP_HEADER_CLEAR_SITE_DATE,
+	HTTP_HEADER_CONTENT_SECURITY_POLICY,
+	HTTP_HEADER_CONTENT_SECURITY_POLICY_REPORT_ONLY,
+	HTTP_HEADER_CONTENT_TYPE,
+	HTTP_HEADER_CONTENT_TYPE_OPTIONS,
+	HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY,
+	HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY_REPORT_ONLY,
+	HTTP_HEADER_CROSS_ORIGIN_OPENER_POLICY,
+	HTTP_HEADER_CROSS_ORIGIN_RESOURCE_POLICY,
+	HTTP_HEADER_DEPRECATION,
+	HTTP_HEADER_ETAG,
+	HTTP_HEADER_INTEGRITY_POLICY,
+	HTTP_HEADER_INTEGRITY_POLICY_REPORT_ONLY,
+	HTTP_HEADER_LINK,
+	HTTP_HEADER_PERMISSIONS_POLICY,
+	HTTP_HEADER_PERMISSIONS_POLICY_REPORT_ONLY,
+	HTTP_HEADER_PREFER,
+	HTTP_HEADER_PREFERENCE_APPLIED,
+	HTTP_HEADER_RATE_LIMIT,
+	HTTP_HEADER_RATE_LIMIT_POLICY,
+	HTTP_HEADER_REFERRER_POLICY,
+	HTTP_HEADER_REPORTING_ENDPOINTS,
+	HTTP_HEADER_SERVER,
+	HTTP_HEADER_SERVER_TIMING,
+	HTTP_HEADER_SERVICE_WORKER_ALLOWED,
+	HTTP_HEADER_STATUS,
+	HTTP_HEADER_STRICT_TRANSPORT_SECURITY,
+	HTTP_HEADER_SUNSET,
+	HTTP_HEADER_TIMING_ALLOW_ORIGIN,
+	HTTP_HEADER_USE_AS_DICTIONARY,
+	HTTP_HEADER_VARY,
+	HTTP_HEADER_XSS_PROTECTION,
+} from '../headers.js'
+import {
+	HTTP_METHOD_PATCH,
+	HTTP_METHOD_POST,
+	HTTP_METHOD_PUT,
+} from '../methods.js'
 
 /** @import { OutgoingHttpHeaders } from 'node:http2' */
 /** @import { ClientPolicyMap, SendContext, Metadata, SendSupportedTypes, SendSupportedTypesNormalizedRecord } from '../defs.js' */
 
-const { HTTP2_METHOD_PUT, HTTP2_METHOD_POST, HTTP2_METHOD_PATCH } = http2.constants
 
-const {
-	HTTP2_HEADER_STATUS,
-	HTTP2_HEADER_SERVER,
-	HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
-	HTTP2_HEADER_CONTENT_TYPE,
-	HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
-	HTTP2_HEADER_ETAG,
-	HTTP2_HEADER_LINK,
-	HTTP2_HEADER_STRICT_TRANSPORT_SECURITY,
-	HTTP2_HEADER_VARY,
-	HTTP2_HEADER_PREFER
-} = http2.constants
 
 /**
  * @param {Record<string,Array<string>|string|number|undefined>} headers
@@ -145,15 +150,17 @@ export function policyHeaders(policy) {
 export function contextHeaders(context) {
 	if(context === undefined) { return {} }
 
+	const vary = []
+
 	const appliedPreferences = AppliedPreferences.encode(context.appliedPreferences)
-	const vary = appliedPreferences === undefined ? undefined : [ HTTP2_HEADER_PREFER ]
+	if(appliedPreferences !== undefined) { vary.push(HTTP_HEADER_PREFER) }
 
 	return {
-		vary,
+		vary: vary.length === 0 ? undefined : vary,
 		headers: cleanHeaders({
 			[HTTP_HEADER_CLEAR_SITE_DATE]: SiteData.encode(context.clearSiteData),
 			[HTTP_HEADER_ACCEPT_CLIENT_HINTS]: ClientHints.encode(context.acceptClientHints),
-			[HTTP2_HEADER_LINK]: Link.encode(context.links),
+			[HTTP_HEADER_LINK]: Link.encode(context.links),
 			[HTTP_HEADER_PREFERENCE_APPLIED]: appliedPreferences,
 			[HTTP_HEADER_SUNSET]: Sunset.encode(context.sunset),
 			[HTTP_HEADER_DEPRECATION]: Deprecation.encode(context.deprecation),
@@ -162,6 +169,8 @@ export function contextHeaders(context) {
 			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(context.rateLimitPolicies),
 
 			[HTTP_HEADER_SERVICE_WORKER_ALLOWED]: context.serviceWorkerAllowed,
+
+			[HTTP_HEADER_USE_AS_DICTIONARY]: UseAsDictionary.encode(context.useAsDictionary),
 
 			...policyHeaders(context.policy)
 		})
@@ -181,7 +190,7 @@ export function varyHeaders(...headers) {
 	if(vary.length === 0) { return {} }
 
 	return {
-		[HTTP2_HEADER_VARY]: vary.join(COMMON_LIST_VALUE_JOINER_COMMA)
+		[HTTP_HEADER_VARY]: vary.join(COMMON_LIST_VALUE_JOINER_COMMA)
 	}
 }
 
@@ -194,22 +203,22 @@ export function varyHeaders(...headers) {
  */
 export function coreHeaders(status, contentType, exposedHeaders, meta) {
 	// todo Assert.isArray or undefined exposedHeaders
-	const exposed = [ HTTP2_HEADER_ETAG, HTTP2_HEADER_SERVER, ...exposedHeaders ] // todo include lastModified
+	const exposed = [ HTTP_HEADER_ETAG, HTTP_HEADER_SERVER, ...exposedHeaders ] // todo include lastModified
 
 	// todo Assert.isString(contentType) if not undefined
 	// todo Assert.isString(meta.servername) if not undefined
 	// todo Assert.isString(meta.origin) if not undefined
 
 	const hsts = StrictTransportSecurity.encode(meta.HSTS)
-	const hstsHeaders = hsts === undefined ? {} : { [HTTP2_HEADER_STRICT_TRANSPORT_SECURITY]: hsts }
+	const hstsHeaders = hsts === undefined ? {} : { [HTTP_HEADER_STRICT_TRANSPORT_SECURITY]: hsts }
 
 	return ({
-		[HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
-		[HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS]: exposed.join(COMMON_LIST_VALUE_JOINER_COMMA),
+		[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]: meta.origin,
+		[HTTP_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS]: exposed.join(COMMON_LIST_VALUE_JOINER_COMMA),
 		// Access-Control-Allow-Credentials // for non-preflight
-		[HTTP2_HEADER_STATUS]: status,
-		[HTTP2_HEADER_CONTENT_TYPE]: contentType,
-		[HTTP2_HEADER_SERVER]: meta.servername,
+		[HTTP_HEADER_STATUS]: status,
+		[HTTP_HEADER_CONTENT_TYPE]: contentType,
+		[HTTP_HEADER_SERVER]: meta.servername,
 		...hstsHeaders
 	})
 }
@@ -243,9 +252,9 @@ export function coerceSupportedTypes_FromArray(methods, supportedTypesArray) {
 	// Assert.isString(methods) if not array or undefined
 	const methodsList = normalizeToArray(methods)
 
-	const put = (methodsList?.includes(HTTP2_METHOD_PUT)) ? supportedTypesArray : undefined
-	const post = (methodsList?.includes(HTTP2_METHOD_POST)) ? supportedTypesArray : undefined
-	const patch = (methodsList?.includes(HTTP2_METHOD_PATCH)) ? supportedTypesArray : undefined
+	const put = (methodsList?.includes(HTTP_METHOD_PUT)) ? supportedTypesArray : undefined
+	const post = (methodsList?.includes(HTTP_METHOD_POST)) ? supportedTypesArray : undefined
+	const patch = (methodsList?.includes(HTTP_METHOD_PATCH)) ? supportedTypesArray : undefined
 
 	return { put, post, patch }
 }

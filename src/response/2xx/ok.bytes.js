@@ -1,11 +1,8 @@
-import http2 from 'node:http2'
-
+import { HTTP_STATUS_OK } from '../../status.js'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContent, SendInfo, SendContext, Metadata, SendBody } from '../../defs.js' */
-
-const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -32,5 +29,6 @@ export function sendBytes(stream, obj, content, info, context, meta) {
 	const range = undefined
 	const encoding = undefined
 
-	send_bytes(stream, HTTP_STATUS_OK, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryType, digest, context, meta)
+	// send_encoded(stream, HTTP_STATUS_OK, contentType, obj, contentDisposition,                       encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryType, digest, context, meta)
+	send_bytes(stream,   HTTP_STATUS_OK, contentType, obj, contentDisposition, range, contentLength, encoding, etag, lastModified, age, cacheControl, acceptRanges, supportedQueryType, digest, context, meta)
 }

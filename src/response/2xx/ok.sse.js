@@ -1,17 +1,14 @@
-import http2 from 'node:http2'
-
 import {
 	ENDING,
 	SSE_BOM,
 	SSE_INACTIVE_STATUS_CODE,
 	SSE_MIME,
 } from '@johntalton/sse-util'
+import { HTTP_STATUS_OK } from '../../status.js'
 import { coreHeaders, performanceHeaders } from '../header-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { Metadata, SSEOptions } from '../../defs.js' */
-
-const { HTTP_STATUS_OK } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -28,7 +25,7 @@ export function sendSSE(stream, meta) {
 		...performanceHeaders(meta)
 		// todo cache-control: no-cache
 
-		// [HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true'
+		// [HTTP_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]: 'true'
 	})
 
 	if(!activeStream) {

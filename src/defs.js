@@ -23,6 +23,7 @@
 /** @import { StrictTransportSecurityOptions } from './headers/strict-transport-security.js' */
 /** @import { RetryAfterItem } from './headers/retry-after.js' */
 /** @import { AutoDigestItem } from './headers/digest.js'  */
+/** @import { UseAsDictionaryItem } from './headers/dictionary.js' */
 
 /**
  * @template T
@@ -129,59 +130,12 @@
  * @property {Array<RateLimitPolicyInfo>|undefined} [rateLimitPolicies]
  *
  * @property {string|undefined} [serviceWorkerAllowed]
+ *
+ * @property {UseAsDictionaryItem|undefined} [useAsDictionary]
  */
 
 /** @type {''} */
 export const EMPTY = ''
-
-//
-export const HTTP_HEADER_ORIGIN = 'origin'
-export const HTTP_HEADER_USER_AGENT = 'user-agent'
-export const HTTP_HEADER_FORWARDED = 'forwarded'
-export const HTTP_HEADER_SEC_CH_UA = 'sec-ch-ua'
-export const HTTP_HEADER_SEC_CH_PLATFORM = 'sec-ch-ua-platform'
-export const HTTP_HEADER_SEC_CH_MOBILE = 'sec-ch-ua-mobile'
-export const HTTP_HEADER_SEC_FETCH_SITE = 'sec-fetch-site'
-export const HTTP_HEADER_SEC_FETCH_MODE = 'sec-fetch-mode'
-export const HTTP_HEADER_SEC_FETCH_DEST = 'sec-fetch-dest'
-export const HTTP_HEADER_SEC_FETCH_USER = 'sec-fetch-user'
-export const HTTP_HEADER_ACCEPT_POST = 'accept-post'
-export const HTTP_HEADER_ACCEPT_PATCH = 'accept-patch'
-export const HTTP_HEADER_CLEAR_SITE_DATE = 'clear-site-data'
-export const HTTP_HEADER_PREFERENCE_APPLIED = 'preference-applied'
-export const HTTP_HEADER_ACCEPT_CLIENT_HINTS = 'accept-ch'
-export const HTTP_HEADER_CONTENT_SECURITY_POLICY = 'content-security-policy'
-export const HTTP_HEADER_CROSS_ORIGIN_OPENER_POLICY = 'cross-origin-opener-policy'
-export const HTTP_HEADER_CROSS_ORIGIN_RESOURCE_POLICY = 'cross-origin-resource-policy'
-export const HTTP_HEADER_REFERRER_POLICY = 'referrer-policy'
-export const HTTP_HEADER_CONTENT_SECURITY_POLICY_REPORT_ONLY = 'content-security-policy-report-only'
-export const HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY = 'cross-origin-embedder-policy'
-export const HTTP_HEADER_CROSS_ORIGIN_EMBEDDER_POLICY_REPORT_ONLY = 'cross-origin-embedder-policy-report-only'
-export const HTTP_HEADER_PERMISSIONS_POLICY = 'permissions-policy'
-export const HTTP_HEADER_PERMISSIONS_POLICY_REPORT_ONLY = 'permissions-policy-report-only'
-export const HTTP_HEADER_INTEGRITY_POLICY = 'integrity-policy'
-export const HTTP_HEADER_INTEGRITY_POLICY_REPORT_ONLY = 'integrity-policy-report-only'
-export const HTTP_HEADER_REPORTING_ENDPOINTS = 'reporting-endpoints'
-export const HTTP_HEADER_ACCEPT_QUERY = 'accept-query'
-export const HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE = 'access-control-max-age'
-export const HTTP_HEADER_SUNSET = 'sunset'
-export const HTTP_HEADER_DEPRECATION = 'deprecation'
-export const HTTP_HEADER_SERVICE_WORKER = 'service-worker'
-export const HTTP_HEADER_SERVICE_WORKER_ALLOWED = 'service-worker-allowed'
-export const HTTP_HEADER_WANT_CONTENT_DIGEST = 'want-content-digest'
-export const HTTP_HEADER_WANT_REPR_DIGEST = 'want-repr-digest'
-export const HTTP_HEADER_WANT_UNENCODED_DIGEST = 'want-unencoded-digest'
-export const HTTP_HEADER_CONTENT_DIGEST = 'content-digest'
-export const HTTP_HEADER_REPR_DIGEST = 'repr-digest'
-export const HTTP_HEADER_UNENCODED_DIGEST = 'unencoded-digest'
-export const HTTP_HEADER_USE_AS_DICTIONARY = 'use-as-dictionary'
-export const HTTP_HEADER_AVAILABLE_DICTIONARY = 'available-dictionary'
-export const HTTP_HEADER_DICTIONARY_ID = 'dictionary-id'
-
-
-
-//
-export const HTTP_METHOD_QUERY = 'QUERY'
 
 //
 export const DEFAULT_METHODS = [ 'HEAD', 'GET', 'POST', 'PATCH', 'DELETE' ]

@@ -73,14 +73,30 @@ export class UseAsDictionary {
 export class DictionaryID {
 	/**
 	 * @param {string|undefined} header
-	 * @returns {undefined}
+	 * @returns {string|undefined}
 	 */
 	static parse(header) {
 		if(header === undefined) { return undefined }
 
 		try {
 			const { bare_item, parameters } = StructuredField.parse(header, SF_FIELD_TYPE_ITEM)
+			if(typeof bare_item !== 'string') { return undefined }
 			return bare_item
+		}
+		catch {
+			return undefined
+		}
+	}
+
+	/**
+	 * @param {string|undefined} did
+	 * @returns {string|undefined}
+	 */
+	static encode(did) {
+		if(did === undefined) { return undefined }
+
+		try {
+			return StructuredField.encode({ value: did, type: 'string' })
 		}
 		catch {
 			return undefined
@@ -98,7 +114,25 @@ export class AvailableDictionary {
 
 		try {
 			const { bare_item, parameters } = StructuredField.parse(header, SF_FIELD_TYPE_ITEM)
+			if(!(ArrayBuffer.isView(bare_item) || (bare_item instanceof ArrayBuffer))) { return undefined }
 			return bare_item
+		}
+		catch {
+			return undefined
+		}
+	}
+
+	/**
+	 * @param {ArrayBufferView|undefined} ad
+	 * @returns {string|undefined}
+	 */
+	static encode(ad) {
+		if(ad === undefined) { return undefined }
+		if(!((ad instanceof ArrayBuffer) || ArrayBuffer.isView(ad))) { return undefined}
+		if(ad.byteLength === 0) { return undefined }
+
+		try {
+			return StructuredField.encode({ value: ad, type: 'binary' })
 		}
 		catch {
 			return undefined

@@ -1,11 +1,8 @@
-import http2 from 'node:http2'
-
+import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '../../status.js'
 import { send_error } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

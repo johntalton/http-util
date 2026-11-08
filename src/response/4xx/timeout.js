@@ -1,15 +1,9 @@
-import http2 from 'node:http2'
-
+import { HTTP_HEADER_CONNECTION } from '../../headers.js'
+import { HTTP_STATUS_REQUEST_TIMEOUT } from '../../status.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, Metadata } from '../../defs.js' */
-
-const {
-	HTTP_STATUS_REQUEST_TIMEOUT
-} = http2.constants
-
-const { HTTP2_HEADER_CONNECTION } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -18,6 +12,6 @@ const { HTTP2_HEADER_CONNECTION } = http2.constants
  */
 export function sendTimeout(stream, context, meta) {
 	send_no_body(stream, HTTP_STATUS_REQUEST_TIMEOUT, {
-			[HTTP2_HEADER_CONNECTION]: 'close'
+			[HTTP_HEADER_CONNECTION]: 'close'
 		}, [], context, meta)
 }

@@ -1,15 +1,12 @@
-import http2 from 'node:http2'
-
 import { RANGE_UNITS_BYTES } from '../../defs.js'
 import { MIME_TYPE_MULTIPART_RANGE, MIME_TYPE_OCTET_STREAM } from '../../headers/util/mime-types.js'
+import { HTTP_STATUS_PARTIAL_CONTENT } from '../../status.js'
 import { Multipart } from '../multipart.js'
 import { send_bytes } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContent, SendContext, Metadata, NonEmptyArray } from '../../defs.js' */
 /** @import { MultipartBytePart } from '../multipart.js' */
-
-const { HTTP_STATUS_PARTIAL_CONTENT } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

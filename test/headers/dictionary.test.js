@@ -107,7 +107,25 @@ describe('AvailableDictionary', () => {
 			assert.deepEqual(result, u8)
 		})
 
+	})
 
+	describe('encode', () => {
+		it('should handle undefined', () => {
+			const result = AvailableDictionary.encode(undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty buffer', () => {
+			const result = AvailableDictionary.encode(Uint8Array.from([]))
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty buffer', {
+			skip: !ifSupports('toBase64')
+		}, () => {
+			const result = AvailableDictionary.encode(Uint8Array.from([ 1, 2, 3 ]))
+			assert.equal(result, ':AQID:')
+		})
 
 	})
 })
@@ -122,6 +140,28 @@ describe('DictionaryID', () => {
 		it('should handle simple string', () => {
 			const result = DictionaryID.parse(' "dictionary-12345"')
 			assert.equal(result, 'dictionary-12345')
+		})
+	})
+
+	describe('encode', () => {
+		it('should handle undefined', () => {
+			const result = DictionaryID.encode(undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty', () => {
+			const result = DictionaryID.encode('')
+			assert.equal(result, '""')
+		})
+
+		it('should handle invalid', () => {
+			const result = DictionaryID.encode(42)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle valid', () => {
+			const result = DictionaryID.encode('Testing-TEST')
+			assert.equal(result, '"Testing-TEST"')
 		})
 	})
 })

@@ -1,22 +1,18 @@
-import http2 from 'node:http2'
-
 import {
-	HTTP_HEADER_RATE_LIMIT,
-	HTTP_HEADER_RATE_LIMIT_POLICY,
 	RateLimit,
 	RateLimitPolicy
 } from '../../headers/rate-limit.js'
 import { RetryAfter } from '../../headers/retry-after.js'
+import {
+	HTTP_HEADER_RATE_LIMIT,
+	HTTP_HEADER_RATE_LIMIT_POLICY,
+	HTTP_HEADER_RETRY_AFTER,
+} from '../../headers.js'
+import { HTTP_STATUS_TOO_MANY_REQUESTS } from '../../status.js'
 import { send_no_body } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, SendInfo, Metadata } from '../../defs.js' */
-
-const {
-	HTTP2_HEADER_RETRY_AFTER
-} = http2.constants
-
-const { HTTP_STATUS_TOO_MANY_REQUESTS } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -31,12 +27,12 @@ export function sendTooManyRequests(stream, info, context, meta) {
 	} = info
 
 	send_no_body(stream, HTTP_STATUS_TOO_MANY_REQUESTS, {
-			[HTTP2_HEADER_RETRY_AFTER]: RetryAfter.encode(limitInfo.resetSeconds),
+			[HTTP_HEADER_RETRY_AFTER]: RetryAfter.encode(limitInfo.resetSeconds),
 			[HTTP_HEADER_RATE_LIMIT]: RateLimit.encode(limitInfo),
 			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(policies)
 		},
 		[
-			HTTP2_HEADER_RETRY_AFTER,
+			HTTP_HEADER_RETRY_AFTER,
 			HTTP_HEADER_RATE_LIMIT,
 			HTTP_HEADER_RATE_LIMIT_POLICY
 		],

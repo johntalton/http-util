@@ -1,11 +1,8 @@
-import http2 from 'node:http2'
-
+import { HTTP_STATUS_SERVICE_UNAVAILABLE } from '../../status.js'
 import { send_error } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, SendInfo, Metadata } from '../../defs.js' */
-
-const { HTTP_STATUS_SERVICE_UNAVAILABLE } = http2.constants
 
 /**
  * @param {ServerHttp2Stream} stream

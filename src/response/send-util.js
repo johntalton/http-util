@@ -63,7 +63,8 @@ const {
 	HTTP2_HEADER_CONTENT_DISPOSITION,
 	HTTP2_HEADER_ACCEPT,
 	HTTP2_HEADER_ACCEPT_ENCODING,
-	HTTP2_HEADER_RETRY_AFTER
+	HTTP2_HEADER_RETRY_AFTER,
+	HTTP2_HEADER_RANGE
 } = http2.constants
 
 /**
@@ -110,7 +111,9 @@ export const ENCODER_MAP = new Map([
 	[ 'br', data => zlib.brotliCompressSync(data) ],
 	[ 'gzip', data => zlib.gzipSync(data, { level: 9, strategy: 0 }) ],
 	[ 'deflate', data => zlib.deflateSync(data) ],
-	[ 'zstd', data => zlib.zstdCompressSync(data) ]
+	[ 'zstd', data => zlib.zstdCompressSync(data) ],
+	// [ 'dcb', data => data ],
+	// [ 'dcz', data => data ]
 ])
 
 /** @type {BrotliOptions} */
@@ -132,7 +135,9 @@ export const ENCODER_STREAM_MAP = new Map([
 	[ 'br', stream => compose(stream, zlib.createBrotliCompress(ENCODER_STREAM_BR_OPTIONS)) ],
 	[ 'gzip', stream => compose(stream, zlib.createGzip(ENCODER_STREAM_GZIP_OPTIONS)) ],
 	[ 'deflate', stream => compose(stream, zlib.createDeflate(ENCODER_STREAM_DEFLATE_OPTIONS)) ],
-	[ 'zstd', stream => compose(stream, zlib.createZstdCompress(ENCODER_STREAM_ZSTD_OPTIONS)) ]
+	[ 'zstd', stream => compose(stream, zlib.createZstdCompress(ENCODER_STREAM_ZSTD_OPTIONS)) ],
+	// [ 'dcb', stream => stream ],
+	// [ 'dcz', stream => stream ]
 ])
 
 /**
@@ -307,9 +312,10 @@ export function send_bytes(stream, status, contentType, obj, contentDisposition,
 	if(supportsQuery) { exposedHeaders.push(HTTP_HEADER_ACCEPT_QUERY) }
 
 	const customVaryHeaders = [ HTTP2_HEADER_ACCEPT, HTTP2_HEADER_ACCEPT_ENCODING ]
-	//if(range !== undefined) { customVaryHeaders.push(HTTP2_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
+	if(range !== undefined) { customVaryHeaders.push(HTTP2_HEADER_RANGE) } // todo: very on range is true even if not returning a content range (multipart/byteranges)
 	// todo add to Vary "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site"
-	// todo add to Very "Origin"
+	// todo add to Vary "Origin"
+	// todo add to Vary "Available-Dictionary" if dcb, dcz encoding used
 
 	send(stream, status, {
 			[HTTP2_HEADER_CONTENT_ENCODING]: encoding,
