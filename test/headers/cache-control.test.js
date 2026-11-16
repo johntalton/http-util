@@ -4,6 +4,86 @@ import { describe, it } from 'node:test'
 import { CacheControl } from '@johntalton/http-util/headers'
 
 describe('CacheControl', () => {
+	describe('parse', () => {
+		it('should handle undefined', () => {
+			const result = CacheControl.parse(undefined)
+			assert.equal(result, undefined)
+		})
+
+		it('should handle empty string', () => {
+				const result = CacheControl.parse('')
+			assert.deepEqual(result, {})
+		})
+
+		it('should throw on non string', () => {
+			assert.throws(() => CacheControl.parse(42), {
+				name: 'TypeError',
+				message: 'parameter must be a string'
+			})
+		})
+
+		it('should handle single item', () => {
+			const result = CacheControl.parse('max-age=42')
+			assert.deepEqual(result, {
+				maxAge: 42,
+				directives: []
+			})
+		})
+
+		it('should handle list of items', () => {
+			const result = CacheControl.parse('max-stale=42, only-if-cached')
+			assert.deepEqual(result, {
+				maxStale: 42,
+				directives: [ 'only-if-cached' ]
+			})
+		})
+
+		it('should handle missing min-fresh value', () => {
+			const result = CacheControl.parse('min-fresh')
+			assert.deepEqual(result, {
+				directives: []
+			})
+		})
+
+		it('should handle negative min-fresh value', () => {
+			const result = CacheControl.parse('min-fresh=-42')
+			assert.deepEqual(result, {
+				directives: []
+			})
+		})
+
+		it('should handle max 32 int min-fresh value', () => {
+			const result = CacheControl.parse('min-fresh=2147483648')
+			assert.deepEqual(result, {
+				minFresh: 2147483648,
+				directives: []
+			})
+		})
+
+		it('should handle max 32 int min-fresh value +1', () => {
+			const result = CacheControl.parse('min-fresh=2147483649')
+			assert.deepEqual(result, {
+				minFresh: 2147483649,
+				directives: []
+			})
+		})
+
+
+		it('should handle drop unknown', () => {
+			const result = CacheControl.parse('no-cache, some-fake')
+			assert.deepEqual(result, {
+				directives: [ 'no-cache' ]
+			})
+		})
+
+		it('should handle drop no-cache params', () => {
+			const result = CacheControl.parse('no-cache="no-valid"')
+			assert.deepEqual(result, {
+				directives: [ 'no-cache' ]
+			})
+		})
+	})
+
 	describe('encode', () => {
 		it('should handle undefined', () => {
 			const result = CacheControl.encode(undefined)
@@ -47,11 +127,92 @@ describe('CacheControl', () => {
 			assert.equal(result, 'public')
 		})
 
+		it('should handle public (directive)', () => {
+			const result = CacheControl.encode({
+				directives: 'public'
+			})
+			assert.equal(result, 'public')
+		})
+
+		it('should handle public (singleton duplicate)', () => {
+			const result = CacheControl.encode({
+				pub: true,
+				directives: 'public'
+			})
+			assert.equal(result, 'public')
+		})
+
 		it('should handle private', () => {
 			const result = CacheControl.encode({
 				priv: true
 			})
 			assert.equal(result, 'private')
+		})
+
+		it('should handle private private mix', () => {
+			const result = CacheControl.encode({
+				pub: true,
+				priv: true
+			})
+			assert.equal(result, undefined)
+		})
+
+		it('should handle private private mix (directive)', () => {
+			const result = CacheControl.encode({
+				directives: [ 'public', 'private' ]
+			})
+			assert.equal(result, undefined)
+		})
+
+		it('should handle private (qualified)', () => {
+			const result = CacheControl.encode({
+				priv: 'some-header',
+			})
+			assert.equal(result, 'private="some-header"')
+		})
+
+		it('should handle private (qualified list)', () => {
+			const result = CacheControl.encode({
+				priv: [ 'some-header', 'and-another' ],
+			})
+			assert.equal(result, 'private="some-header,and-another"')
+		})
+
+		it('should include no-cache directive', () => {
+			const result = CacheControl.encode({
+				directives: 'no-cache'
+			})
+			assert.equal(result, 'no-cache')
+		})
+
+		it('should include no-cache directive (array)', () => {
+			const result = CacheControl.encode({
+				directives: ['no-cache', 'no-cache']
+			})
+			assert.equal(result, 'no-cache')
+		})
+
+		it('should include no-cache directive (duplicate)', () => {
+			const result = CacheControl.encode({
+				noCache: true,
+				directives: 'no-cache'
+			})
+			assert.equal(result, 'no-cache')
+		})
+
+		it('should include no-cache directive with field', () => {
+			const result = CacheControl.encode({
+				noCache: ['a', 'b']
+			})
+			assert.equal(result, 'no-cache="a,b"')
+		})
+
+		it('should include no-cache directive with field', () => {
+			const result = CacheControl.encode({
+				noCache: ['a', 'b'],
+				directives: 'no-cache'
+			})
+			assert.equal(result, 'no-cache="a,b"')
 		})
 
 		it('should disallow pub and priv (only)', () => {
@@ -132,6 +293,14 @@ describe('CacheControl', () => {
 				staleIfError: -42
 			})
 			assert.equal(result, undefined)
+		})
+
+		it('should handle extensions', () => {
+			const result = CacheControl.encode({
+				pub: true,
+				directives: 'community="UCI"'
+			})
+			assert.equal(result, 'public, community="UCI"')
 		})
 	})
 })

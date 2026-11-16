@@ -32,14 +32,14 @@ The common Structured Fields are also supported via [StructuredField](./src/head
 | accept-language               | ✅ |   | select |
 | access-control-request-method | ✅ |   ||
 | access-control-request-header | ✅ |   ||
-| cache-control                 |   | ✅ ||
+| cache-control                 | ✅ | ✅ ||
 | clear-site-data               |   | ✅ ||
 | client-hints                  |   | ✅ ||
 | conditional (etag)            | ✅ | ✅ | has, hayAny, weak, strong |
 | conditional {lastModified}    | ✅ | ✅ | toDate, toInstant, isAfter |
 | content-disposition           | ✅ | ✅ ||
 | content-range                 |    | ✅ ||
-| content-security-policy       |   | ✅ ||
+| content-security-policy       |    | ✅ ||
 | content-type                  | ✅ |   ||
 | cross-origin-embedder-policy  |   | ✅ ||
 | cross-origin-opener-policy    |   | ✅ ||

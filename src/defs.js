@@ -4,7 +4,7 @@
 /** @import { TimingsInfo } from './headers/server-timing.js' */
 /** @import { EtagItem } from './headers/conditional.js' */
 /** @import { IMFFixDateInput } from './headers/util/imf-fixdate.js' */
-/** @import { CacheControlOptions } from './headers/cache-control.js' */
+/** @import { CacheControlResponseItem } from './headers/cache-control.js' */
 /** @import { ContentRangeDirective } from './headers/content-range.js' */
 /** @import { RateLimitPolicyInfo, RateLimitInfo } from './headers/rate-limit.js' */
 /** @import { DispositionInput } from './headers/content-disposition.js' */
@@ -68,7 +68,7 @@
  * @property {EtagItem|undefined} etag
  * @property {IMFFixDateInput|string|undefined} lastModified
  * @property {number|undefined} age
- * @property {CacheControlOptions} cacheControl
+ * @property {CacheControlResponseItem} cacheControl
  * @property {ContentRangeDirective} rangeDirective
  * @property {SendDigest|undefined} digest
  */
