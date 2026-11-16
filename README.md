@@ -1,19 +1,21 @@
 # http-util
 
-[![npm Version](http://img.shields.io/npm/v/@johntalton/http-util.svg)](https://www.npmjs.com/package/@johntalton/http-util)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/johntalton/http-util)
-[![CI](https://github.com/johntalton/http-util/actions/workflows/CI.yml/badge.svg)](https://github.com/johntalton/http-util/actions/workflows/CI.yml)
-
-
 Set of utilities to aid in building from-scratch [node:http2](https://nodejs.org/docs/latest/api/http2.html) stream compatible services.
-
-A comprehensive server framework that uses this library can be found at [http-core](https://github.com/johntalton/http-core).
 
 A full range of header parsing and encoding, as well are response stream methods.  A deferred `body` reader (akin to fetch api) is provided.
 
 - [Header](#header-parsers--encoders)
 - [Response](#response)
 - [Body parser](#body)
+
+A comprehensive server framework that uses this library can be found at [http-core](https://github.com/johntalton/http-core).
+
+[![npm Version](http://img.shields.io/npm/v/@johntalton/http-util.svg)](https://www.npmjs.com/package/@johntalton/http-util)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/johntalton/http-util)
+[![CI](https://github.com/johntalton/http-util/actions/workflows/CI.yml/badge.svg)](https://github.com/johntalton/http-util/actions/workflows/CI.yml)
+![GitHub](https://img.shields.io/github/license/johntalton/http-util)
+[![Downloads Per Month](http://img.shields.io/npm/dm/@johntalton/http-util.svg)](https://www.npmjs.com/package/@johntalton/http-util)
+![GitHub last commit](https://img.shields.io/github/last-commit/johntalton/http-util)
 
 ## Header Parsers / Encoders
 

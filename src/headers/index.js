@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/performance/noBarrelFile: entry point */
 /** biome-ignore-all lint/performance/noReExportAll: entry point */
+export * from '../headers.js'
 export * from './util/mime-types.js'
 //
 

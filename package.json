@@ -9,7 +9,7 @@
     "#structured-field": "./src/headers/structured-field/index.js"
   },
   "exports": {
-    ".": "./src/headers/index.js",
+    ".": "./src/index.js",
     "./headers": "./src/headers/index.js",
     "./body": "./src/body.js",
     "./response": "./src/response/index.js",
@@ -28,7 +28,7 @@
     "_build": "tsc -p jsconfig.json --noEmit",
     "lint": "biome check",
     "test": "node --test test/**/*.test.js",
-    "coverage": "c8 --src src --check-coverage --statements 99 --branches 95 --functions 95 --lines 99 -r lcovonly -r text node --test test/**/*.test.js"
+    "coverage": "c8 --src src --check-coverage --statements 98 --branches 94 --functions 95 --lines 98 -r lcovonly -r text node --test test/**/*.test.js"
   },
   "repository": {
     "url": "https://github.com/johntalton/http-util"

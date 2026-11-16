@@ -1,5 +1,5 @@
-import { EMPTY } from "../defs.js"
-import { Assert } from "./util/assert.js"
+import { EMPTY } from '../defs.js'
+import { Assert } from './util/assert.js'
 
 export class AccessControlRequestMethod {
   /**

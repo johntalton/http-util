@@ -9,6 +9,7 @@ export class KVP {
 	/**
 	 * @param {Array<string>} params
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
+	 * @returns {Map<string, string|undefined>}
 	 */
 	static #parse(params, acceptableKeys = undefined) {
 		const parameters = new Map()
@@ -43,6 +44,7 @@ export class KVP {
 	 * Parses Key Value pair parameter list with leading named item.
 	 * @param {string|undefined} str
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
+	 * @returns {{ name: string|undefined, parameters: Map<string, string|undefined>}|undefined}
 	 */
 	static parse(str, acceptableKeys = undefined) {
 		if(str === undefined) { return undefined }
@@ -71,6 +73,7 @@ export class KVP {
 	 * Parses Key Value pair parameter list (no special treatment for leading key)
 	 * @param {string|undefined} str
 	 * @param {Array<string>|undefined} [acceptableKeys=undefined]
+	 * @returns {{ parameters: Map<string, string|undefined> }|undefined}
 	 */
 	static parseParameters(str, acceptableKeys = undefined) {
 		if(str === undefined) { return undefined }
@@ -90,6 +93,7 @@ export class KVP {
 	 * @param {string} key
 	 * @param {string|number|undefined} value
 	 * @param {boolean} [quote = false ]
+	 * @returns {string}
 	 */
 	static encode(key, value, quote = false) {
 		if(value === undefined) { return key }
