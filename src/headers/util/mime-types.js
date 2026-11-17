@@ -8,6 +8,7 @@ export const MIME_TYPE_JPEG = 'image/jpeg'
 export const MIME_TYPE_PNG = 'image/png'
 export const MIME_TYPE_WEBP = 'image/webp'
 export const MIME_TYPE_AVIF = 'image/avif'
+export const MIME_TYPE_JXL = 'image/jxl'
 
 // text
 export const MIME_TYPE_TEXT = 'text/plain'
@@ -26,6 +27,9 @@ export const MIME_TYPE_REPORTING_JSON = 'application/reports+json'
 export const MIME_TYPE_CSP_REPORT = 'application/csp-report'
 export const MIME_TYPE_JSON_PATCH = 'application/json-patch+json'
 export const MIME_TYPE_JSON_MERGE_PATCH = 'application/merge-patch+json'
+export const MIME_TYPE_PROBLEM_JSON = 'application/problem+json'
+export const MIME_TYPE_PROBLEM_XML = 'application/problem+xml'
+
 
 // multipart
 export const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data' // RFC1867
