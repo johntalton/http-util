@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: it is complex */
 import { ReadableStream } from 'node:stream/web'
 
 import { EMPTY } from '../defs.js'

@@ -16,7 +16,12 @@ describe('Base32', () => {
 	})
 
 	describe('decode', () => {
-		// it('should handle undefined')
+		it('should handle bad char', () => {
+			assert.throws(() => Base32.decode('ABCDEF99999999'), {
+				message: 'Invalid Base32 character',
+				name: 'Error'
+			})
+		})
 
 		it('should handle basic example', () => {
 			const u8 = Base32.decode('OBZGK5DFNZSCA5DINFZSA2LTEBRGS3TBOJ4SAY3PNZ2GK3TUFY======')

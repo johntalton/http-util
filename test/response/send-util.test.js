@@ -4,7 +4,15 @@ import zlib from 'node:zlib'
 import { ReadableStream } from 'node:stream/web'
 import { Readable, compose } from 'node:stream'
 
-import { send, send_bytes, send_no_body, send_error, send_encoded, calculateDigests } from '@johntalton/http-util/response'
+import {
+	send,
+	send_bytes,
+	send_no_body,
+	send_no_body_or_problem,
+	send_error,
+	send_encoded,
+	calculateDigests
+} from '@johntalton/http-util/response'
 
 import { ifSupports } from '../node-version.js'
 
@@ -22,6 +30,38 @@ const DEFAULT_META = {
 // const asRS = buffer => new ReadableStream({ type: 'bytes', start(controller) { controller.enqueue(buffer); controller.close() } })
 
 describe('send_util', () => {
+	describe('send_no_body_or_problem', () => {
+		it('should send with no body', () => {
+			const stream = new MockHttp2Stream()
+			const message = undefined
+			send_no_body_or_problem(stream, 200, {}, [], {}, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.sentHeaders[':status'], 200)
+			assert.equal(stream.sentHeaders['server'], 'TEST-SERVER-v1')
+
+			const result = stream.read()
+			assert.equal(result, null)
+		})
+
+		it('should send with problem', () => {
+			const stream = new MockHttp2Stream()
+			const problem = {
+				type: 'urn:test',
+				title: 'Test',
+				detail: 'A Test'
+			}
+			send_no_body_or_problem(stream, 500, {}, [], { problem }, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.sentHeaders[':status'], 500)
+			assert.equal(stream.sentHeaders['server'], 'TEST-SERVER-v1')
+
+			const decoder = new TextDecoder('utf-8', { fatal: true })
+			const result = stream.read()
+			const decoded = decoder.decode(result)
+			assert.deepEqual(decoded, JSON.stringify({ ...problem, status: 500 }))
+		})
+	})
+
 	describe('send_no_body', () => {
 		it('should send with no body', () => {
 			const stream = new MockHttp2Stream()
@@ -37,29 +77,25 @@ describe('send_util', () => {
 	})
 
 	describe('send_error', () => {
-		it('should send with default message', () => {
+		it('should send with default message (deprecated)', () => {
 			const stream = new MockHttp2Stream()
 			const message = undefined
 			send_error(stream, 500, message, undefined, {}, structuredClone(DEFAULT_META))
 
 			const result = stream.read()
-			const decoder = new TextDecoder('utf-8')
-			const decoded = decoder.decode(result)
-			assert.equal(decoded, JSON.stringify({ message: 'Error' }))
+			assert.deepEqual(result, null)
 		})
 
-		it('should send with message', () => {
+		it('should send with message (deprecated)', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'A Message'
 			send_error(stream, 500, message, undefined, {}, structuredClone(DEFAULT_META))
 
 			const result = stream.read()
-			const decoder = new TextDecoder('utf-8')
-			const decoded = decoder.decode(result)
-			assert.equal(decoded, JSON.stringify({ message }))
+			assert.equal(result, null)
 		})
 
-		it('should send with message and retryAfter', () => {
+		it('should send with message (deprecated) and retryAfter', () => {
 			const stream = new MockHttp2Stream()
 			const message = 'A Message'
 			const retryAfter = 42
@@ -70,9 +106,22 @@ describe('send_util', () => {
 			assert.equal(stream.sentHeaders['access-control-expose-headers'], 'etag,server,retry-after')
 
 			const result = stream.read()
-			const decoder = new TextDecoder('utf-8')
+			assert.equal(result, null)
+		})
+
+		it('should send with problem', () => {
+			const stream = new MockHttp2Stream()
+			const problem = {
+				type: 'urn:test',
+				title: 'Test',
+				detail: 'This is a Test'
+			}
+			send_error(stream, 500, undefined, undefined, { problem }, structuredClone(DEFAULT_META))
+
+			const decoder = new TextDecoder('utf-8', { fatal: true })
+			const result = stream.read()
 			const decoded = decoder.decode(result)
-			assert.equal(decoded, JSON.stringify({ message }))
+			assert.deepEqual(decoded, JSON.stringify({ ...problem, status: 500 }))
 		})
 	})
 

@@ -24,6 +24,7 @@
 /** @import { RetryAfterItem } from './headers/retry-after.js' */
 /** @import { AutoDigestItem } from './headers/digest.js'  */
 /** @import { UseAsDictionaryItem } from './headers/dictionary.js' */
+/** @import { ProblemInstance } from './problem.js' */
 
 /**
  * @template T
@@ -132,6 +133,8 @@
  * @property {string|undefined} [serviceWorkerAllowed]
  *
  * @property {UseAsDictionaryItem|undefined} [useAsDictionary]
+ *
+ * @property {ProblemInstance|undefined} [problem]
  */
 
 /** @type {''} */

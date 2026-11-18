@@ -12,7 +12,7 @@ import { send_bytes } from '../send-util.js'
  * @param {ServerHttp2Stream} stream
  * @param {NonEmptyArray<MultipartBytePart>|MultipartBytePart} objs
  * @param {Omit<SendContent, 'rangeDirective'>} content
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendPartialContent(stream, objs, content, context, meta) {

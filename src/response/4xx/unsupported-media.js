@@ -6,7 +6,7 @@ import {
 } from '../../headers.js'
 import { HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE } from '../../status.js'
 import { coerceSupportedTypes } from '../header-util.js'
-import { send_no_body } from '../send-util.js'
+import { send_no_body_or_problem } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, SendInfo, Metadata } from '../../defs.js' */
@@ -32,7 +32,7 @@ export function sendUnsupportedMediaType(stream, method, info, context, meta) {
 	if(supportedTypesRecord.post) { exposedHeaders.push(HTTP_HEADER_ACCEPT_POST) }
 	if(supportedTypesRecord.patch) { exposedHeaders.push(HTTP_HEADER_ACCEPT_PATCH) }
 
-	send_no_body(stream, HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, {
+	send_no_body_or_problem(stream, HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE, {
 		// [HTTP_HEADER_ACCEPT_PUT]: supportedTypesRecord.put?.join(COMMON_LIST_VALUE_JOINER_COMMA)
 			[HTTP_HEADER_ACCEPT_POST]: supportedTypesRecord.post?.join(COMMON_LIST_VALUE_JOINER_COMMA),
 			[HTTP_HEADER_ACCEPT_PATCH]: supportedTypesRecord.patch?.join(COMMON_LIST_VALUE_JOINER_COMMA),

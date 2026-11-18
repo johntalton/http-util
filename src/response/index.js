@@ -2,6 +2,7 @@
 /** biome-ignore-all lint/performance/noReExportAll: entry point */
 export * from '../defs.js'
 export * from '../methods.js'
+export * from '../problem.js'
 export * from './header-util.js'
 export * from './multipart.js'
 export * from './send-util.js'

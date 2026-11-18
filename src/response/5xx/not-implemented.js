@@ -6,10 +6,10 @@ import { send_error } from '../send-util.js'
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string|undefined} message
+ * @param {string|undefined} _message
  * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendNotImplemented(stream, message, context, meta) {
-	send_error(stream, HTTP_STATUS_NOT_IMPLEMENTED, message, undefined, context, meta)
+export function sendNotImplemented(stream, _message, context, meta) {
+	send_error(stream, HTTP_STATUS_NOT_IMPLEMENTED, _message, undefined, context, meta)
 }

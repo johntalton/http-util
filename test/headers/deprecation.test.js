@@ -12,6 +12,13 @@ describe('Deprecation', () => {
 			assert.equal(result, undefined)
 		})
 
+		it('should handle Date', () => {
+			assert.throws(() => Deprecation.encode(new Date()), {
+				message: 'not implemented',
+				name: 'Error'
+			})
+		})
+
 		it('should handle Temporal Instant', {
 			skip: !ifSupports('temporal')
 		}, () => {

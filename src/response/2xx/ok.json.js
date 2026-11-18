@@ -10,7 +10,7 @@ import { send_encoded } from '../send-util.js'
  * @param {Object} obj
  * @param {Omit<SendContent, 'contentType' | 'contentLength' | 'rangeDirective'>} content
  * @param {Pick<SendInfo, 'supportedQueryTypes'>} info
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendJSON(stream, obj, content, info, context, meta) {

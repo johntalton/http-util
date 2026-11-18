@@ -9,7 +9,7 @@ import {
 	HTTP_HEADER_RETRY_AFTER,
 } from '../../headers.js'
 import { HTTP_STATUS_TOO_MANY_REQUESTS } from '../../status.js'
-import { send_no_body } from '../send-util.js'
+import { send_no_body_or_problem } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, SendInfo, Metadata } from '../../defs.js' */
@@ -26,7 +26,7 @@ export function sendTooManyRequests(stream, info, context, meta) {
 		policies
 	} = info
 
-	send_no_body(stream, HTTP_STATUS_TOO_MANY_REQUESTS, {
+	send_no_body_or_problem(stream, HTTP_STATUS_TOO_MANY_REQUESTS, {
 			[HTTP_HEADER_RETRY_AFTER]: RetryAfter.encode(limitInfo.resetSeconds),
 			[HTTP_HEADER_RATE_LIMIT]: RateLimit.encode(limitInfo),
 			[HTTP_HEADER_RATE_LIMIT_POLICY]: RateLimitPolicy.encode(policies)

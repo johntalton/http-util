@@ -5,7 +5,7 @@ import {
 	HTTP_HEADER_LAST_MODIFIED
 } from '../../headers.js'
 import { HTTP_STATUS_PRECONDITION_FAILED } from '../../status.js'
-import { send_no_body } from '../send-util.js'
+import { send_no_body_or_problem } from '../send-util.js'
 
 /** @import { ServerHttp2Stream } from 'node:http2' */
 /** @import { SendContext, SendContent, Metadata } from '../../defs.js' */
@@ -22,7 +22,7 @@ export function sendPreconditionFailed(stream, content, context, meta) {
 		lastModified
 	} = content
 
-	send_no_body(stream, HTTP_STATUS_PRECONDITION_FAILED, {
+	send_no_body_or_problem(stream, HTTP_STATUS_PRECONDITION_FAILED, {
 		[HTTP_HEADER_ETAG]: Conditional.encodeEtag(etag),
 		[HTTP_HEADER_LAST_MODIFIED]: InternetMessageFormatFixDate.encode(lastModified)
 	}, [], context, meta)

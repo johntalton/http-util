@@ -18,7 +18,7 @@ import { send } from '../send-util.js'
 /**
  * @param {ServerHttp2Stream} stream
  * @param {Pick<SendContent, 'etag' | 'lastModified' | 'age' | 'cacheControl'>} content
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendNotModified(stream, content, context, meta) {

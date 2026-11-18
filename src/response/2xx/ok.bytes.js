@@ -9,7 +9,7 @@ import { send_bytes } from '../send-util.js'
  * @param {SendBody|undefined} obj
  * @param {Omit<SendContent, 'rangeDirective'|'encoding'>} content
  * @param {Pick<SendInfo, 'acceptRanges'>} info
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendBytes(stream, obj, content, info, context, meta) {

@@ -14,7 +14,7 @@ import { CacheControl } from '../headers/cache-control.js'
 import { Conditional } from '../headers/conditional.js'
 import { ContentDisposition } from '../headers/content-disposition.js'
 import { ContentRange } from '../headers/content-range.js'
-import { CHARSET_UTF8, CONTENT_TYPE_JSON } from '../headers/content-type.js'
+import { CHARSET_UTF8 } from '../headers/content-type.js'
 import { ContentDigest, ReprDigest, UnencodedDigest } from '../headers/digest.js'
 import { RetryAfter } from '../headers/retry-after.js'
 import { InternetMessageFormatFixDate } from '../headers/util/imf-fixdate.js'
@@ -38,6 +38,7 @@ import {
 	HTTP_HEADER_RETRY_AFTER,
 	HTTP_HEADER_UNENCODED_DIGEST
 } from '../headers.js'
+import { Problem } from '../problem.js'
 import {
 	HTTP_STATUS_INTERNAL_SERVER_ERROR,
 	HTTP_STATUS_NOT_FOUND,
@@ -59,11 +60,30 @@ import {
 /** @import { AcceptRangeUnits, Metadata, SendContext, SendBodyTypes, SendBody, SendDigest } from '../defs.js' */
 /** @import { EtagItem } from '../headers/conditional.js' */
 /** @import { IMFFixDateInput } from '../headers/util/imf-fixdate.js' */
-/** @import { CacheControlOptions } from '../headers/cache-control.js' */
+/** @import { CacheControlResponseItem } from '../headers/cache-control.js' */
 /** @import { ContentRangeDirective } from '../headers/content-range.js' */
 /** @import { DispositionInput } from '../headers/content-disposition.js' */
 /** @import { RetryAfterItem } from '../headers/retry-after.js' */
 /** @import { AutoDigestItem } from '../headers/digest.js' */
+
+/**
+ * @param {ServerHttp2Stream} stream
+ * @param {number} status
+ * @param {OutgoingHttpHeaders} headers
+ * @param {Array<string>} exposedHeaders
+ * @param {SendContext} context
+ * @param {Metadata} meta
+ */
+export function send_no_body_or_problem(stream, status, headers, exposedHeaders, context, meta) {
+	const { problem } = context
+	if(problem === undefined) {
+		send(stream, status, headers, exposedHeaders, undefined, undefined, undefined, context, meta)
+	}
+
+	const { contentType, body } = Problem.encode(problem, status)
+
+	send(stream, status, headers, exposedHeaders, undefined, contentType, body, context, meta)
+}
 
 /**
  * @param {ServerHttp2Stream} stream
@@ -80,26 +100,19 @@ export function send_no_body(stream, status, headers, exposedHeaders, context, m
 /**
  * @param {ServerHttp2Stream} stream
  * @param {number} status
- * @param {string|undefined} message
+ * @param {string|undefined} _message
  * @param {RetryAfterItem|undefined} retryAfter
  * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function send_error(stream, status, message, retryAfter, context, meta) {
-	// Assert.isString(message, 'message') if not undefined
-
-	const obj = JSON.stringify({
-		message: message ?? 'Error'
-	})
-
+export function send_error(stream, status, _message, retryAfter, context, meta) {
 	const retryAfterStr = RetryAfter.encode(retryAfter)
 
 	const exposedHeaders = retryAfterStr === undefined ? [ ] : [ HTTP_HEADER_RETRY_AFTER ]
-	const customVaryHeaders = undefined
 
-	send(stream, status, {
+	send_no_body_or_problem(stream, status, {
 		[HTTP_HEADER_RETRY_AFTER]: retryAfterStr
-	}, exposedHeaders, customVaryHeaders, CONTENT_TYPE_JSON, obj, context, meta) // todo should this be plain text
+	}, exposedHeaders, context, meta)
 }
 
 /** @typedef { (data: InputType) => Buffer<ArrayBuffer> } EncoderFun */
@@ -209,7 +222,7 @@ export function calculateDigests(digestItem, obj) {
  * @param {EtagItem|undefined} etag
  * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
- * @param {CacheControlOptions|undefined} cacheControl
+ * @param {CacheControlResponseItem|undefined} cacheControl
  * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
  * @param {SendDigest|undefined} digest
@@ -294,7 +307,7 @@ export function send_encoded(stream, status, contentType, body, contentDispositi
  * @param {EtagItem|undefined} etag
  * @param {IMFFixDateInput|string|undefined} lastModified
  * @param {number|undefined} age
- * @param {CacheControlOptions|undefined} cacheControl
+ * @param {CacheControlResponseItem|undefined} cacheControl
  * @param {AcceptRangeUnits|undefined} acceptRanges
  * @param {Array<string>|undefined} supportedQueryTypes
  * @param {SendDigest|undefined} digest

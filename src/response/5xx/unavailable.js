@@ -6,13 +6,13 @@ import { send_error } from '../send-util.js'
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string|undefined} message
+ * @param {string|undefined} _message
  * @param {Pick<SendInfo, 'retryAfter'>} info
  * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendUnavailable(stream, message, info, context, meta) {
+export function sendUnavailable(stream, _message, info, context, meta) {
 	const { retryAfter } = info
 
-	send_error(stream, HTTP_STATUS_SERVICE_UNAVAILABLE, message, retryAfter, context, meta)
+	send_error(stream, HTTP_STATUS_SERVICE_UNAVAILABLE, _message, retryAfter, context, meta)
 }

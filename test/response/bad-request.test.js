@@ -25,14 +25,40 @@ describe('Response', () => {
 				'Timing-Allow-Origin': undefined,
 				'access-control-allow-origin': undefined,
 				'access-control-expose-headers': 'etag,server',
-				'content-type': 'text/plain; charset=utf-8',
+				'content-type': undefined,
 				server: undefined
 			})
 
 			const encoder = new TextEncoder()
 
 			const result = stream.read()
-			assert.deepEqual(result, Buffer.from(encoder.encode(message)))
+			assert.deepEqual(result, null)
+		})
+
+		it('should handle basic values (with problem)', () => {
+			const stream = new MockHttp2Stream()
+			const problem = {
+				type: 'urn:test',
+				title: 'Test',
+				detail: 'This is a Test'
+			}
+			Response.badRequest(stream, undefined, { problem }, structuredClone(DEFAULT_META))
+
+			assert.equal(stream.headersSent, true)
+			assert.deepEqual(stream.sentHeaders, {
+				':status': 400,
+				'Server-Timing': undefined,
+				'Timing-Allow-Origin': undefined,
+				'access-control-allow-origin': undefined,
+				'access-control-expose-headers': 'etag,server',
+				'content-type': 'application/problem+json',
+				server: undefined
+			})
+
+			const decoder = new TextDecoder('utf-8', { fatal: true })
+			const result = stream.read()
+			const decoded = decoder.decode(result)
+			assert.deepEqual(decoded, JSON.stringify({ ...problem, status: 400 }))
 		})
 	})
 })

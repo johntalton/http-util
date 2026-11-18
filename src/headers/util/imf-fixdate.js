@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: lots of conditionals is ok */
 import { Assert } from './assert.js'
 
 /**

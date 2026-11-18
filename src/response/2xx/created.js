@@ -15,7 +15,7 @@ import { send_no_body } from '../send-util.js'
  * @param {ServerHttp2Stream} stream
  * @param {URL|string|undefined} location
  * @param {Pick<SendContent, 'etag' | 'lastModified'>} content
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendCreated(stream, location, content, context, meta) {

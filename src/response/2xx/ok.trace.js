@@ -14,7 +14,7 @@ const PSEUDO_HEADER_PREFIX = ':'
  * @param {string} method
  * @param {URL} url
  * @param {IncomingHttpHeaders} headers
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendTrace(stream, method, url, headers, context, meta) {

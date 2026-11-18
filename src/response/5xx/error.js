@@ -6,10 +6,10 @@ import { send_error } from '../send-util.js'
 
 /**
  * @param {ServerHttp2Stream} stream
- * @param {string} message
+ * @param {string|undefined} _message
  * @param {SendContext} context
  * @param {Metadata} meta
  */
-export function sendError(stream, message, context, meta) {
-	send_error(stream, HTTP_STATUS_INTERNAL_SERVER_ERROR, message, undefined, context, meta)
+export function sendError(stream, _message, context, meta) {
+	send_error(stream, HTTP_STATUS_INTERNAL_SERVER_ERROR, _message, undefined, context, meta)
 }

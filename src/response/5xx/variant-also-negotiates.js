@@ -10,9 +10,7 @@ import { send_error } from '../send-util.js'
  * @param {Metadata} meta
  */
 export function sendVariantAlsoNegotiates(stream, context, meta) {
-	const message = undefined
-	const retryAfter = undefined
-	send_error(stream, HTTP_STATUS_VARIANT_ALSO_NEGOTIATES, message, retryAfter, context, meta)
+	send_error(stream, HTTP_STATUS_VARIANT_ALSO_NEGOTIATES, undefined, undefined, context, meta)
 }
 
 // TCN: list

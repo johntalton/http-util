@@ -10,5 +10,5 @@ import { send_error } from '../send-util.js'
  * @param {Metadata} meta
  */
 export function sendInsufficientStorage(stream, context, meta) {
-	send_error(stream, HTTP_STATUS_INSUFFICIENT_STORAGE, 'Insufficient Storage', undefined, context, meta)
+	send_error(stream, HTTP_STATUS_INSUFFICIENT_STORAGE, undefined, undefined, context, meta)
 }

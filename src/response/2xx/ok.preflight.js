@@ -29,7 +29,7 @@ import { send_no_body } from '../send-util.js'
 /**
  * @param {ServerHttp2Stream} stream
  * @param {Pick<SendInfo, 'supportedMethods' | 'supportedHeaders' | 'supportedTypes' | 'supportedQueryTypes' | 'acceptRanges'>} info
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendPreflight(stream, info, context, meta) {

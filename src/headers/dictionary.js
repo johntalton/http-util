@@ -78,7 +78,7 @@ export class DictionaryID {
 		if(header === undefined) { return undefined }
 
 		try {
-			const { bare_item, parameters } = StructuredField.parse(header, SF_FIELD_TYPE_ITEM)
+			const { bare_item } = StructuredField.parse(header, SF_FIELD_TYPE_ITEM)
 			if(typeof bare_item !== 'string') { return undefined }
 			return bare_item
 		}
@@ -112,9 +112,11 @@ export class AvailableDictionary {
 		if(header === undefined) { return undefined }
 
 		try {
-			const { bare_item, parameters } = StructuredField.parse(header, SF_FIELD_TYPE_ITEM)
+			const { bare_item } = StructuredField.parse(header, SF_FIELD_TYPE_ITEM)
 			if(!(ArrayBuffer.isView(bare_item) || (bare_item instanceof ArrayBuffer))) { return undefined }
-			return bare_item
+			return ArrayBuffer.isView(bare_item) ?
+				new Uint8Array(bare_item.buffer, bare_item.byteOffset, bare_item.byteLength) :
+				new Uint8Array(bare_item)
 		}
 		catch {
 			return undefined

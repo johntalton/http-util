@@ -9,7 +9,7 @@ import { send_encoded } from '../send-util.js'
  * @param {SendBody|undefined} obj
  * @param {Omit<SendContent, 'rangeDirective' | 'contentLength'>} content
  * @param {Pick<SendInfo, 'supportedQueryTypes'>} info
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendEncoded(stream, obj, content, info, context, meta) {

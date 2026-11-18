@@ -8,7 +8,7 @@ import { send_no_body } from '../send-util.js'
 /**
  * @param {ServerHttp2Stream} stream
  * @param {URL|string|undefined} location
- * @param {SendContext} context
+ * @param {Omit<SendContext,'problem'>} context
  * @param {Metadata} meta
  */
 export function sendAccepted(stream, location, context, meta) {
